@@ -177,7 +177,13 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
                           <AlertDialogCancel>Anuluj</AlertDialogCancel>
                           <AlertDialogAction  onClick={async () => {
                               try {
-                                  await router.delete(`/files/${file.id}`);
+                                  await router.delete(`/files/${file.id}`,
+{
+onSuccess: ()=>{
+console.log('123')
+}
+
+});
                                   // alert('Plik został usunięty.');
                                   refreshData();
                                   setOptionVisible(false);
