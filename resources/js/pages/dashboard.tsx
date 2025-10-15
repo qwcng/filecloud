@@ -21,12 +21,13 @@
     LucideInfinity,
     InfoIcon,
   } from "lucide-react";
-  import { folder } from "@/routes/files";
+  import { folder, share } from "@/routes/files";
 import { ref } from "process";
 import { motion } from "motion/react"
 import {FileCard, FileModal,ShareModal,UploadFileCard} from "@/components/files/Files"
 import {FolderCard} from "@/components/files/Folders"
 import { Toaster } from "@/components/ui/sonner"
+import { Skeleton } from "@/components/ui/skeleton";
 import { SelectScrollUpButton } from "@radix-ui/react-select";
 import {
   Dialog,
@@ -43,11 +44,9 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
   const url = window.location.pathname;
   let fileName = url.split("/").pop();
-  const breadcrumbs: BreadcrumbItem[] = [
-    { title: "panel", href: dashboard().url + "/" },
-    // { title: "Pliki", href: dashboard().url + "/files" },
-    { title: fileName, href: dashboard().url + "/" + fileName },  // { title: "Mój folder", href: dashboard().url }
-  ];
+
+
+
 
   if(fileName === 'dashboard'){
   fileName=null;
@@ -63,15 +62,15 @@ import { Button } from "@/components/ui/button"
     url: string;
   };
 
-  
 
-  
+
+
 
   // --- ShareModal i FileModal pozostają bez zmian ---
 
 
-  
-  
+
+
   export default function Dashboard() {
     const [files, setFiles] = useState<FileData[]>([]);
     const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
@@ -79,7 +78,12 @@ import { Button } from "@/components/ui/button"
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [selecting, setSelecting] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<FileData[]>([]);
+    const [breadcrumbs,setBreadcrumbs] = useState();
+    const [sharedFile,setSharedFile] = useState(false);
+    const [shareLink,setShareLink] =useState('');
     const [clicks, setClicks] = useState(0);
+    const [foldersLoading, setFoldersLoading] = useState(true);
+    const [filesLoading, setFilesLoading] = useState(true);
     useEffect(() => {
     setUrlr(window.location.pathname.split("/").pop() || '');
 }, [refreshTrigger]);
@@ -89,9 +93,12 @@ const refreshData = () => {
 };
 
     useEffect(() => {
+      if(urlr == 'dashboard'){
+        setUrlr('');
+      }
       console.log("Current URL segment:", urlr);
 
-    }, [urlr]);
+    }, [ urlr,refreshTrigger]);
 
     const mapMimeToType = (mime: string): FileData["type"] => {
       if (mime.startsWith("image/")) return "image";
@@ -107,15 +114,37 @@ const refreshData = () => {
     const [folders, setFolders] = useState<{ id: number; name: string }[]>([]);
 
     useEffect(() => {
+      setFoldersLoading(true);
       axios.get(`/folders/${urlr}`).then((response) => {
+        setFoldersLoading(false);
         setFolders(response.data);
+
         // console.log("Folders response:", response.data);
       });
     }, [refreshTrigger]);
-
+      useEffect(() => {
+          if (urlr && urlr == 'dashboard') {
+              axios.get(`/pathTo/${urlr}`).then((response) => {
+                  // response.data = [{id,name}, ...]
+                  const bc: BreadcrumbItem[] = [
+                      { title: "panel", href: dashboard().url + "/" },
+                      ...response.data.map((folder: any) => ({
+                          title: folder.name,
+                          href: `/dashboard/${folder.id}`,
+                      }))
+                  ];
+                  setBreadcrumbs(bc);
+              });
+          } else {
+              setBreadcrumbs([{ title: "panel", href: dashboard().url + "/" }]);
+          }
+      }, [urlr, refreshTrigger]);
 
     useEffect(() => {
+      setFilesLoading(true);
+      console.log("Fetching files for folder:", urlr);
       axios.get(`/files/${urlr}`).then((response) => {
+        setFilesLoading(false);
         const mappedFiles: FileData[] = response.data.files.map((f: any) => ({
           id: f.id,
           name: f.original_name,
@@ -124,9 +153,14 @@ const refreshData = () => {
           created_at: f.created_at,
           url: f.url,
         }));
+        
         setFiles(mappedFiles);
+        if(urlr == "sharedFile"){
+          setSharedFile(true);
+        }
       });
     }, [refreshTrigger]);
+
 
     // useEffect(() => {
     //   alert('123');
@@ -135,6 +169,42 @@ const refreshData = () => {
     return (
       <AppLayout breadcrumbs={breadcrumbs}>
         <Head title="Moje Pliki" />
+        {sharedFile &&(
+          <Dialog open={true}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Udostępniony plik</DialogTitle>
+            <DialogDescription>
+            Wprowadź link udostepnionego pliku.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="name-1">Link</Label>
+              <Input id="name-1" name="name" defaultValue="http://localhost:8000/share/" onChange={ (e)=>{setShareLink(e.target.value)}}/>
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Link href={'./'}>
+              <Button variant="outline" onClick={
+                ()=>{ setSharedFile(false)
+                      
+                }}>Cancel</Button>
+              </Link>
+            </DialogClose>
+           { (() => {
+      const cleanedPath = shareLink.replace(window.location.origin + '/', '');
+      return (
+        <Link href={`../${cleanedPath}`}>
+          <Button type="submit">Otwórz plik</Button>
+        </Link>
+      );
+  })() }
+          </DialogFooter>
+        </DialogContent>
+    </Dialog>
+        )}
       <Toaster
       position="top-center"
       richColors
@@ -151,7 +221,7 @@ const refreshData = () => {
 
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
           <h3 className="text-lg font-semibold">📂 Moje Pliki
-            
+
           </h3>
           {/* <button className="border" onClick={()=>{setClicks(clicks+1)}}>{clicks}</button> */}
           <Dialog>
@@ -174,7 +244,7 @@ const refreshData = () => {
               <Label htmlFor="name-1">Nazwa folderu</Label>
               <Input id="name-1" name="name" defaultValue="Nowy folder" />
             </div>
-            
+
           </div>
           <DialogFooter>
             <DialogClose asChild>
@@ -195,7 +265,7 @@ const refreshData = () => {
         </DialogContent>
       </form>
     </Dialog>
-            
+          
           <button onClick={() => selecting ? setSelecting(false) : setSelecting(true)}
           className="w-34 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 ">
             {selecting ? 'Anuluj' : 'Zaznacz pliki'}
@@ -228,15 +298,39 @@ const refreshData = () => {
           <div className="flex flex-wrap gap-4 lg:justify-start justify-center sm:">
             <UploadFileCard folderName={urlr} refreshData={refreshData} />
              {/* <FolderCard folderName="Nowy Folder" /> */}
-            {folders.map((folder) => (
-              <>
-              
-              <FolderCard key={folder.id} href={folder.id}  onFolderClick={refreshData}folderName={folder.name} />
-              </>
-            ))}
+              {foldersLoading ? (
+                <>
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                </>
+              ) : (
+                folders.map((folder) => (
+                  <FolderCard
+                    key={folder.id}
+                    href={folder.id.toString()}
+                    onFolderClick={refreshData}
+                    folderName={folder.name}
+                    folderId={folder.id}
+                  />
+                ))
+              )}
           </div>
           <div className="flex flex-wrap gap-4 lg:justify-start justify-center">
-            {files.map((file) => (
+          {filesLoading ? (
+                <>
+                  <Skeleton className=" w-72 rounded-lg" />  
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                  <Skeleton className=" w-72 rounded-lg" />
+                </>
+              ) : (
+            files.map((file) => (
               <>
               {selecting && (<input type="checkbox" onChange={(e) => {
                 if (e.target.checked) {
@@ -247,7 +341,7 @@ const refreshData = () => {
               }} className=" left-[-10] h-5 w-5 z-10" />)}
               <FileCard key={file.id} file={file} onClick={() => setSelectedFile(file)} refreshData={refreshData} />
               </>
-            ))}
+            )))}
           </div>
           {selectedFile && <FileModal file={selectedFile} onClose={() => setSelectedFile(null)} />}
         </div>

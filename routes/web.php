@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\FileController;
+use App\Models\SharedFile;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -32,9 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Lista plików użytkownika
     Route::get('/files', [FileController::class, 'index'])->name('files.index');
     Route::get('/files/{folder}', [FileController::class, 'folder'])->name('files.folder');
-    
+
     Route::delete('/files/{file}', [FileController::class, 'deleteFile'])->name('files.delete');
-    // Pobranie pliku (download)
+    Route::patch('/files/{file}/move', [FileController::class, 'moveFile'])->name('files.move');
+
     Route::get('/d/{file}', [FileController::class, 'downloadFile'])->name('downloadFile');
 
     // Wyświetlenie pliku (np. obraz, audio, wideo)
@@ -60,7 +62,18 @@ Route::get('/share/{fileId}/download', [FileController::class, 'downloadSharedFi
 Route::post('/createFolder', [FileController::class, 'createFolder'])->name('createFolder');
 // Route::get('/folders', [FileController::class, 'listFolders'])->name('listFolders');
 Route::get('/folders/{parent?}',  [FileController::class, 'listFolders'])->name('listFolders');
+Route::get('/pathTo/{folderId?}', [FileController::class, 'pathTo']) -> name('pathTo');
 
+
+
+Route::get('/sharedFile', function(){
+ Inertia::render('SharedFile');
+});
 // Dodatkowe pliki konfiguracyjne
+Route::get('/word',function(){
+    return Inertia::render('Word');
+});
+Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
+Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

@@ -71,7 +71,12 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
 //       document.removeEventListener("mousedown", handleClickOutside);
 //     };
 //   }, []);
-
+ const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setData("fileId", file.id.toString());
+    e.dataTransfer.effectAllowed = "move";
+    e.currentTarget.style.opacity = "0.5";
+    e.currentTarget.style.border = "2px dashed #000";
+  };
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -79,6 +84,13 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
       transition={{ duration: 0.2, ease: "easeOut" }}
       // whileHover={{ scale: 1.02, boxShadow: "0 8px 20px rgba(0,0,0,0.08)" }}
       className="relative w-72 border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={(e) => {
+        e.currentTarget.style.opacity = "1";
+        e.currentTarget.style.border = "none";
+        setOptionVisible(false);
+      }}
     >
       <div className="flex justify-end">
         <EllipsisVertical
@@ -117,10 +129,10 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
           <h2 className="text-lg font-semibold mb-2">Opcje pliku</h2>
           <ul className="list-none p-0 m-0">
             <li className="m-2 cursor-pointer hover:text-blue-600">
-              <Link href={`/textFile/${file.id}`}><EyeIcon className="inline-block mr-2" /> Podgląd</Link>
+              <Link href={`/edit/${file.id}`}><EyeIcon className="inline-block mr-2" /> Podgląd</Link>
             </li>
             <li className="m-2 cursor-pointer hover:text-blue-600">
-              <span onClick={() =>{}}><InfoIcon className="inline-block mr-2" /> Szczegóły</span>
+              <span onClick={() =>{setInfoModalOpen(true)}}><InfoIcon className="inline-block mr-2" /> Szczegóły</span>
             </li>
             <li className="m-2 cursor-pointer hover:text-blue-600">
   <a
@@ -278,7 +290,13 @@ export function ShareModal({ fileId, onClose }: { fileId: number; onClose: () =>
         await router.post(`/filesShare/${fileId}`, {
           access_code: code,
           expires_in: expiresAt ? parseInt(expiresAt) : null,
-        });
+        },{
+          onSuccess: () => {
+           
+            // toast.success('Plik został udostępniony!')
+        }
+        
+      });
         // alert(
         //   "✅ Plik został udostępniony! \n Znajdziesz go pod linkiem localhost:800/share/" + fileId
         // );
@@ -335,7 +353,7 @@ export function ShareModal({ fileId, onClose }: { fileId: number; onClose: () =>
             </Label>
             <Input
               id="link"
-              defaultValue={`http://localhost:8000/share/${fileId}`}
+              defaultValue={`https://filecloud.ct8.pl/share/${fileId}`}
               readOnly
             />
           </div>
@@ -374,12 +392,18 @@ export function UploadFileCard({folderName, refreshData}: {folderName: string; r
       const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/uploadFile', {
-          forceFormData: true, // wymusza wysyłkę multipart/form-data
-        });
+          forceFormData: true,
+          onSuccess: () => {
+            toast.success('Pliki zostały przesłane!');
+            setData("files", []);
+            refreshData();
+          } // wymusza wysyłkę multipart/form-data
+        }, 
+       
+        
+        );
         // After successful upload,
-        // we can reset the form
-          setData("files", []);
-        refreshData();
+        
       };
     
       const removeFile = (index: number) => {

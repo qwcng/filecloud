@@ -4,9 +4,11 @@ import { Head, router, useForm, Link } from "@inertiajs/react";
 import { EllipsisVertical, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 
-export function FolderCard({ folderName, href, onFolderClick }: { folderName: string; href: string; onFolderClick: () => void }) {
+export function FolderCard({ folderName, href, onFolderClick, folderId }: { folderName: string; href: string; onFolderClick: () => void; folderId: number }) {
   const [optionVisible, setOptionVisible] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDivElement>(null);
@@ -17,6 +19,7 @@ export function FolderCard({ folderName, href, onFolderClick }: { folderName: st
     setOptionVisible(true);
   };
 
+  // obsługa kliknięcia poza modalem
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -24,24 +27,40 @@ export function FolderCard({ folderName, href, onFolderClick }: { folderName: st
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // DRAG & DROP
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const fileId = e.dataTransfer.getData("fileId");
+    if (!fileId) return;
+
+    try {
+      console.log(`Przenoszenie pliku ${fileId} do folderu ${folderId}`);
+      await axios.patch(`/files/${fileId}/move`, { folder_id: folderId });
+      toast.success(`Plik przeniesiony do ${folderName}`);
+      onFolderClick(); // odśwież pliki/foldery
+    } catch (err) {
+      console.error(err);
+      toast.error("Nie udało się przenieść pliku");
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      // whileHover={{ scale: 1.02, }}
-      className="
-      "
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
     >
       <Link
         href={`/dashboard/${href}`}
         onClick={() => onFolderClick()}
-        className="hover:shadow-lg transition bg-[#8090a0] dark:bg-neutral-800 relative block w-72 border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
+        className="hover:shadow-lg transition  dark:bg-neutral-800 relative block w-72 border rounded-lg p-4 shadow"
       >
         <div className="flex justify-end">
           <EllipsisVertical
@@ -55,12 +74,7 @@ export function FolderCard({ folderName, href, onFolderClick }: { folderName: st
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
         </svg>
         <h3 className="text-sm text-[#706f6c]">10 plików</h3>
         <h3 className="text-lg font-medium text-ellipsis">{folderName}</h3>

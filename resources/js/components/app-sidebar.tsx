@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Files, Folder, LayoutGrid, PlusIcon } from 'lucide-react';
+import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -13,6 +13,11 @@ const mainNavItems: NavItem[] = [
         title: 'Moje pliki',
         href: dashboard(),
         icon: Files,
+    },
+    {
+        title:'Udostępnione Pliki',
+        href : '/dashboard/sharedFile',
+        icon: Share2Icon,
     },
      {
         title: 'Dodaj pliki',

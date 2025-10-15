@@ -3,6 +3,7 @@
     namespace App\Http\Controllers;
 
     use App\Models\UserFile;
+    use App\Models\Folder;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Storage;
     use Inertia\Inertia;
@@ -16,6 +17,7 @@
         public function index(Request $request)
         {
             $files = UserFile::where('user_id', $request->user()->id)
+            ->where('folder_id', null)
                 ->orderBy('created_at', 'desc')
                 ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
 
@@ -25,9 +27,15 @@
         }
 
         public function folder(Request $request, $folder)
-        {
+        {   
+            if ($folder === 'dashboard') {
+                $folderr = null;
+            }
+            else {
+                $folderr = $folder;
+            }
             $files = UserFile::where('user_id', $request->user()->id)
-                ->where('folder_id', $folder)
+                ->where('folder_id', $folderr)
                 ->orderBy('created_at', 'desc')
                 ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
 
@@ -107,6 +115,21 @@ foreach ($request->file('files') as $file) {
             // return response()->json(['message' => 'Plik usunięty']);
         }
         // 2️⃣ Pobranie listy plików użytkownika
+        public function moveFile(Request $request, UserFile $file)
+        {
+            if ($file->user_id !== auth()->id()) {
+                abort(403);
+            }
+
+            $request->validate([
+                'folder_id' => 'nullable|exists:folders,id',
+            ]);
+
+            $file->folder_id = $request->folder_id;
+            $file->save();
+
+            // return response()->json(['message' => 'Plik przeniesiony']);
+        }
         public function files(Request $request)
         {
             $userFiles = UserFile::where('user_id', $request->user()->id)
@@ -305,7 +328,7 @@ foreach ($request->file('files') as $file) {
         ]);
 
         // Zakładam, że masz model Folder i odpowiednią tabelę w bazie danych
-        $folder = \App\Models\Folder::create([
+        $folder = Folder::create([
             'user_id' => $request->user()->id,
             'name' => $request->name,
             'parent_id' => $request->parent ? $request->parent : null,
@@ -319,7 +342,7 @@ foreach ($request->file('files') as $file) {
     public function listFolders(Request $request,$parent=null)
     {   
 
-    $folders = \App\Models\Folder::where('user_id', $request->user()->id)
+    $folders = Folder::where('user_id', $request->user()->id)
         ->where('parent_id', $parent)
         ->orderBy('created_at', 'desc')
         ->get(['id', 'name', 'created_at']);
@@ -327,4 +350,61 @@ foreach ($request->file('files') as $file) {
 
         return response()->json($folders);
     }
+public function pathTo(Request $request, $folderId = null)
+{
+    if (!$folderId) {
+        return response()->json([]);
+    }
+
+    $path = [];
+    $currentFolder = Folder::find($folderId);
+
+    while ($currentFolder) {
+        $path[] = [
+            'id' => $currentFolder->id,
+            'name' => $currentFolder->name,
+        ];
+        // id rodzica null = root
+        $currentFolder = $currentFolder->parent_id ? Folder::find($currentFolder->parent_id) : null;
+    }
+
+    // odwracamy żeby root był pierwszy
+    $path = array_reverse($path);
+
+    return response()->json($path);
 }
+public function editFile($fileId)
+{
+    $file = UserFile::findOrFail($fileId);
+
+    if ($file->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    $path = Storage::disk('private')->path($file->path);
+    $content = file_get_contents($path);
+
+    return Inertia::render('Word', [
+        'fileContent' => $content,
+        'fileId' => $file->id,
+        'fileName' => $file->original_name,
+    ]);
+}
+public function saveEditedFile(Request $request, $fileId)
+{
+    $file = UserFile::findOrFail($fileId);
+    if ($file->user_id !== auth()->id()) {
+        abort(403);
+    }  
+    $request->validate([
+        'content' => 'string',
+        'filename' => 'required|string|max:255',
+    ]);
+    $path = Storage::disk('private')->path($file->path);
+    file_put_contents($path, $request->input('content'));
+    $file->original_name = $request->filename;
+    $file->save();
+
+    // return response()->json(['message' => 'File updated successfully']);
+}
+    }
