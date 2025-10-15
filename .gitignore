@@ -11,6 +11,7 @@
 /storage/pail
 /vendor
 .env
+vite.config.ts
 .env.backup
 .env.production
 .phpactor.json

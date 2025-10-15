@@ -146,9 +146,10 @@ function handleSaveFile() {
               className="flex-1 bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg"
             />
             {/* <button onClick={handleDownload} className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-white">Eksportuj</button>
-             */}
-             <button onClick={handleDownload} className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-white">Pobierz</button>
+             */} 
              <button onClick={handleSaveFile} className="px-4 py-2 w-13 text-center bg-blue-600 hover:bg-blue-500 rounded-lg text-white"><SaveIcon /></button>
+             <button onClick={handleDownload} className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-white">Pobierz</button>
+            
             <button onClick={() => { setText(''); setStatusMsg('wyczyszczono'); }} className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white">Wyczyść</button>
           </div>
 
