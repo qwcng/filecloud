@@ -44,12 +44,12 @@
             ]);
         }
 
-    // 1️⃣ Upload pliku
+
         public function uploadFile(Request $request)
     {
         $request->validate([
             'files' => 'required|array',
-            'files.*' => 'file|max:13240', // każdy plik max ~10MB
+            'files.*' => 'file|max:13240', 
         ]);
 
         $uploadedFiles = [];

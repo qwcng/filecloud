@@ -123,7 +123,7 @@ const refreshData = () => {
       });
     }, [refreshTrigger]);
       useEffect(() => {
-          if (urlr && urlr == 'dashboard') {
+          
               axios.get(`/pathTo/${urlr}`).then((response) => {
                   // response.data = [{id,name}, ...]
                   const bc: BreadcrumbItem[] = [
@@ -135,9 +135,9 @@ const refreshData = () => {
                   ];
                   setBreadcrumbs(bc);
               });
-          } else {
-              setBreadcrumbs([{ title: "panel", href: dashboard().url + "/" }]);
-          }
+         
+              // setBreadcrumbs([{ title: "panel", href: dashboard().url + "/" }]);
+          
       }, [urlr, refreshTrigger]);
 
     useEffect(() => {
