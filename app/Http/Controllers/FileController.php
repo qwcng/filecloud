@@ -9,7 +9,7 @@
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
-
+    
     class FileController extends Controller
     {
         // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -55,7 +55,8 @@
         $uploadedFiles = [];
 
 foreach ($request->file('files') as $file) {
-    $path = $file->store('uploads', 'private');
+    $filename = time() . '_' . $file->getClientOriginalName();
+    $path = $file->storeAs('uploads', $filename, 'private');
     $mime = $file->getMimeType();
 
     $type = match (true) {
@@ -69,8 +70,14 @@ foreach ($request->file('files') as $file) {
         default => 'other',
     };
 
-    // pobieramy folder_id lub null jeśli root
+    // folder_id
     $folderId = $request->input('folder') === 'root' ? null : $request->input('folder');
+
+    // generowanie miniaturki tylko dla obrazów
+   
+
+    
+}
 
     $userFile = UserFile::create([
         'user_id' => $request->user()->id,
@@ -80,6 +87,7 @@ foreach ($request->file('files') as $file) {
         'size' => $file->getSize(),
         'type' => $type,
         'folder_id' => $folderId,
+        'thumbnail' => $type === 'image' ? "photos/thumbs/{$filename}" : null, // zapis miniaturki w bazie
     ]);
 
     $uploadedFiles[] = [
@@ -90,8 +98,9 @@ foreach ($request->file('files') as $file) {
         'date' => $userFile->created_at->format('Y-m-d'),
         'url' => route('downloadFile', $userFile->id),
         'type' => $userFile->type,
+        'thumbnail' => $userFile->thumbnail ? Storage::url($userFile->thumbnail) : null,
     ];
-}
+
 
         // return response()->json([
         //     'message' => 'Pliki dodane',

@@ -121,11 +121,11 @@ export function Gallery({
       >
         Zamknij
       </button>
-      <div className="absolute bottom-4 flex gap-2 overflow-x-auto p-2 rounded w-[70%] justify-center">
+      <div className="absolute bottom-4 flex gap-2 w-[90%] overflow-x-auto p-2 justify-start scroll-smooth">
         {images.map((img, i) => (
           <div key={i} onClick={() => setCurrentIndex(i)}>
             <img
-              className={`w-16 h-16 object-cover rounded-2xl cursor-pointer border-2 ${
+              className={`min-w-16 min-h-16 max-w-16 max-h-16 object-cover rounded-2xl cursor-pointer border-2 ${
                 i === currentIndex ? "border-white" : "border-transparent"
               }`}
               src={'/showFile/'+img.id}
