@@ -407,4 +407,25 @@ public function saveEditedFile(Request $request, $fileId)
 
     // return response()->json(['message' => 'File updated successfully']);
 }
+public function filesByType(Request $request, $type)
+{
+    $validTypes = ['image', 'audio', 'video', 'document', 'text', 'other'];
+    if (!in_array($type, $validTypes)) {
+        abort(400, 'Invalid file type');
+    }
+    // if image is mime type
+    if ($type === 'image') {
+        $newType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+        $files = UserFile::where('user_id', $request->user()->id)
+        ->whereIn('mime_type', $newType)
+        ->orderBy('created_at', 'desc')
+        ->get();
+    }
+    // $files = UserFile::where('user_id', $request->user()->id)
+    //     ->where('mime_type', $type)
+    //     ->orderBy('created_at', 'desc')
+    //     ->get();
+
+    return response()->json($files);
+}
     }

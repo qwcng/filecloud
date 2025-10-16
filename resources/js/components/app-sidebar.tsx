@@ -5,8 +5,9 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon } from 'lucide-react';
+import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Headphones, } from 'lucide-react';
 import AppLogo from './app-logo';
+import { NavMainGallery } from './nav-gallery';
 
 const mainNavItems: NavItem[] = [
     {
@@ -24,6 +25,29 @@ const mainNavItems: NavItem[] = [
         href: 'addFile',
         icon: PlusIcon,
     },
+];
+const themeFolders: NavItem[] = [
+    {
+        title: 'Galeria',
+        href: '/type/images',
+        icon: Image,
+    },
+    {
+        title: 'Muzyka',
+        href: '/type/music',
+        icon: Headphones,
+    },
+    {
+        title: 'Dokumenty',
+        href: '/type/documents',
+        icon: File,
+    },
+    {
+        title: 'Inne',
+        href: '/type/other',
+        icon: Folder,
+    },
+    // Add more folder items as needed
 ];
 
 const footerNavItems: NavItem[] = [
@@ -54,9 +78,13 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="h-92">
                 <NavMain items={mainNavItems} />
+                <NavMainGallery items={themeFolders} />
             </SidebarContent>
+            {/* <SidebarContent>
+                <NavMainGallery items={themeFolders} />
+            </SidebarContent> */}
 
             <SidebarFooter>
                 <NavFooter items={footerNavItems} className="mt-auto" />

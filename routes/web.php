@@ -64,7 +64,7 @@ Route::post('/createFolder', [FileController::class, 'createFolder'])->name('cre
 Route::get('/folders/{parent?}',  [FileController::class, 'listFolders'])->name('listFolders');
 Route::get('/pathTo/{folderId?}', [FileController::class, 'pathTo']) -> name('pathTo');
 
-
+Route::get('/getFileByType/{type}', [FileController::class, 'filesByType'])->name('getAllImages');
 
 Route::get('/sharedFile', function(){
  Inertia::render('SharedFile');
@@ -73,6 +73,11 @@ Route::get('/sharedFile', function(){
 Route::get('/word',function(){
     return Inertia::render('Word');
 });
+
+
+Route::get('/type/{type?}', function(){    
+    return Inertia::render("Type");})->name('files.byType');
+
 Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
 require __DIR__.'/settings.php';
