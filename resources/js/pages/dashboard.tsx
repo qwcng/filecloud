@@ -115,6 +115,7 @@ const refreshData = () => {
 
     useEffect(() => {
       setFoldersLoading(true);
+      console.log("Fetching folders for parent:", urlr);
       axios.get(`/folders/${urlr}`).then((response) => {
         setFoldersLoading(false);
         setFolders(response.data);

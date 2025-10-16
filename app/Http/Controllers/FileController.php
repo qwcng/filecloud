@@ -100,7 +100,7 @@ foreach ($request->file('files') as $file) {
         'type' => $userFile->type,
         'thumbnail' => $userFile->thumbnail ? Storage::url($userFile->thumbnail) : null,
     ];
-
+}
 
         // return response()->json([
         //     'message' => 'Pliki dodane',
@@ -108,7 +108,7 @@ foreach ($request->file('files') as $file) {
             
         // ]);
         //delete all retrun json
-        }
+        
         public function deleteFile(UserFile $file)
         {
             if ($file->user_id !== auth()->id()) {
@@ -350,6 +350,11 @@ foreach ($request->file('files') as $file) {
     }
     public function listFolders(Request $request,$parent=null)
     {   
+        if ($parent === 'dashboard' || $parent === null) {
+            $parent = null;
+        } else {
+            $parent = $parent;
+        }
 
     $folders = Folder::where('user_id', $request->user()->id)
         ->where('parent_id', $parent)

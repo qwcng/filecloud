@@ -4,7 +4,12 @@ import AppLayout from "@/layouts/app-layout";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { type BreadcrumbItem } from "@/types";
 
+const breadcrumbs: BreadcrumbItem[] = [
+  { title: "panel", href: "/dashboard/" },
+  { title: "Moja galeria" },
+];
 type Image = {
   src: string;
   alt: string;
@@ -156,7 +161,7 @@ export default function Type() {
     });
   },[]);
   return (
-    <AppLayout>
+    <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Pliki według typu" />
       <div className="flex flex-wrap gap-4 p-4">
         {images.map((img, index) => (
