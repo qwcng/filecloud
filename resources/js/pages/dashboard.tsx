@@ -266,6 +266,51 @@ const refreshData = () => {
         </DialogContent>
       </form>
     </Dialog>
+        <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline">Nowy plik</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Nowy plik</DialogTitle>
+            <DialogDescription>
+              Podaj nazwę nowego pliku.
+              
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="filename">Nazwa pliku</Label>
+              <Input id="filename" name="filename" defaultValue="nowyplik.txt" />
+            </div>
+            
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={(e)=>{
+              e.preventDefault();
+              const filename = (document.querySelector('input[name="filename"]') as HTMLInputElement).value;
+              console.log('Tworzenie pliku o nazwie:', filename);
+              console.log('Aktualny folder:', urlr);
+              router.post('/createFile', {
+                filename: filename,
+                folder: urlr === 'dashboard' ? null : urlr,
+                
+              },
+            {
+              onSuccess: (file) => {
+                refreshData();
+                
+            ;
+              }
+            });
+
+            }}>Zapisz zmiany</Button>
+          </DialogFooter>
+        </DialogContent>
+    </Dialog>
           
           <button onClick={() => selecting ? setSelecting(false) : setSelecting(true)}
           className="w-34 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 ">

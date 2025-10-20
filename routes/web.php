@@ -80,5 +80,7 @@ Route::get('/type/{type?}', function(){
 
 Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
+
+Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

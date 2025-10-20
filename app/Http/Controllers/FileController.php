@@ -442,4 +442,32 @@ public function filesByType(Request $request, $type)
 
     return response()->json($files);
 }
+
+    public function createFile(Request $request)
+{
+    $request->validate([
+        'filename' => 'required|string|max:255',
+        'folder' => 'nullable|',
+    ]);
+
+    // Generujemy unikalną nazwę pliku
+    $filename = time() . '_' . $request->filename;
+    $path = 'uploads/' . $filename;
+
+    // Tworzymy pusty plik w storage/private
+    Storage::disk('private')->put($path, '');
+
+    // Tworzymy rekord w bazie danych
+    $file = UserFile::create([
+        'user_id' => $request->user()->id,
+        'original_name' => $request->filename,
+        'path' => $path,
+        'mime_type' => 'text/plain',
+        'size' => Storage::disk('private')->size($path), // ✅ teraz poprawnie
+        'type' => 'text',
+        'folder_id' => $request->input('folder') === 'root' ? null : $request->input('folder'),
+    ]);
+
+    return Inertia::location(route('editFile', $file->id));
+}
     }

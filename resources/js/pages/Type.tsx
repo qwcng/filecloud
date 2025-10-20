@@ -52,10 +52,10 @@ export function ImageCard({
     animate={{ scale: 1 }}
     
     // transition={transition}
-      className="flex flex-col items-center w-32 h-fit cursor-pointer"
+      className="flex flex-col items-center w-32  [@media(max-width:450px)]:w-24 h-fit cursor-pointer"
       onClick={onClick}
     >
-      <img className="w-28 h-28 object-cover" src={'/showFile/'+id} alt={alt} />
+        <img className="w-16 h-16 [@media(max-width:450px)]:w-16  [@media(max-width:450px)]:h-16 object-cover 2xs:rounded-lg" src={'/showFile/'+id} alt={alt} />
       <span className="mt-1 font-bold text-sm text-neutral-800  dark:text-white w-full line-clamp-2 text-center break-words">
         {alt}
       </span>
