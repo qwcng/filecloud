@@ -46,6 +46,7 @@ export function ImageCard({
   alt: string;
   onClick: () => void;
 }) {
+  console.log("123");
   return (
     <motion.div
     initial={{ scale: 0.95 }}
