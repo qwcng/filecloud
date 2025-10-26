@@ -410,10 +410,10 @@ public function saveEditedFile(Request $request, $fileId)
     if ($file->user_id !== auth()->id()) {
         abort(403);
     }  
-    $request->validate([
-        'content' => 'string',
-        'filename' => 'required|string|max:255',
-    ]);
+    // $request->validate([
+    //     'content' => '',
+    //     'filename' => 'required|string|max:255',
+    // ]);
     $path = Storage::disk('private')->path($file->path);
     file_put_contents($path, $request->input('content'));
     $file->original_name = $request->filename;
