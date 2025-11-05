@@ -56,7 +56,7 @@ export function ImageCard({
       className="flex flex-col items-center w-32  [@media(max-width:450px)]:w-24 h-fit cursor-pointer"
       onClick={onClick}
     >
-        <img className="w-16 h-16 [@media(max-width:450px)]:w-16  [@media(max-width:450px)]:h-16 object-cover 2xs:rounded-lg" src={'/showThumbnail/'+id} alt={alt}  loading="lazy"/>
+        <img className="w-16 h-16 [@media(max-width:450px)]:w-16  [@media(max-width:450px)]:h-16 object-cover 2xs:rounded-lg" src={'/showFile/'+id} alt={alt}  loading="lazy"/>
       <span className="mt-1 font-bold text-sm text-neutral-800  dark:text-white w-full line-clamp-2 text-center break-words">
         {alt}
       </span>
@@ -116,12 +116,16 @@ export function Gallery({
         className="absolute right-4 text-neutral-800 dark:text-white w-12 h-12 cursor-pointer"
         onClick={nextImage}
       />
-      <img
+      {/* <img
         className="w-[80%] max-h-[70%] rounded-2xl object-contain "
         src={'/showFile/'+images[currentIndex].id}
         loading="lazy"
         alt={images[currentIndex].original_name}
-      />
+      /> */}
+      <video className="w-[80%] max-h-[70%] rounded-2xl object-contain" controls autoPlay >
+        <source src="/showFile/161">
+        </source>
+      </video>
       <button
         className="absolute top-4 right-4 text-white px-4 py-2 border border-white rounded"
         onClick={onClose}

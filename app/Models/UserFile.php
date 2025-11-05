@@ -16,6 +16,8 @@ class UserFile extends Model
         'path',
         'mime_type',
         'size',
+        'type',
+        'thumbnail',
     ];
 
     public function user() {

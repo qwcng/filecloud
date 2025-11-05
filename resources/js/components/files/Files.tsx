@@ -105,7 +105,7 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
       >
         {icons[file.type]}
         <h3 className="text-lg font-medium text-ellipsis">{file.name}</h3>
-        <p className="text-sm text-gray-500">Rozmiar: {file.size} MB</p>
+        <p className="text-sm text-gray-500">Rozmiar: {(file.size / 1000000).toPrecision(2)} MB</p>
         <p className="text-sm text-gray-500">Data: {file.created_at}</p>
       </div>
 

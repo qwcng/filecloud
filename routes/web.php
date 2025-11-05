@@ -42,6 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Wyświetlenie pliku (np. obraz, audio, wideo)
     Route::get('/showFile/{file}', [FileController::class, 'showFile'])
         ->name('showFile');
+    Route::get('/showThumbnail/{file}', [FileController::class, 'showThumbnail'])
+        ->name('showThumbnail');
 
     // Wyświetlenie pliku tekstowego
     Route::get('/textFile/{fileId}', [FileController::class, 'showTextFile'])
@@ -53,16 +55,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Publiczny dostęp do udostępnionego pliku przez kod
-Route::get('/share/{fileId}', [FileController::class, 'shareFile'])->name('shareFile');
-Route::post('/share/{fileId}/check', [FileController::class, 'checkAccessCode'])->name('checkAccessCode');
-Route::get('/share/{fileId}/show', [FileController::class, 'showSharedFile'])->name('showSharedFile');
-
-Route::get('/share/{fileId}/download', [FileController::class, 'downloadSharedFile'])
-    ->name('downloadSharedFile');
-Route::post('/createFolder', [FileController::class, 'createFolder'])->name('createFolder');
-// Route::get('/folders', [FileController::class, 'listFolders'])->name('listFolders');
-Route::get('/folders/{parent?}',  [FileController::class, 'listFolders'])->name('listFolders');
-Route::get('/pathTo/{folderId?}', [FileController::class, 'pathTo']) -> name('pathTo');
 
 Route::get('/getFileByType/{type}', [FileController::class, 'filesByType'])->name('getAllImages');
 
@@ -77,6 +69,9 @@ Route::get('/word',function(){
 
 Route::get('/type/{type?}', function(){    
     return Inertia::render("Type");})->name('files.byType');
+Route::get('/polygon',function(){    
+    return Inertia::render("Polygon");})->name('files.byPolygon');
+
 
 Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
@@ -84,3 +79,5 @@ Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->n
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+require __DIR__.'/folders.php';
+require __DIR__.'/share.php';

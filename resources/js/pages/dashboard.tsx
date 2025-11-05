@@ -111,13 +111,14 @@ const refreshData = () => {
       if (mime.includes("zip") || mime.includes("compressed")) return "zip";
       return "other";
     };
-    const [folders, setFolders] = useState<{ id: number; name: string }[]>([]);
+    const [folders, setFolders] = useState<{ id: number; name: string, filesCount: number }[]>([]);
 
     useEffect(() => {
       setFoldersLoading(true);
       console.log("Fetching folders for parent:", urlr);
       axios.get(`/folders/${urlr}`).then((response) => {
         setFoldersLoading(false);
+        console.log(response.data);
         setFolders(response.data);
 
         // console.log("Folders response:", response.data);
@@ -357,9 +358,11 @@ const refreshData = () => {
                   <FolderCard
                     key={folder.id}
                     href={folder.id.toString()}
+
                     onFolderClick={refreshData}
                     folderName={folder.name}
                     folderId={folder.id}
+                    filesCount={folder.files_count}
                   />
                 ))
               )}

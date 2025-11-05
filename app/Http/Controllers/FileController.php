@@ -9,6 +9,8 @@
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
+    use Illuminate\Support\Str;
+    use Intervention\Image\Laravel\Facades\Image;
     
     class FileController extends Controller
     {
@@ -47,17 +49,19 @@
 
         public function uploadFile(Request $request)
     {
-        $request->validate([
-            'files' => 'required|array',
-            'files.*' => 'file|max:13240', 
-        ]);
+        // $request->validate([
+        //     'files' => 'required|array',
+        //     'files.*' => 'file|max:1231240', 
+        // ]);
 
         $uploadedFiles = [];
 
 foreach ($request->file('files') as $file) {
     $filename = time() . '_' . $file->getClientOriginalName();
-    $path = $file->storeAs('uploads', $filename, 'private');
+    // $path = $file->storeAs('uploads', $filename, 'private');
     $mime = $file->getMimeType();
+     $path = $file->store('uploads', 'private');
+    
 
     $type = match (true) {
         str_starts_with($mime, 'image/') => 'image',
@@ -72,12 +76,19 @@ foreach ($request->file('files') as $file) {
 
     // folder_id
     $folderId = $request->input('folder') === 'root' ? null : $request->input('folder');
-
+    if($type == "image"){
+ $image = Image::read($file)
+                ->resize(300, 200);
+         Storage::put(
+                "private/uploads/thumbs/{$filename}",
+                $image->encodeByExtension($file->getClientOriginalExtension(), quality: 70)
+            );
+        }
     // generowanie miniaturki tylko dla obrazów
    
 
     
-}
+
 
     $userFile = UserFile::create([
         'user_id' => $request->user()->id,
@@ -87,19 +98,20 @@ foreach ($request->file('files') as $file) {
         'size' => $file->getSize(),
         'type' => $type,
         'folder_id' => $folderId,
-        'thumbnail' => $type === 'image' ? "photos/thumbs/{$filename}" : null, // zapis miniaturki w bazie
+        'thumbnail' => $type === 'image' ? "uploads/thumbs/$filename" : null // zapis miniaturki w bazie
     ]);
 
-    $uploadedFiles[] = [
-        'id' => $userFile->id,
-        'folder_id' => $userFile->folder_id,
-        'name' => $userFile->original_name,
-        'size' => number_format($userFile->size / 1024 / 1024, 2),
-        'date' => $userFile->created_at->format('Y-m-d'),
-        'url' => route('downloadFile', $userFile->id),
-        'type' => $userFile->type,
-        'thumbnail' => $userFile->thumbnail ? Storage::url($userFile->thumbnail) : null,
-    ];
+    // $uploadedFiles[] = [
+    //     'id' => $userFile->id,
+    //     'folder_id' => $userFile->folder_id,
+    //     'name' => $userFile->original_name,
+    //     'size' => number_format($userFile->size / 1024 / 1024, 2),
+    //     'date' => $userFile->created_at->format('Y-m-d'),
+    //     'url' => route('downloadFile', $userFile->id),
+    //     'type' => $userFile->type,
+    //     'thumbnail' => $userFile->thumbnail ? Storage::url($userFile->thumbnail) : null,
+    // ];
+}
 }
 
         // return response()->json([
@@ -117,6 +129,9 @@ foreach ($request->file('files') as $file) {
 
             // Usuwanie pliku z dysku
             Storage::disk('private')->delete($file->path);
+            if (!empty($file->thumbnail) && Storage::disk('private')->exists($file->thumbnail)) {
+                Storage::disk('private')->delete($file->thumbnail);
+            }
 
             // Usuwanie rekordu z bazy danych
             $file->delete();
@@ -175,6 +190,16 @@ foreach ($request->file('files') as $file) {
 
         $path = Storage::disk('private')->path($file->path);
         return response()->file($path); // 👈 zwróci obrazek inline
+    }
+    public function showThumbnail(UserFile $file)
+    {
+        if ($file->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $path = Storage::disk('private')->path($file->thumbnail);
+         return response()->file($path); // 👈 zwróci miniaturkę inline
+    
     }
     public function showTextFile($fileId)
     {
@@ -359,11 +384,64 @@ foreach ($request->file('files') as $file) {
     $folders = Folder::where('user_id', $request->user()->id)
         ->where('parent_id', $parent)
         ->orderBy('created_at', 'desc')
-        ->get(['id', 'name', 'created_at']);
+        ->withCount('files')
+        ->get(['id', 'name', 'created_at', 'filesCount']);
 
 
         return response()->json($folders);
     }
+    private function deleteFolderRecursively(Folder $folder)
+{
+    // Usuń wszystkie pliki w tym folderze
+    foreach ($folder->files as $file) {
+        try {
+            // jeśli path w DB to 'uploads/...' -> użyj disk('private')
+            if (Storage::disk('private')->exists($file->path)) {
+                Storage::disk('private')->delete($file->path);
+            } else {
+                Log::warning("Plik nie istnieje na dysku private: {$file->path} (DB id: {$file->id})");
+            }
+
+            // jeśli masz miniaturkę zapisaną w $file->thumbnail - usuń ją też
+            if (!empty($file->thumbnail) && Storage::disk('private')->exists($file->thumbnail)) {
+                Storage::disk('private')->delete($file->thumbnail);
+            }
+        } catch (\Throwable $e) {
+            // Zaloguj błąd, kontynuuj usuwanie rekordów z bazy
+            Log::error("Błąd usuwania pliku z dysku: {$file->path} — {$e->getMessage()}");
+        }
+
+        // usuń rekord z bazy
+        try {
+            $file->delete();
+        } catch (\Throwable $e) {
+            Log::error("Błąd usuwania rekordu pliku id {$file->id}: {$e->getMessage()}");
+        }
+    }
+
+    // Usuń podfoldery (rekurencja)
+    foreach ($folder->children as $childFolder) {
+        $this->deleteFolderRecursively($childFolder);
+    }
+
+    // Usuń sam folder
+    $folder->delete();
+}
+
+   public function deleteFolder(Request $request, $folderId)
+{
+    $folder = Folder::findOrFail($folderId);
+
+    // 🔒 Sprawdzenie, czy folder należy do zalogowanego użytkownika
+    if ($folder->user_id !== $request->user()->id) {
+        abort(403, 'Brak uprawnień do usunięcia tego folderu.');
+    }
+
+    // 🧹 Usuń folder wraz z plikami i podfolderami
+    $this->deleteFolderRecursively($folder);
+
+    return response()->json(['message' => 'Folder został usunięty.']);
+}
 public function pathTo(Request $request, $folderId = null)
 {
     if (!$folderId) {
