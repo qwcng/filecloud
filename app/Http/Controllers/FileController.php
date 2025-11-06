@@ -189,7 +189,10 @@ foreach ($request->file('files') as $file) {
         }
 
         $path = Storage::disk('private')->path($file->path);
-        return response()->file($path); // 👈 zwróci obrazek inline
+        return response()->file($path,[
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+        ]);
+         // 👈 zwróci obrazek inline
     }
     public function showThumbnail(UserFile $file)
     {
@@ -202,7 +205,9 @@ foreach ($request->file('files') as $file) {
         
 
         $path = Storage::disk('private')->path($file->thumbnail);
-         return response()->file($path); // 👈 zwróci miniaturkę inline
+         return response()->file($path, [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+        ]);
     
     }
     public function showTextFile($fileId)

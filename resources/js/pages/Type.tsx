@@ -74,10 +74,24 @@ export function Gallery({
   onClose: () => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [imageCache, setImageCache] = useState<{ [key: number]: string }>({});
+
+useEffect(() => {
+  const currentImage = images[currentIndex];
+  if (!imageCache[currentImage.id]) {
+    fetch(`/showFile/${currentImage.id}`)
+      .then(res => res.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        setImageCache(prev => ({ ...prev, [currentImage.id]: url }));
+      });
+  }
+}, [currentIndex, images, imageCache]);
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
   }, [initialIndex]);
+
 
   // Obsługa Escape i strzałek
   useEffect(() => {
@@ -118,8 +132,9 @@ export function Gallery({
       />
       <img
         className="w-[80%] max-h-[70%] rounded-2xl object-contain "
-        src={'/showFile/'+images[currentIndex].id}
+        src={imageCache[images[currentIndex].id]}
         loading="lazy"
+        fetchPriority="high"
         alt={images[currentIndex].original_name}
       />
       <button
