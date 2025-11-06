@@ -196,6 +196,10 @@ foreach ($request->file('files') as $file) {
         if ($file->user_id !== auth()->id()) {
             abort(403);
         }
+        if($file->thumbnail == null){
+            return null;
+        }
+        
 
         $path = Storage::disk('private')->path($file->thumbnail);
          return response()->file($path); // 👈 zwróci miniaturkę inline
