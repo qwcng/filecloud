@@ -171,7 +171,7 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="filenamee">Nazwa pliku</Label>
-              <Input id="filenamee" name="filenamee" defaultValue="nowyplik.txt" />
+              <Input id="filenamee" name="filenamee" defaultValue={file.name} />
             </div>
             
           </div>
