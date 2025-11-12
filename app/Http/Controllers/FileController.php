@@ -491,6 +491,20 @@ public function editFile($fileId)
         'fileName' => $file->original_name,
     ]);
 }
+public function changeFileName(Request $request, $fileId)
+{
+    $file = UserFile::findOrFail($fileId);
+    if ($file->user_id !== auth()->id()) {
+        abort(403);
+    }  
+    $request->validate([
+        'filename' => 'required|string|max:255',
+    ]);
+    $file->original_name = $request->filename;
+    $file->save();
+
+    // return response()->json(['message' => 'File name updated successfully']);
+}
 public function saveEditedFile(Request $request, $fileId)
 {
     $file = UserFile::findOrFail($fileId);

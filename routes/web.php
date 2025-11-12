@@ -75,7 +75,7 @@ Route::get('/polygon',function(){
 
 Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
-
+Route::post('/changeFileName/{fileId}', [FileController::class, 'changeFileName'])->name('changeFileName');
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

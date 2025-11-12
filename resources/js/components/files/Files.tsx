@@ -153,9 +153,53 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
             <li className="m-2 cursor-pointer hover:text-blue-600">  
               <span onClick={() =>{setShareModalOpen(true)}}><ShareIcon className="inline-block mr-2" /> Udostępnij</span>
             </li>
-            <li className="m-2 cursor-pointer hover:text-blue-600">
+          
+              <Dialog>
+        <DialogTrigger asChild>
+         <li className="m-2 cursor-pointer hover:text-blue-600">
               <Edit2Icon className="inline-block mr-2" /> Zmień nazwę
             </li>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Zmień nazwę pliku</DialogTitle>
+            <DialogDescription>
+              Zmień nazwę pliku i zapisz zmiany.
+              
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="filenamee">Nazwa pliku</Label>
+              <Input id="filenamee" name="filenamee" defaultValue="nowyplik.txt" />
+            </div>
+            
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={(e)=>{
+              e.preventDefault();
+              const filename = (document.querySelector('input[name="filenamee"]') as HTMLInputElement).value;
+              router.post(`/changeFileName/${file.id}`, {
+                filename: filename,
+                
+                
+              },
+            {
+              onSuccess: (file) => {
+                refreshData();
+                
+            ;
+              }
+            });
+
+            }}>Zapisz zmiany</Button>
+          </DialogFooter>
+        </DialogContent>
+    </Dialog>
+            
             {/* <li className="m-2 cursor-pointer text-red-600" onClick={async () => {
               if (confirm(`Czy na pewno chcesz usunąć plik "${file.name}"?`)) {
                 try {

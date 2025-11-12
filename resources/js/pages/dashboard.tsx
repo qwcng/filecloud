@@ -259,8 +259,14 @@ const refreshData = () => {
                 router.post('/createFolder', {
                   name: (document.querySelector('input[name="name"]') as HTMLInputElement).value,
                   parent: urlr === 'dashboard' ? null : urlr,
-                });
-                refreshData();
+                },
+              {
+                onSuccess: (folder) => {
+                  refreshData();
+
+                }
+              });
+                
               }}>Zapisz</Button>
             </DialogClose>
           </DialogFooter>
