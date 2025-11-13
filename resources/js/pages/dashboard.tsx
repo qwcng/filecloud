@@ -39,6 +39,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -84,6 +93,8 @@ import { Button } from "@/components/ui/button"
     const [clicks, setClicks] = useState(0);
     const [foldersLoading, setFoldersLoading] = useState(true);
     const [filesLoading, setFilesLoading] = useState(true);
+    const [sorting,setSorting] = useState("dateDesc");
+    const [sortedFiles,setSortedFiles] = useState<FileData[]>([]);
     useEffect(() => {
     setUrlr(window.location.pathname.split("/").pop() || '');
 }, [refreshTrigger]);
@@ -157,12 +168,35 @@ const refreshData = () => {
         }));
         
         setFiles(mappedFiles);
+        console.log(mappedFiles);
         if(urlr == "sharedFile"){
           setSharedFile(true);
+
         }
       });
     }, [refreshTrigger]);
+useEffect(() => {
+    const sorted = [...files].sort((a, b) => {
+      switch (sorting) {
+        case "nameAsc":
+          return a.name.localeCompare(b.name);
+        case "nameDesc":
+          return b.name.localeCompare(a.name);
+        case "sizeAsc":
+          return String(a.size).localeCompare(String(b.size));
+        case "sizeDesc":
+          return String(b.size).localeCompare(String(a.size));
+        case "dateAsc":
+          return a.created_at.localeCompare(b.created_at);
+        case "dateDesc":
+          return b.created_at.localeCompare(a.created_at);
+        default:
+          return 0;
+      }
+    });
 
+    setSortedFiles(sorted);
+  }, [sorting, files]);
 
     // useEffect(() => {
     //   alert('123');
@@ -317,7 +351,26 @@ const refreshData = () => {
             }}>Zapisz zmiany</Button>
           </DialogFooter>
         </DialogContent>
+        
     </Dialog>
+    <Select onValueChange={(e)=>{
+      console.log(e);
+      setSorting(e)}}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Sortuj" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Sortowanie</SelectLabel>
+          <SelectItem value="nameAsc">Nazwa rosnąco</SelectItem>
+          <SelectItem value="nameDesc">Nazwa malejąco</SelectItem>
+          <SelectItem value="sizeAsc">Rozmiar rosnąco</SelectItem>
+          <SelectItem value="sizeDesc">Rozmiar malejąco</SelectItem>
+          <SelectItem value="dateAsc">Data rosnąco</SelectItem>
+          <SelectItem value="dateDesc">Data malejąco</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
           
           <button onClick={() => selecting ? setSelecting(false) : setSelecting(true)}
           className="w-34 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 ">
@@ -385,7 +438,7 @@ const refreshData = () => {
                   <Skeleton className=" w-72 rounded-lg" />
                 </>
               ) : (
-            files.map((file) => (
+            sortedFiles.map((file) => (
               <>
               {selecting && (<input type="checkbox" onChange={(e) => {
                 if (e.target.checked) {

@@ -1,193 +1,253 @@
-import React, { useState, useEffect, use } from "react";
-import { Head,router } from "@inertiajs/react";
-import AppLayout from "@/layouts/app-layout";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
-import axios from "axios";
-import { type BreadcrumbItem } from "@/types";
+import React, { useEffect, useRef, useState } from "react";
+import ePub, { Book, Rendition, Location } from "epubjs";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
-const breadcrumbs: BreadcrumbItem[] = [
-  { title: "panel", href: "/dashboard/" },
-  { title: "Moja galeria" },
-];
-type Image = {
-  src: string;
-  alt: string;
+interface Bookmark {
+  cfi: string;
+  note?: string;
+}
+
+const EpubReader: React.FC = () => {
+  const viewerRef = useRef<HTMLDivElement>(null);
+  const [book, setBook] = useState<Book | null>(null);
+  const [rendition, setRendition] = useState<Rendition | null>(null);
+  const [toc, setToc] = useState<any[]>([]);
+  const [currentLocation, setCurrentLocation] = useState<string | null>(null);
+  const [locations, setLocations] = useState<Location[] | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [fontSize, setFontSize] = useState(100);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [fileName, setFileName] = useState<string>("");
+  const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
+
+
+  const handleFileChange = (file: File) => {
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) setFileBuffer(e.target.result as ArrayBuffer);
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  useEffect(() => {
+    if (!fileBuffer || !viewerRef.current) return;
+
+    const initBook = async () => {
+      const b = ePub(fileBuffer);
+      setBook(b);
+
+      await b.ready;
+
+      // Generowanie lokalizacji
+      await b.locations.generate(1600);
+      setLocations(b.locations?.locations || []);
+      setTotalPages(b.locations?.length() || 0);
+
+      const r = b.renderTo(viewerRef.current!, {
+        width: "100%",
+        height: viewerRef.current?.clientHeight || 600,
+      });
+
+      await r.display(); // <- kluczowe
+
+      // Rejestracja motywów
+      r.themes.register("dark", { body: { background: "#121212", color: "#E5E5E5" } });
+      r.themes.register("light", { body: { background: "#FAFAFA", color: "#111111" } });
+      r.themes.select(theme);
+      r.themes.fontSize(`${fontSize}%`);
+
+      r.on("relocated", (location) => {
+        setCurrentLocation(location.start.cfi);
+        const locObj = b.locations!.locationFromCfi(location.start.cfi);
+        const allLocations = b.locations!.locations || [];
+        const pageIndex = allLocations.findIndex((l) => l.start.cfi === locObj.start.cfi) + 1;
+        setCurrentPage(pageIndex > 0 ? pageIndex : 1);
+      });
+
+      const nav = await b.loaded.navigation;
+      setToc(nav.toc);
+
+      setRendition(r);
+    };
+
+    initBook();
+  }, [fileBuffer]);
+  
+  // Aktualizacja motywu i fontu
+  useEffect(() => {
+    if (!rendition) return;
+    rendition.themes.select(theme);
+    rendition.themes.fontSize(`${fontSize}%`);
+  }, [theme, fontSize, rendition]);
+
+
+  const goToLocation = (cfi: string) => {
+    setCurrentPage(rendition?.currentLocation().start.index);
+    rendition?.display(cfi);
+  };
+  const nextPage = () => {
+  if (!rendition || !locations) return;
+  rendition.next();
+  setCurrentPage(rendition.currentLocation().start.index);
+  console.log(rendition.currentLocation().start.index);
 };
 
-const images: Image[] = [
-  {
-    src: "https://cdn.motor1.com/images/mgl/AkQlKx/s1/koenigsegg-chimera.jpg",
-    alt: "Koenigsegg Chimera",
-  },
-  {
-    src: "https://images.squarespace-cdn.com/content/v1/5f7ca9b4bb17060b028086bb/1663702472875-MD7AS638YGSZL94L16PK/DSC02968-min.jpg",
-    alt: "DSC02968",
-  },
-  {
-    src: "https://st.automobilemag.com/uploads/sites/11/2017/11/Koenigsegg-04.jpg",
-    alt: "Koenigsegg 04",
-  },
-];
-const transition = {
-  duration: 0.8,
-  delay: 0.5,
-  ease: [0, 0.71, 0.2, 1.01],
-}
+const prevPage = () => {
+  if (!rendition || !locations) return;
+  rendition.prev();
+  setCurrentPage(rendition.currentLocation().start.index);
+};
 
-export function ImageCard({
-  src,
-  id,
-  alt,
-  onClick,
-}: {
-  src: string;
-  id: number;
-  alt: string;
-  onClick: () => void;
-}) {
-  console.log("123");
-  return (
-    <motion.div
-    initial={{ scale: 0.95 }}
-    animate={{ scale: 1 }}
-    
-    // transition={transition}
-      className="flex flex-col items-center w-32  [@media(max-width:450px)]:w-24 h-fit cursor-pointer"
-      onClick={onClick}
-    >
-        <img className="w-16 h-16 [@media(max-width:450px)]:w-16  [@media(max-width:450px)]:h-16 object-cover 2xs:rounded-lg" src={'/showFile/'+id} alt={alt}  loading="lazy"/>
-      <span className="mt-1 font-bold text-sm text-neutral-800  dark:text-white w-full line-clamp-2 text-center break-words">
-        {alt}
-      </span>
-    </motion.div>
-  );
-}
 
-export function Gallery({
-  images,
-  initialIndex,
-  onClose,
-}: {
-  images: Image[];
-  initialIndex: number;
-  onClose: () => void;
-}) {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+const goToPage = (pageNum: number) => {
+  if (!locations) return;
+  if (pageNum < 1) pageNum = 1;
+  if (pageNum > totalPages) pageNum = totalPages;
 
-  useEffect(() => {
-    setCurrentIndex(initialIndex);
-  }, [initialIndex]);
+  goToLocation(locations[pageNum - 1].start.cfi);
+};
 
-  // Obsługa Escape i strzałek
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      } else if (e.key === "ArrowLeft") {
-        setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-      } else if (e.key === "ArrowRight") {
-        setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [images.length, onClose]);
-
-  const prevImage = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const nextImage = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  const addBookmark = () => {
+    if (!currentLocation) return;
+    const note = prompt("Dodaj notatkę do zakładki (opcjonalnie):");
+    setBookmarks([...bookmarks, { cfi: currentLocation, note: note || "" }]);
   };
 
   return (
-    <div className="fixed inset-0  backdrop-blur-xs  backdrop-saturate-200 flex flex-col items-center justify-center z-50 ">
-      <ArrowLeft
-        className="absolute left-4 text-neutral-800 dark:text-white w-12 h-12 cursor-pointer"
-        onClick={prevImage}
-      />
-      <ArrowRight
-        className="absolute right-4 text-neutral-800 dark:text-white w-12 h-12 cursor-pointer"
-        onClick={nextImage}
-      />
-      {/* <img
-        className="w-[80%] max-h-[70%] rounded-2xl object-contain "
-        src={'/showFile/'+images[currentIndex].id}
-        loading="lazy"
-        alt={images[currentIndex].original_name}
-      /> */}
-      <video className="w-[80%] max-h-[70%] rounded-2xl object-contain" controls autoPlay >
-        <source src="/showFile/161">
-        </source>
-      </video>
-      <button
-        className="absolute top-4 right-4 text-white px-4 py-2 border border-white rounded"
-        onClick={onClose}
-      >
-        Zamknij
-      </button>
-      <div className="absolute bottom-4 flex gap-2 w-[90%] overflow-x-auto p-2 justify-start scroll-smooth">
-        {images.map((img, i) => (
-          <div key={i} onClick={() => setCurrentIndex(i)}>
-            <img
-            loading="lazy"
-              className={`min-w-16 min-h-16 max-w-16 max-h-16 object-cover rounded-2xl cursor-pointer border-2 ${
-                i === currentIndex ? "border-white" : "border-transparent"
-              }`}
-              src={'/showThumbnail/'+img.id}
-              alt={img.original_name}
-            />
-          </div>
-        ))}
+    <div className="flex flex-col h-screen w-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      {/* Wybór pliku */}
+      <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 gap-4 flex-wrap">
+        <label className="cursor-pointer">
+          <input
+            type="file"
+            accept=".epub"
+            onChange={(e) => {
+              const file = e.target?.files?.[0];
+              if (file) handleFileChange(file);
+            }}
+            // className="hidden"
+          />
+          
+       
+        </label>
       </div>
+
+      
+        <>
+          {/* Pasek nawigacyjny */}
+          <nav className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" onClick={prevPage}>⬅️</Button>
+              <Button variant="ghost" onClick={nextPage}>➡️</Button>
+              <Button variant="ghost" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+                {theme === "light" ? "🌙" : "☀️"}
+              </Button>
+              <input
+                type="range"
+                min={50}
+                max={200}
+                value={fontSize}
+                onChange={(e) => setFontSize(Number(e.target.value))}
+                className="ml-4 w-32 accent-blue-500"
+              />
+              <Button variant="ghost" onClick={addBookmark}>🔖</Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Spis treści */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost">📚 TOC</Button>
+                </DialogTrigger>
+                <DialogContent className="w-72 max-w-full p-2">
+                  <DialogTitle className="sr-only">Spis treści</DialogTitle>
+                  <ScrollArea className="h-80">
+                    <ul className="flex flex-col gap-1">
+                      {toc.map((item, idx) => (
+                        <li key={idx}>
+                          <Button
+                            variant="ghost"
+                            className="w-full text-left text-sm"
+                            onClick={() => goToLocation(item.href)}
+                          >
+                            {item.label}
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
+                </DialogContent>
+              </Dialog>
+
+              {/* Zakładki */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost">📌 Zakładki</Button>
+                </DialogTrigger>
+                <DialogContent className="w-72 max-w-full p-2">
+                  <DialogTitle className="sr-only">Zakładki</DialogTitle>
+                  <ScrollArea className="h-80">
+                    <ul className="flex flex-col gap-1">
+                      {bookmarks.map((bm, idx) => (
+                        <li key={idx}>
+                          <Button
+                            variant="ghost"
+                            className="w-full text-left text-sm"
+                            onClick={() => goToLocation(bm.cfi)}
+                          >
+                            {bm.note || `Zakładka ${idx + 1}`}
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </nav>
+
+          {/* Czytnik */}
+          <div
+            ref={viewerRef}
+            className="flex-1 w-full"
+            style={{ minHeight: "calc(100vh - 120px)" }}
+          />
+
+          {/* Paginacja */}
+          <div className="flex items-center justify-center gap-4 p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Strona: {currentPage} / {totalPages}
+            </span>
+            
+<input
+  type="number"
+  min={1}
+  max={totalPages}
+  value={currentPage} // <--- teraz sterowany
+  // onChange={(e) => {
+  //   const pageNum = e.target.valueAsNumber;
+  //   if (!isNaN(pageNum)) goToPage(pageNum);
+  // }}
+    // onKeyDown={(e) => {
+    //   if (e.key === "Enter") {
+    //     const pageNum = Number((e.target as HTMLInputElement).value);
+    //     goToPage(pageNum);
+    //   }
+    // }}
+  className="w-20 text-sm"
+/>
+            
+          </div>
+        </>
+    
     </div>
   );
-}
+};
 
-export default function Type() {
-  const [showGallery, setShowGallery] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [images, setImages] = useState([]);
-  const openGallery = (index: number) => {
-    setSelectedIndex(index);
-    setShowGallery(true);
-  };
-
-  const closeGallery = () => setShowGallery(false);
-  useEffect(() => {
-    axios.get('/getFileByType/image/').then(response => {
-      console.log(response.data);
-        setImages(response.data);
-
-    });
-  },[]);
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Pliki według typu" />
-      <div className="flex flex-wrap gap-4 p-4">
-        {images.map((img, index) => (
-          <ImageCard
-            id={img.id}
-            key={index}
-            src={img.id}
-            alt={img.original_name}
-            onClick={() => openGallery(index)}
-          />
-        ))}
-      </div>
-      {showGallery && (
-        <Gallery
-          images={images}
-          initialIndex={selectedIndex}
-          onClose={closeGallery}
-        />
-      )}
-    </AppLayout>
-  );
-}
+export default EpubReader;
