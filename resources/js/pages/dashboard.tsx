@@ -20,6 +20,9 @@
     Share2Icon,
     LucideInfinity,
     InfoIcon,
+    UserPlusIcon,
+    ArrowUpNarrowWide,
+    ArrowDownNarrowWide,
   } from "lucide-react";
   import { folder, share } from "@/routes/files";
 import { ref } from "process";
@@ -65,7 +68,7 @@ import { Button } from "@/components/ui/button"
   type FileData = {
     id: number;
     name: string;
-    type: "image" | "pdf" | "excel" | "ppt" | "zip" | "mp3" | "video" | "other";
+    type: "image" | "pdf" | "excel" | "ppt" | "zip" | "mp3" | "video" | "epub" | "other";
     size: string;
     created_at: string;
     url: string;
@@ -93,7 +96,7 @@ import { Button } from "@/components/ui/button"
     const [clicks, setClicks] = useState(0);
     const [foldersLoading, setFoldersLoading] = useState(true);
     const [filesLoading, setFilesLoading] = useState(true);
-    const [sorting,setSorting] = useState("dateDesc");
+    const [sorting,setSorting] = useState(localStorage.getItem("sorting") || 'dateDesc');
     const [sortedFiles,setSortedFiles] = useState<FileData[]>([]);
     useEffect(() => {
     setUrlr(window.location.pathname.split("/").pop() || '');
@@ -119,7 +122,8 @@ const refreshData = () => {
       if (mime.includes("word")) return "other";
       if (mime.includes("excel") || mime.includes("spreadsheet")) return "excel";
       if (mime.includes("presentation")) return "ppt";
-      if (mime.includes("zip") || mime.includes("compressed")) return "zip";
+      // if (mime.includes("zip") || mime.includes("compressed")) return "zip";
+      if (mime === "application/epub+zip") return "epub";
       return "other";
     };
     const [folders, setFolders] = useState<{ id: number; name: string, filesCount: number }[]>([]);
@@ -183,9 +187,10 @@ useEffect(() => {
         case "nameDesc":
           return b.name.localeCompare(a.name);
         case "sizeAsc":
-          return String(a.size).localeCompare(String(b.size));
+          // return String(a.size).localeCompare(String(b.size));
+          return a.size - b.size;
         case "sizeDesc":
-          return String(b.size).localeCompare(String(a.size));
+          return b.size - a.size;
         case "dateAsc":
           return a.created_at.localeCompare(b.created_at);
         case "dateDesc":
@@ -194,8 +199,9 @@ useEffect(() => {
           return 0;
       }
     });
-
+    // const saved = localStorage.getItem("");
     setSortedFiles(sorted);
+  
   }, [sorting, files]);
 
     // useEffect(() => {
@@ -353,8 +359,11 @@ useEffect(() => {
         </DialogContent>
         
     </Dialog>
-    <Select onValueChange={(e)=>{
+    <Select defaultValue={sorting}  onValueChange={(e)=>{
       console.log(e);
+        localStorage.setItem("sorting", e);
+
+    // setSortedFiles(sorted);
       setSorting(e)}}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Sortuj" />
@@ -362,12 +371,12 @@ useEffect(() => {
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Sortowanie</SelectLabel>
-          <SelectItem value="nameAsc">Nazwa rosnąco</SelectItem>
-          <SelectItem value="nameDesc">Nazwa malejąco</SelectItem>
-          <SelectItem value="sizeAsc">Rozmiar rosnąco</SelectItem>
-          <SelectItem value="sizeDesc">Rozmiar malejąco</SelectItem>
-          <SelectItem value="dateAsc">Data rosnąco</SelectItem>
-          <SelectItem value="dateDesc">Data malejąco</SelectItem>
+          <SelectItem value="nameAsc"> <ArrowUpNarrowWide/>Nazwa rosnąco</SelectItem>
+          <SelectItem value="nameDesc"><ArrowDownNarrowWide/>Nazwa malejąco</SelectItem>
+          <SelectItem value="sizeAsc"><ArrowUpNarrowWide />Rozmiar rosnąco</SelectItem>
+          <SelectItem value="sizeDesc"><ArrowDownNarrowWide/>Rozmiar malejąco</SelectItem>
+          <SelectItem value="dateAsc"><ArrowUpNarrowWide/>Data rosnąco</SelectItem>
+          <SelectItem value="dateDesc"><ArrowDownNarrowWide/>Data malejąco</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
@@ -379,6 +388,26 @@ useEffect(() => {
           {selecting ? (
             <>
               <span> zaznaczono {selectedFiles.length} plików</span>
+              <button className=" w-34 ml-2 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700" onClick={() => {
+                if (confirm(`Czy na pewno chcesz usunąć zaznaczone pliki?`)) {
+                  console.log(selectedFiles)
+                  selectedFiles.forEach(async (file) => {
+
+                    try {
+                      console.log(file)
+                      await axios.delete(`/files/${file.id}`);
+                      // alert('Plik został usunięty.');
+                      setSelectedFiles(files.filter(f => f.id !== file.id));
+                      // setSelectedFiles([]);
+                      setSelecting(false);
+                    } catch (error) {
+                      console.error('Błąd podczas usuwania pliku:', error);
+                      alert('Wystąpił błąd podczas usuwania pliku.');
+                    }
+                  });
+                  refreshData();
+                }
+              }}> Usuń zaznaczone pliki</button>
               <button className=" w-34 ml-2 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700" onClick={() => {
                 if (confirm(`Czy na pewno chcesz usunąć zaznaczone pliki?`)) {
                   console.log(selectedFiles)
@@ -440,13 +469,13 @@ useEffect(() => {
               ) : (
             sortedFiles.map((file) => (
               <>
-              {selecting && (<input type="checkbox" onChange={(e) => {
+              {selecting && (<input type="checkbox"    onChange={(e) => {
                 if (e.target.checked) {
                   setSelectedFiles([...selectedFiles, file]);
                 } else {
                   setSelectedFiles(selectedFiles.filter(f => f.id !== file.id));
                 }
-              }} className=" left-[-10] h-5 w-5 z-10" />)}
+              }} className="inline-block   h-8 w-8 z-10" />)}
               <FileCard key={file.id} file={file} onClick={() => setSelectedFile(file)} refreshData={refreshData} />
               </>
             )))}

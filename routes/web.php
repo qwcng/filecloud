@@ -69,13 +69,14 @@ Route::get('/word',function(){
 
 Route::get('/type/{type?}', function(){    
     return Inertia::render("Type");})->name('files.byType');
-Route::get('/polygon',function(){    
-    return Inertia::render("Polygon");})->name('files.byPolygon');
+Route::get('/polygon/{fileId?}',function($fileId){    
+    return Inertia::render("Polygon",['defaultUrl' => $fileId]);})->name('files.byPolygon');
 
 
 Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
 Route::post('/changeFileName/{fileId}', [FileController::class, 'changeFileName'])->name('changeFileName');
+Route::post('/changeFolderName/{folderId}', [FileController::class, 'changeFolderName'])->name('changeFolderName');
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

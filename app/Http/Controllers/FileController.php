@@ -189,9 +189,11 @@ foreach ($request->file('files') as $file) {
         }
 
         $path = Storage::disk('private')->path($file->path);
-        return response()->file($path,[
-            'Cache-Control' => 'public, max-age=31536000, immutable',
-        ]);
+        return response()->file($path, [
+        'Content-Type' => 'application/epub+zip',
+        'Content-Disposition' => 'inline', // <- kluczowe
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
          // 👈 zwróci obrazek inline
     }
     public function showThumbnail(UserFile $file)
@@ -382,23 +384,32 @@ foreach ($request->file('files') as $file) {
         //     'folder' => $folder,
         // ]);
     }
-    public function listFolders(Request $request,$parent=null)
-    {   
-        if ($parent === 'dashboard' || $parent === null) {
-            $parent = null;
-        } else {
-            $parent = $parent;
-        }
+   public function listFolders(Request $request, $parent = null)
+{
+    if ($parent === 'dashboard' || $parent === null) {
+        $parent = null;
+    }
 
+    // wczytujemy całe drzewo folderów + pliki
     $folders = Folder::where('user_id', $request->user()->id)
         ->where('parent_id', $parent)
+        ->with(['children.children.children', 'children.files', 'files'])
         ->orderBy('created_at', 'desc')
-        ->withCount('files')
-        ->get(['id', 'name', 'created_at', 'filesCount']);
+        ->get();
 
+    // dodajemy total_files_count
+    $folders = $folders->map(function ($folder) {
+        return [
+            'id' => $folder->id,
+            'name' => $folder->name,
+            'created_at' => $folder->created_at,
+            'filesCount' => $folder->files()->count(), // lokalne
+            'files_count' => $folder->recursiveFilesCount() // rekurencyjne
+        ];
+    });
 
-        return response()->json($folders);
-    }
+    return response()->json($folders);
+}
     private function deleteFolderRecursively(Folder $folder)
 {
     // Usuń wszystkie pliki w tym folderze
@@ -450,6 +461,23 @@ foreach ($request->file('files') as $file) {
     $this->deleteFolderRecursively($folder);
 
     return response()->json(['message' => 'Folder został usunięty.']);
+}
+public function changeFolderName(Request $request, $folderId){
+     $folder = Folder::findOrFail($folderId);
+    
+    //  $request->validate(["foldername"=>"string|required"]);
+     if ($folder->user_id !== $request->user()->id) {
+        abort(403, 'Brak uprawnień do usunięcia tego folderu.');
+    }
+    $request->validate([
+        'foldername' => 'required|string|max:255',
+    ]);
+    $folder->name = $request->foldername;
+    $folder->save();
+    // return response()->json(['123']);
+    // return response()->json(['message' => 'File name updated successfully']);
+    
+
 }
 public function pathTo(Request $request, $folderId = null)
 {

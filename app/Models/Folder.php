@@ -25,4 +25,13 @@ class Folder extends Model
     {
         return $this->hasMany(UserFile::class, 'folder_id');
     }
+    public function recursiveFilesCount(): int{
+    $count = $this->files()->count(); // pliki w aktualnym folderze
+
+    foreach ($this->children as $child) {
+        $count += $child->recursiveFilesCount(); // pliki w podfolderach
+    }
+
+    return $count;
+}
 }

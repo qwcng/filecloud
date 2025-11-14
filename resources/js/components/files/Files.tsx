@@ -1,7 +1,7 @@
 import React, { JSX, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, router, useForm} from "@inertiajs/react";
-import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon } from "lucide-react";
+import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon, Book } from "lucide-react";
 import { FileArchive, FileAudio, FileImage, FileSpreadsheet, FileText } from "lucide-react";
 import axios from "axios";
 import { type BreadcrumbItem, type FileData } from "@/types";
@@ -46,6 +46,7 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
     excel: <FileSpreadsheet className="mx-auto mb-2 h-16 w-16 text-green-500" />,
     ppt: <FileSpreadsheet className="mx-auto mb-2 h-16 w-16 text-orange-500" />,
     zip: <FileArchive className="mx-auto mb-2 h-16 w-16 text-yellow-500" />,
+    epub: <Book className="mx-auto mb-2 h-16 w-16 text-indigo-500" />,
     mp3: <FileAudio className="mx-auto mb-2 h-16 w-16 text-purple-500" />,
     other: <FileText className="mx-auto mb-2 h-16 w-16 text-gray-500" />,
   };
@@ -290,6 +291,11 @@ export function FileModal({ file, onClose }: { file: FileData; onClose: () => vo
                 <source src={`/showFile/${file.id}`} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
+            </div>
+          )}
+          {file.type === "epub" && (
+            <div className="mb-4">
+             <Button variant="outline" onClick={() => window.open(`/polygon/${file.id}`, "_blank")}>Otwórz czytnik EPUB</Button>
             </div>
           )}
           {file.type === "other" && (

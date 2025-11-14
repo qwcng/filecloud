@@ -1,7 +1,7 @@
 import React from "react";
 // import { useState, useEffect, useRef } from "react";
 import { Head, router, useForm, Link } from "@inertiajs/react";
-import { EllipsisVertical, Trash2Icon, X } from "lucide-react";
+import { Edit2Icon, EllipsisVertical, Trash2Icon, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -130,12 +130,56 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
           </button>
           <h2 className="text-lg font-semibold mb-2">Opcje folderu</h2>
           <ul>
-            <li className="mb-2 cursor-pointer hover:text-blue-600">Zmień nazwę</li>
+            <Dialog>
+        <DialogTrigger asChild>
+          <li className="flex items-center cursor-pointer  hover:text-blue-400">
+              <Edit2Icon className="inline-block mr-2" /> Zmień nazwę
+          </li>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Zmień nazwę folderu</DialogTitle>
+            <DialogDescription>
+              Zmień nazwę folderi i zapisz zmiany.
+              
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="foldernamee">Nazwa folderu</Label>
+              <Input id="foldernamee" name="foldernamee" defaultValue={folderName} />
+            </div>
+            
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={(e)=>{
+              e.preventDefault();
+              const foldername = (document.querySelector('input[name="foldernamee"]') as HTMLInputElement).value;
+              router.post(`/changeFolderName/${folderId}`, {
+                foldername: foldername,
+                
+                
+              },
+            {
+              onSuccess: (folder) => {
+                onFolderClick();
+                
+            ;
+              }
+            });
+
+            }}>Zapisz zmiany</Button>
+          </DialogFooter>
+        </DialogContent>
+    </Dialog>
              <AlertDialog>
                   <AlertDialogTrigger asChild>
-                      <div className="flex items-center">
+                      <li className="flex items-center cursor-pointer mt-2 hover:text-red-500">
                           <Trash2Icon className="inline-block mr-2" /> Usuń
-                      </div>
+                      </li>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                       <AlertDialogHeader>
