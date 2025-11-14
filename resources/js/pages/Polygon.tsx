@@ -68,7 +68,7 @@ const handleUrlLoad = useCallback(async () => {
     setBook(null);
 
     try {
-        const response = await fetch("http://localhost:8000/showFile/" + bookCode);
+        const response = await fetch("/showFile/" + bookCode);
         const arrayBuffer = await response.arrayBuffer();
         const newBook = Epub(arrayBuffer);
         setBook(newBook);
