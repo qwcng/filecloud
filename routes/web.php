@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\FileController;
 use App\Models\SharedFile;
+use Illuminate\Support\Facades\Cache;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -75,7 +76,9 @@ Route::get('/polygon/{fileId?}',function($fileId){
 Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
 Route::post('/changeFileName/{fileId}', [FileController::class, 'changeFileName'])->name('changeFileName');
-
+Route::get('/test123', function(){
+    Cache::store('redis')->put('route', 'rout'.time().'x', 3600); 
+});
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
