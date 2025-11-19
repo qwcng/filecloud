@@ -9,15 +9,14 @@
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+    use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
     
     class FileController extends Controller
     {
         // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
         
-        public function index(Request $request)
+public function index(Request $request)
 {
     $userId = $request->user()->id;
     $cacheKey = "files:user:{$userId}:folder:null"; // folder null = root
@@ -65,7 +64,6 @@ public function folder(Request $request, $folder)
                     'date' => $file->created_at->format('Y-m-d'),
                     'url' => route('downloadFile', $file->id),
                     'type' => $file->type,
-                    'mime_type' => $file->mime_type,
                     'thumbnail' => $file->thumbnail ? Storage::url($file->thumbnail) : null,
                 ];
             });
