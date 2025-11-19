@@ -31,7 +31,7 @@ public function index(Request $request)
                 return [
                     'id' => $file->id,
                     'name' => $file->original_name,
-                    'size' => number_format($file->size / 1024 / 1024, 2),
+                    'size' => $file->size,
                     'date' => $file->created_at->format('Y-m-d'),
                     'url' => route('downloadFile', $file->id),
                     'type' => $file->type,
@@ -61,7 +61,7 @@ public function folder(Request $request, $folderId)
                 return [
                     'id' => $file->id,
                     'name' => $file->original_name,
-                    'size' => number_format($file->size / 1024 / 1024, 2),
+                    'size' => $file->size,
                     'date' => $file->created_at->format('Y-m-d'),
                     'url' => route('downloadFile', $file->id),
                     'type' => $file->type,
