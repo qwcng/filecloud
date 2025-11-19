@@ -9,7 +9,8 @@
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
-    use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
     
     class FileController extends Controller
@@ -17,34 +18,62 @@
         // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
         
         public function index(Request $request)
-        {
-            $files = UserFile::where('user_id', $request->user()->id)
+{
+    $userId = $request->user()->id;
+    $cacheKey = "files:user:{$userId}:folder:null"; // folder null = root
+
+    $files = Cache::store('redis')->remember($cacheKey, 60, function () use ($userId) {
+        return UserFile::where('user_id', $userId)
             ->where('folder_id', null)
-                ->orderBy('created_at', 'desc')
-                ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at'])
+            ->map(function ($file) {
+                return [
+                    'id' => $file->id,
+                    'name' => $file->original_name,
+                    'size' => number_format($file->size / 1024 / 1024, 2),
+                    'date' => $file->created_at->format('Y-m-d'),
+                    'url' => route('downloadFile', $file->id),
+                    'type' => $file->type,
+                    'thumbnail' => $file->thumbnail ? Storage::url($file->thumbnail) : null,
+                ];
+            });
+    });
 
-            return response()->json([
-                'files' => $files
-            ]);
-        }
+    return response()->json([
+        'files' => $files
+    ]);
+}
 
-        public function folder(Request $request, $folder)
-        {   
-            if ($folder === 'dashboard') {
-                $folderr = null;
-            }
-            else {
-                $folderr = $folder;
-            }
-            $files = UserFile::where('user_id', $request->user()->id)
-                ->where('folder_id', $folderr)
-                ->orderBy('created_at', 'desc')
-                ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
+public function folder(Request $request, $folder)
+{
+    $userId = $request->user()->id;
+    $folderId = $folder === 'dashboard' ? null : $folder;
 
-            return response()->json([
-                'files' => $files
-            ]);
-        }
+    $cacheKey = "files:user:{$userId}:folder:" . ($folderId ?? 'null');
+
+    $files = Cache::store('redis')->remember($cacheKey, 60, function () use ($userId, $folderId) {
+        return UserFile::where('user_id', $userId)
+            ->where('folder_id', $folderId)
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'thumbnail', 'type'])
+            ->map(function ($file) {
+                return [
+                    'id' => $file->id,
+                    'name' => $file->original_name,
+                    'size' => number_format($file->size / 1024 / 1024, 2),
+                    'date' => $file->created_at->format('Y-m-d'),
+                    'url' => route('downloadFile', $file->id),
+                    'type' => $file->type,
+                    'thumbnail' => $file->thumbnail ? Storage::url($file->thumbnail) : null,
+                ];
+            });
+    });
+
+    return response()->json([
+        'files' => $files
+    ]);
+}
 
 
         public function uploadFile(Request $request)
