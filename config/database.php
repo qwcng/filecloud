@@ -144,6 +144,7 @@ return [
     'redis' => [
 
         'client' => env('REDIS_CLIENT', 'phpredis'),
+        'prefix' => '',
 
 'options' => [
     'cluster' => env('REDIS_CLUSTER', 'redis'),
