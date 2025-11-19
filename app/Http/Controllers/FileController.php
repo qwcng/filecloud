@@ -9,6 +9,7 @@
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
+    use Illuminate\Support\Facades\Cache;
     use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
     
@@ -44,18 +45,17 @@ public function index(Request $request)
     ]);
 }
 
-public function folder(Request $request, $folder)
+public function folder(Request $request, $folderId)
 {
     $userId = $request->user()->id;
-    $folderId = $folder === 'dashboard' ? null : $folder;
-
+    $folderId = $folderId === 'dashboard' ? null : $folderId;
     $cacheKey = "files:user:{$userId}:folder:" . ($folderId ?? 'null');
 
     $files = Cache::store('redis')->remember($cacheKey, 60, function () use ($userId, $folderId) {
         return UserFile::where('user_id', $userId)
             ->where('folder_id', $folderId)
             ->orderBy('created_at', 'desc')
-            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'thumbnail', 'type'])
+            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at'])
             ->map(function ($file) {
                 return [
                     'id' => $file->id,
@@ -69,9 +69,7 @@ public function folder(Request $request, $folder)
             });
     });
 
-    return response()->json([
-        'files' => $files
-    ]);
+    return response()->json(['files' => $files]);
 }
 
 
