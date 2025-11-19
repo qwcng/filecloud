@@ -65,6 +65,7 @@ public function folder(Request $request, $folder)
                     'date' => $file->created_at->format('Y-m-d'),
                     'url' => route('downloadFile', $file->id),
                     'type' => $file->type,
+                    'mime_type' => $file->mime_type,
                     'thumbnail' => $file->thumbnail ? Storage::url($file->thumbnail) : null,
                 ];
             });
