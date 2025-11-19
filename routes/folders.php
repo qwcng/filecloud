@@ -2,8 +2,11 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\FileController;
-Route::post('/createFolder', [FileController::class, 'createFolder'])->name('createFolder');
+use App\Http\Controllers\FolderController;
+
+Route::post('/createFolder', [FolderController::class, 'createFolder'])->name('createFolder');
 // Route::get('/folders', [FileController::class, 'listFolders'])->name('listFolders');
-Route::get('/folders/{parent?}',  [FileController::class, 'listFolders'])->name('listFolders');
-Route::delete('/folders/{parent?}', [FileController::class,'deleteFolder'])->name('deleteFolder');
-Route::get('/pathTo/{folderId?}', [FileController::class, 'pathTo']) -> name('pathTo');
+Route::get('/folders/{parent?}',  [FolderController::class, 'listFolders'])->name('listFolders');
+Route::delete('/folders/{parent?}', [FolderController::class,'deleteFolder'])->name('deleteFolder');
+
+Route::post('/changeFolderName/{folderId}', [FolderController::class, 'changeFolderName'])->name('changeFolderName');

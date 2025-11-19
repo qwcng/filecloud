@@ -36,7 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/files/{file}', [FileController::class, 'deleteFile'])->name('files.delete');
     Route::patch('/files/{file}/move', [FileController::class, 'moveFile'])->name('files.move');
-
+    Route::get('/pathTo/{folderId?}', [FileController::class, 'pathTo']) -> name('pathTo');
     Route::get('/d/{file}', [FileController::class, 'downloadFile'])->name('downloadFile');
 
     // Wyświetlenie pliku (np. obraz, audio, wideo)
@@ -49,9 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/textFile/{fileId}', [FileController::class, 'showTextFile'])
         ->name('textFile');
 
-    // Udostępnianie pliku
-    Route::post('/filesShare/{file}', [FileController::class, 'createShare'])->name('files.share');
-    Route::delete('/filesShare/{file}', [FileController::class, 'removeShare'])->name('files.removeShare');
+   
+   
 });
 
 // Publiczny dostęp do udostępnionego pliku przez kod
@@ -76,7 +75,7 @@ Route::get('/polygon/{fileId?}',function($fileId){
 Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFile');
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
 Route::post('/changeFileName/{fileId}', [FileController::class, 'changeFileName'])->name('changeFileName');
-Route::post('/changeFolderName/{folderId}', [FileController::class, 'changeFolderName'])->name('changeFolderName');
+
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

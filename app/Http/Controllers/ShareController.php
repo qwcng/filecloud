@@ -1,0 +1,146 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\SharedFile;
+use App\Models\UserFile;
+use Carbon\Carbon;
+use Illuminate\Container\Attributes\Storage;
+use Illuminate\Http\Request;
+
+class ShareController extends Controller
+{
+  public function createShare(Request $request, UserFile $file)
+        {
+            //  / tylko właściciel pliku
+            if ($file->user_id !== auth()->id()) {
+                abort(403);
+            }
+            $data = $request->validate([
+                'access_code' => 'required|string|size:6',
+                'expires_in' => 'nullable|integer|min:1', // liczba godzin
+            ]);
+
+            $share = SharedFile::updateOrCreate(
+                ['file_id' => $file->id],
+                [
+                    'access_code' => $data['access_code'],
+                    'active' => true,
+                    'expires_at' => $data['expires_in']
+                        ? Carbon::now()->addHours($data['expires_in'])
+                        : null,
+                ]
+            );
+
+            // return response()->json([
+            //     'message' => 'Plik został udostępniony',
+            //     'share_url' => route('shareFile', $file->id),
+            //     'access_code' => $share->access_code,
+            //     'expires_at' => $share->expires_at,
+            // ]);
+        }
+
+        public function removeShare(UserFile $file)
+        {
+        if ($file->user_id !== auth()->id()) {
+                abort(403);
+            }
+
+            SharedFile::where('file_id', $file->id)->delete();
+
+            return response()->json(['message' => 'Udostępnianie wyłączone']);
+        }
+
+    public function shareFile($fileId)
+    {
+        $file = UserFile::withoutGlobalScopes()->findOrFail($fileId);
+
+        $share = SharedFile::where('file_id', $file->id)
+            ->where('active', true)
+            ->first();
+
+        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+            abort(404, 'Link nieaktywny');
+        }
+
+        return Inertia::render('ShareFile', [
+            'fileId' => $file->id,
+            'fileName' => $file->original_name,
+        ]);
+    }
+
+    public function checkAccessCode(Request $request, $fileId)
+    {
+        $request->validate(['code' => 'required|string|size:6']);
+
+        $file = UserFile::withoutGlobalScopes()->findOrFail($fileId);
+
+        $share = SharedFile::where('file_id', $file->id)
+            ->where('active', true)
+            ->first();
+
+        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+            // return response()->json(['success' => false, 'message' => 'Link wygasł'], 403);
+        }
+
+        if ($share->access_code !== $request->code) {
+            // return response()->json(['success' => false, 'message' => 'Niepoprawny kod'], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'file' => [
+                'id' => $file->id,
+                'name' => $file->original_name,
+                'url' => route('downloadFile', $file->id),
+                'type' => $file->type,
+                'size' => number_format($file->size / 1024 / 1024, 2),
+            ],
+        ]);
+    }
+    public function downloadSharedFile(Request $request, $fileId)
+    {
+        $code = $request->query('code'); // pobieramy kod z GET
+
+        $file = UserFile::withoutGlobalScopes()->findOrFail($fileId);
+
+        $share = SharedFile::where('file_id', $file->id)
+            ->where('active', true)
+            ->first();
+
+        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+            abort(403, 'Link nieaktywny');
+        }
+
+        if ($share->access_code !== $code) {
+            abort(403, 'Niepoprawny kod dostępu');
+        }
+
+        return Storage::disk('private')->download($file->path, $file->original_name);
+    }
+    public function showSharedFile(Request $request, $fileId)
+    {
+        $code = $request->query('code'); // pobieramy kod z GET
+        if (!$code) {
+            abort(403, 'Kod dostępu wymagany');
+        }
+
+        $file = UserFile::withoutGlobalScopes()->findOrFail($fileId);
+
+        $share = SharedFile::where('file_id', $file->id)
+            ->where('active', true)
+            ->first();
+
+        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+            abort(403, 'Link nieaktywny');
+        }
+
+        if ($share->access_code !== $code) {
+            abort(403, 'Niepoprawny kod dostępu');
+        }
+
+        // 👇 zamiast pobierania – wyświetlamy inline (np. obrazek, pdf itp.)
+        $path = Storage::disk('private')->path($file->path);
+        return response()->file($path);
+    }
+}
