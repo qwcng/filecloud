@@ -77,7 +77,8 @@ Route::get('/edit/{fileId}', [FileController::class, 'editFile'])->name('editFil
 Route::post('/edit/{fileId}/save', [FileController::class, 'saveEditedFile'])->name('saveEditedFile');
 Route::post('/changeFileName/{fileId}', [FileController::class, 'changeFileName'])->name('changeFileName');
 Route::get('/test123', function(){
-    Cache::store('redis')->put('route', 'rout'.time().'x', 3600); 
+    // Cache::store('redis')->put('route', 'rout'.time().'x', 3600); 
+    return Inertia::render('Test');
 });
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';

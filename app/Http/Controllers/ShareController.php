@@ -7,6 +7,7 @@ use App\Models\UserFile;
 use Carbon\Carbon;
 use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ShareController extends Controller
 {
