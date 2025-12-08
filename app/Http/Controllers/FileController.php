@@ -9,45 +9,42 @@
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+    use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
     
     class FileController extends Controller
     {
         // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
         
+        public function index(Request $request)
+        {
+            $files = UserFile::where('user_id', $request->user()->id)
+            ->where('folder_id', null)
+                ->orderBy('created_at', 'desc')
+                ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
 
-public function index(Request $request)
-{
-    $userId = $request->user()->id;
-    $cacheKey = "files:user:{$userId}:folder:null"; // folder null = root
+            return response()->json([
+                'files' => $files
+            ]);
+        }
 
-    $files = Cache::store('redis')->remember($cacheKey, 60, function () use ($userId) {
-        return UserFile::where('user_id', $userId)
-            ->whereNull('folder_id')
-            ->orderBy('created_at', 'desc')
-            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
-    });
+        public function folder(Request $request, $folder)
+        {   
+            if ($folder === 'dashboard') {
+                $folderr = null;
+            }
+            else {
+                $folderr = $folder;
+            }
+            $files = UserFile::where('user_id', $request->user()->id)
+                ->where('folder_id', $folderr)
+                ->orderBy('created_at', 'desc')
+                ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
 
-    return response()->json(['files' => $files]);
-}
-
-public function folder(Request $request, $folder)
-{
-    $userId = $request->user()->id;
-    $folderId = $folder === 'dashboard' ? null : $folder;
-    $cacheKey = "files:user:{$userId}:folder:" . ($folderId ?? 'null');
-
-    $files = Cache::store('redis')->remember($cacheKey, 60, function () use ($userId, $folderId) {
-        return UserFile::where('user_id', $userId)
-            ->where('folder_id', $folderId)
-            ->orderBy('created_at', 'desc')
-            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
-    });
-
-    return response()->json(['files' => $files]);
-}
+            return response()->json([
+                'files' => $files
+            ]);
+        }
 
 
         public function uploadFile(Request $request)

@@ -3,6 +3,7 @@
   import AppLayout from "@/layouts/app-layout";
   import { type BreadcrumbItem } from "@/types";
   import { dashboard } from "@/routes";
+  
   import MusicPlayer from "@/components/MusicPlayer";
   import axios from "axios";
     import {
@@ -24,7 +25,7 @@
     ArrowUpNarrowWide,
     ArrowDownNarrowWide,
   } from "lucide-react";
-  import { folder, share } from "@/routes/files";
+  import { folder} from "@/routes/files";
 import { ref } from "process";
 import { motion } from "motion/react"
 import {FileCard, FileModal,ShareModal,UploadFileCard} from "@/components/files/Files"
@@ -54,6 +55,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpApi from "i18next-http-backend";
+import i18n from "i18next";
+
   const url = window.location.pathname;
   let fileName = url.split("/").pop();
 
@@ -79,6 +84,22 @@ import { Button } from "@/components/ui/button"
 
 
   // --- ShareModal i FileModal pozostają bez zmian ---
+i18n
+  .use(HttpApi)                  // 🔥 musisz włączyć backend
+  .use(initReactI18next)
+  .init({
+    supportedLngs: ["en", "pl","ru","fr"],
+    fallbackLng: "en",
+    lng: localStorage.getItem("lang") || "pl",
+
+    backend: {
+      loadPath: "/locales/{{lng}}/translation.json"
+    },
+
+    interpolation: {
+      escapeValue: false
+    }
+  });
 
 
 
@@ -98,8 +119,16 @@ import { Button } from "@/components/ui/button"
     const [filesLoading, setFilesLoading] = useState(true);
     const [sorting,setSorting] = useState(localStorage.getItem("sorting") || 'dateDesc');
     const [sortedFiles,setSortedFiles] = useState<FileData[]>([]);
+          
+    
     useEffect(() => {
     setUrlr(window.location.pathname.split("/").pop() || '');
+
+
+
+    
+
+
 }, [refreshTrigger]);
 const refreshData = () => {
   setRefreshTrigger(prev => prev + 1);
@@ -208,6 +237,14 @@ useEffect(() => {
     //   alert('123');
     // }, [clicks]);
     // console.log("Folders:", refreshTrigger);
+
+
+
+    
+
+    const {t, i18n} = useTranslation();
+    // i18n.changeLanguage("pl");
+    
     return (
       <AppLayout breadcrumbs={breadcrumbs}>
         <Head title="Moje Pliki" />
@@ -262,9 +299,11 @@ useEffect(() => {
       />
 
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-          <h3 className="text-lg font-semibold">📂 Moje Pliki
+          
+          <h3 className="text-lg font-semibold">📂 {t("sidebarmyFiles")}
+            
 
-          </h3>
+          </h3><button onClick={()=>{i18n.changeLanguage("pl")}}> 123 </button>
           {/* <button className="border" onClick={()=>{setClicks(clicks+1)}}>{clicks}</button> */}
           <Dialog>
       <form>
@@ -359,6 +398,23 @@ useEffect(() => {
         </DialogContent>
         
     </Dialog>
+                        <Select onValueChange={(e)=>{
+                        localStorage.setItem("lang",e);
+                    }} >
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                        <SelectLabel>Fruits</SelectLabel>
+                        <SelectItem value="en">Angielski</SelectItem>
+                        <SelectItem value="pl">Polski</SelectItem>
+                        <SelectItem value="ru">Rosyjski</SelectItem>
+                        <SelectItem value="fr">Francuski</SelectItem>
+                      
+                        </SelectGroup>
+                    </SelectContent>
+                    </Select>
     <Select defaultValue={sorting}  onValueChange={(e)=>{
       console.log(e);
         localStorage.setItem("sorting", e);
@@ -370,13 +426,13 @@ useEffect(() => {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Sortowanie</SelectLabel>
-          <SelectItem value="nameAsc"> <ArrowUpNarrowWide/>Nazwa rosnąco</SelectItem>
-          <SelectItem value="nameDesc"><ArrowDownNarrowWide/>Nazwa malejąco</SelectItem>
-          <SelectItem value="sizeAsc"><ArrowUpNarrowWide />Rozmiar rosnąco</SelectItem>
-          <SelectItem value="sizeDesc"><ArrowDownNarrowWide/>Rozmiar malejąco</SelectItem>
-          <SelectItem value="dateAsc"><ArrowUpNarrowWide/>Data rosnąco</SelectItem>
-          <SelectItem value="dateDesc"><ArrowDownNarrowWide/>Data malejąco</SelectItem>
+          <SelectLabel>{t("sorting")}</SelectLabel>
+          <SelectItem value="nameAsc"> <ArrowUpNarrowWide/>{t("sorting.nameAsc")}</SelectItem>
+          <SelectItem value="nameDesc"><ArrowDownNarrowWide/>{t("sorting.nameDesc")}</SelectItem>
+          <SelectItem value="sizeAsc"><ArrowUpNarrowWide />{t("sorting.sizeAsc")}</SelectItem>
+          <SelectItem value="sizeDesc"><ArrowDownNarrowWide/>{t("sorting.sizeDesc")}</SelectItem>
+          <SelectItem value="dateAsc"><ArrowUpNarrowWide/>{t("sorting.dateAsc")}</SelectItem>
+          <SelectItem value="dateDesc"><ArrowDownNarrowWide/>{t("sorting.dateDesc")}</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

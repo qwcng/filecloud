@@ -7,6 +7,15 @@ import { type BreadcrumbItem } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit as editAppearance } from '@/routes/appearance';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -24,6 +33,22 @@ export default function Appearance() {
                 <div className="space-y-6">
                     <HeadingSmall title="Appearance settings" description="Update your account's appearance settings" />
                     <AppearanceTabs />
+                    <Select onValueChange={(e)=>{
+                        localStorage.setItem("lang",e);
+                    }} >
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                        <SelectLabel>Fruits</SelectLabel>
+                        <SelectItem value="en">Angielski</SelectItem>
+                        <SelectItem value="pl">Polski</SelectItem>
+                        <SelectItem value="ru">Rosyjski</SelectItem>
+                      
+                        </SelectGroup>
+                    </SelectContent>
+                    </Select>
                 </div>
             </SettingsLayout>
         </AppLayout>

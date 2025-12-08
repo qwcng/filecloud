@@ -1,0 +1,10 @@
+{
+  "sidebarmyFiles": "Мои файлы",
+  "sorting": "сортировка",
+  "sorting.nameAsc": "Имя (А-Я)",
+  "sorting.nameDesc": "Имя (Я-А)",
+  "sorting.sizeAsc": "Размер по возрастанию",
+  "sorting.sizeDesc": "Размер по убыванию",
+  "sorting.dateAsc": "Дата по возрастанию",
+  "sorting.dateDesc": "Дата по убыванию"
+}

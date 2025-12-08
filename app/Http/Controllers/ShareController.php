@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SharedFile;
 use App\Models\UserFile;
 use Carbon\Carbon;
-use Illuminate\Container\Attributes\Storage;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -143,5 +143,27 @@ class ShareController extends Controller
         // 👇 zamiast pobierania – wyświetlamy inline (np. obrazek, pdf itp.)
         $path = Storage::disk('private')->path($file->path);
         return response()->file($path);
+    }
+    public function getSharedFiles(Request $request)
+    {
+        $sharedFiles = SharedFile::where('active', true)
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', Carbon::now());
+            })
+            ->with('file')
+            ->get()
+            ->map(function ($share) {
+                return [
+                    'id' => $share->file->id,
+                    'name' => $share->file->original_name,
+                    'type' => $share->file->type,
+                    'size' => number_format($share->file->size / 1024 / 1024, 2),
+                    'shared_at' => $share->created_at->toDateTimeString(),
+                    'expires_at' => $share->expires_at ? $share->expires_at->toDateTimeString() : null,
+                ];
+            });
+
+        return response()->json(['shared_files' => $sharedFiles]);
     }
 }

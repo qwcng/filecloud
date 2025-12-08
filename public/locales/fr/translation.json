@@ -1,0 +1,10 @@
+{
+  "sidebarmyFiles": "Mes fichiers",
+  "sorting": "tri",
+  "sorting.nameAsc": "Nom (A-Z)",
+  "sorting.nameDesc": "Nom (Z-A)",
+  "sorting.sizeAsc": "Taille croissante",
+  "sorting.sizeDesc": "Taille décroissante",
+  "sorting.dateAsc": "Date croissante",
+  "sorting.dateDesc": "Date décroissante"
+}

@@ -1,57 +1,42 @@
-import React, { useEffect, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import QRCodeStyling from "qr-code-styling";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpApi from "i18next-http-backend";
+import i18n from "i18next";
 
-// Usage:
-// <QrWithLogo text="https://twoj-link.pl" logo="/logo.png" />
+// --- Konfiguracja i18next w tym samym pliku dla testu ---
+i18n
+  .use(HttpApi)                  // 🔥 musisz włączyć backend
+  .use(initReactI18next)
+  .init({
+    supportedLngs: ["en", "pl"],
+    fallbackLng: "en",
+    lng: "en",
+    
 
-export default function QrWithLogo({ text ="https://filecloud.ct8.pl/share/65", logo="http://localhost:8000/logo.png" }) {
-  const ref = useRef(null);
-  const qr = useRef(null);
 
-  useEffect(() => {
-    qr.current = new QRCodeStyling({
-      width: 300,
-      height: 300,
-      type: "svg",
-      data: text,
-      image: logo,
-      dotsOptions: {
-        type: "rounded"
-      },
-      cornersSquareOptions: {
-        type: "extra-rounded"
-      },
-      imageOptions: {
-        crossOrigin: "anonymous",
+    backend: {
+      loadPath: "/locales/{{lng}}/translation.json"
+    },
 
-        margin: 8
-      }
-    });
-    qr.current.append(ref.current);
-  }, []);
-
-  useEffect(() => {
-    if (qr.current) {
-      qr.current.update({ data: text, image: logo });
+    interpolation: {
+      escapeValue: false
     }
-  }, [text, logo]);
+  });
 
-  const download = () => {
-    qr.current.download({ name: "qr-code", extension: "png" });
-  };
+export default function TestPage(){
+  const { t, i18n } = useTranslation();
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6">
-      <Card className="p-4 shadow-xl rounded-2xl">
-        <CardContent>
-          <div ref={ref} />
-        </CardContent>
-      </Card>
-      <Button onClick={download} className="px-6 py-2 rounded-2xl shadow">
-        Pobierz QR
-      </Button>
+    <div style={{ padding: 20, fontFamily: "Arial" }}>
+      
+      <h3>📂 {t("sidebarmyFiles")}</h3>
+
+      <div style={{ marginTop: 20 }}>
+        <button onClick={() => i18n.changeLanguage("en")}>English</button>
+        <button onClick={() => i18n.changeLanguage("pl")} style={{ marginLeft: 10 }}>Polski</button>
+      </div>
     </div>
   );
-}
+};
+
