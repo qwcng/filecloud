@@ -25,18 +25,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
-
+import { Ban, Download, EyeIcon, PenLine, ShareIcon, TvMinimal } from "lucide-react";
+import { Tab } from "@headlessui/react";
+import { router } from "@inertiajs/react";
+import QrCodeGenerator from "@/components/QRcodeGenerator";
+import QRCodeStyling from "qr-code-styling";
+import OpenSharedLink from "@/components/OpenSharedLink";
 interface FileType {
   id: number;
   name: string;
   size: string;
   shared_at: string;
+  code: string;
 }
 
 export default function SharedFileTest() {
   const [files, setFiles] = useState<FileType[]>([]);
-
+  const [code, setCode] = useState<number>();
+  const [link, setLink] = useState<string>("");
   useEffect(() => {
   // dane testowe
   axios.get('/getSharedFiles').then(response => {
@@ -97,6 +103,10 @@ const handleSubmit = () => {
         <h3 className="text-lg font-semibold">📂 Udostępnione pliki</h3>
 
         <div className="flex items-center gap-2 my-4">
+          <OpenSharedLink />
+         
+        
+
           <Input
             placeholder="Szukaj plików..."
             value={query}
@@ -115,7 +125,9 @@ const handleSubmit = () => {
                   <TableHead>Rozmiar</TableHead>
                   {/* <TableHead>Udostępnione przez</TableHead> */}
                   <TableHead>Data dodania</TableHead>
+                  <TableHead>Kod dostępu</TableHead>
                   <TableHead>Akcje</TableHead>
+
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -125,6 +137,7 @@ const handleSubmit = () => {
                     <TableCell>{file.size}</TableCell>
                     
                     <TableCell>{new Date(file.shared_at).toLocaleString()}</TableCell>
+                    <TableCell>{file.code}</TableCell>
                     <TableCell>
                      <Select 
                       value={undefined}
@@ -144,9 +157,12 @@ const handleSubmit = () => {
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Akcje</SelectLabel>
-                          <SelectItem value="delete">Cofnij udostępnienie</SelectItem>
-                          <SelectItem value="edit">Zmień kod</SelectItem>
-                          <SelectItem value="download">Pobierz</SelectItem>
+                          <SelectItem value="Podgląd"> <EyeIcon /> Podgląd</SelectItem>
+                          <SelectItem value="share"><ShareIcon /> Udostępnij</SelectItem>
+                          <SelectItem value="delete"><Ban /> Cofnij udostępnienie</SelectItem>
+                          <SelectItem value="edit"><PenLine /> Zmień kod</SelectItem>
+                          <SelectItem value="download"><Download /> Pobierz</SelectItem>
+                          
                           
 
 
@@ -196,9 +212,36 @@ const handleSubmit = () => {
           
           ) : null}
             {action==="edit" ?(
-           `Funkcja pobierania pliku jeszcze nie jest zaimplementowana.`
-            ) : null}
+              <>
+              <Input type="number" defaultValue={code} onChange={(e) => setCode(Number(e.target.value))} maxLength={6} placeholder="Nowy kod dostępu" />
+              <Button onClick={()=>{
+                console.log("Aktualizowanie kodu dostępu na:", code);
+                console.log("Dla pliku o ID:", selectedFile?.id);
+                router.post('/updateShareCode', {
+                  file_id: selectedFile?.id,
+                  access_code: code,
+                },
+              {                  onSuccess: () => {
+                console.log("Kod dostępu zaktualizowany");
+                setDialog(false);
+              }
 
+              });
+                
+              }}>Zapisz</Button>
+              </>
+            ) : null}
+            {action==="share" ?(
+              <>
+                
+                Udostępnij plik <strong>{selectedFile?.name}</strong> ponownie, kopiując link poniżej:
+                <QrCodeGenerator url={`${window.location.origin}/share/${selectedFile?.id}`} />
+                {/* <Button onClick={()=>{
+                }}>Pobierz QR Code</Button> */}
+                <Input readOnly value={`${window.location.origin}/share/${selectedFile?.id}`} />
+
+              </>
+            ) : null}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -161,9 +161,41 @@ class ShareController extends Controller
                     'size' => number_format($share->file->size / 1024 / 1024, 2),
                     'shared_at' => $share->created_at->toDateTimeString(),
                     'expires_at' => $share->expires_at ? $share->expires_at->toDateTimeString() : null,
+                    'code' => $share->access_code,
                 ];
             });
 
         return response()->json(['shared_files' => $sharedFiles]);
+    }
+    public function revokeSharedFile(Request $request){
+        $request->validate(['file_id' => 'required|integer']);
+
+        $share = SharedFile::where('file_id', $request->file_id)
+            ->where('active', true)
+            ->first();
+
+        if ($share) {
+            $share->active = false;
+            $share->save();
+        }
+
+        return response()->json(['message' => 'Udostępnianie cofnięte']);
+    }
+    public function updateShareCode(Request $request){
+        $request->validate([
+            'file_id' => 'required|integer',
+            'access_code' => 'required|integer|digits:6',
+        ]);
+
+        $share = SharedFile::where('file_id', $request->file_id)
+            ->where('active', true)
+            ->first();
+
+        if ($share) {
+            $share->access_code = $request->access_code;
+            $share->save();
+        }
+
+        return response()->json(['message' => 'Kod dostępu zaktualizowany']);
     }
 }

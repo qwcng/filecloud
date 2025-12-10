@@ -17,7 +17,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title:'Udostępnione Pliki',
-        href : '/dashboard/sharedFile',
+        href : '/sharedFiles',
         icon: Share2Icon,
     },
      {

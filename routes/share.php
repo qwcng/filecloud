@@ -15,3 +15,4 @@ Route::post('/filesShare/{file}', [ShareController::class, 'createShare'])->name
 Route::delete('/filesShare/{file}', [ShareController::class, 'removeShare'])->name('removeShare');
 Route::get('/getSharedFiles', [ShareController::class, 'getSharedFiles'])->name('sharedFiles');
 Route::post('/revokeSharedFile', [ShareController::class, 'revokeSharedFile'])->name('revokeSharedFile');
+Route::post('/updateShareCode', [ShareController::class, 'updateShareCode'])->name('updateShareCode');
