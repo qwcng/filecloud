@@ -35,7 +35,9 @@ interface FileType {
   id: number;
   name: string;
   size: string;
+  expires_at: string | null;
   shared_at: string;
+
   code: string;
 }
 
@@ -125,6 +127,7 @@ const handleSubmit = () => {
                   <TableHead>Rozmiar</TableHead>
                   {/* <TableHead>Udostępnione przez</TableHead> */}
                   <TableHead>Data dodania</TableHead>
+                  <TableHead> Wygasa </TableHead>
                   <TableHead>Kod dostępu</TableHead>
                   <TableHead>Akcje</TableHead>
 
@@ -137,6 +140,7 @@ const handleSubmit = () => {
                     <TableCell>{file.size}</TableCell>
                     
                     <TableCell>{new Date(file.shared_at).toLocaleString()}</TableCell>
+                    <TableCell>{file.expires_at ? new Date(file.expires_at).toLocaleString() : "Nigdy"}</TableCell>
                     <TableCell>{file.code}</TableCell>
                     <TableCell>
                      <Select 
@@ -234,10 +238,8 @@ const handleSubmit = () => {
             {action==="share" ?(
               <>
                 
-                Udostępnij plik <strong>{selectedFile?.name}</strong> ponownie, kopiując link poniżej:
-                <QrCodeGenerator url={`${window.location.origin}/share/${selectedFile?.id}`} />
-                {/* <Button onClick={()=>{
-                }}>Pobierz QR Code</Button> */}
+                Udostępnij plik <strong>{selectedFile?.name}</strong> ponownie, kopiując link lub udotepniając kod QR:
+                <div className="w-full flex justify-center mb-5"><QrCodeGenerator url={`${window.location.origin}/share/${selectedFile?.id}`} /></div>
                 <Input readOnly value={`${window.location.origin}/share/${selectedFile?.id}`} />
 
               </>

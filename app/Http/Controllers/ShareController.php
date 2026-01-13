@@ -19,17 +19,20 @@ class ShareController extends Controller
             }
             $data = $request->validate([
                 'access_code' => 'required|string|size:6',
-                'expires_in' => 'nullable|integer|min:1', // liczba godzin
+                'expires_in' => 'nullable', // liczba godzin
             ]);
 
             $share = SharedFile::updateOrCreate(
                 ['file_id' => $file->id],
                 [
+                    'user_id' => auth()->id(),
                     'access_code' => $data['access_code'],
                     'active' => true,
                     'expires_at' => $data['expires_in']
-                        ? Carbon::now()->addHours($data['expires_in'])
-                        : null,
+                        ? Carbon::createFromFormat('Y-m-d', $data['expires_in'])->endOfDay()
+                        : ($data['expires_in']
+                            ? Carbon::now()->addHours($data['expires_in'])
+                            : null),
                 ]
             );
 
@@ -147,11 +150,12 @@ class ShareController extends Controller
     public function getSharedFiles(Request $request)
     {
         $sharedFiles = SharedFile::where('active', true)
+        ->where('user_id', auth()->id())
             ->where(function ($query) {
                 $query->whereNull('expires_at')
                       ->orWhere('expires_at', '>', Carbon::now());
             })
-            ->with('file')
+            ->with('user', 'file')
             ->get()
             ->map(function ($share) {
                 return [
@@ -160,7 +164,7 @@ class ShareController extends Controller
                     'type' => $share->file->type,
                     'size' => number_format($share->file->size / 1024 / 1024, 2),
                     'shared_at' => $share->created_at->toDateTimeString(),
-                    'expires_at' => $share->expires_at ? $share->expires_at->toDateTimeString() : null,
+                    'expires_at' => $share->expires_at ? $share->expires_at : null,
                     'code' => $share->access_code,
                 ];
             });
@@ -184,11 +188,12 @@ class ShareController extends Controller
     public function updateShareCode(Request $request){
         $request->validate([
             'file_id' => 'required|integer',
-            'access_code' => 'required|integer|digits:6',
+            'access_code' => 'required|string|size:6',
         ]);
 
         $share = SharedFile::where('file_id', $request->file_id)
             ->where('active', true)
+            ->where('user_id', auth()->user()->id)
             ->first();
 
         if ($share) {
@@ -198,4 +203,5 @@ class ShareController extends Controller
 
         return response()->json(['message' => 'Kod dostępu zaktualizowany']);
     }
+    
 }

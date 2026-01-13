@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CloudVault - Secure Cloud Storage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d121b] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ebf3] bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-10 py-3">
+<div class="flex items-center gap-4 text-[#0d121b] dark:text-white">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined text-3xl">cloud_circle</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">CloudVault</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Product</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Solutions</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Pricing</a>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-sm font-bold leading-normal transition-colors">
+<span class="truncate">Log In</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold leading-normal transition-colors">
+<span class="truncate">Get Started</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<div class="relative flex w-full flex-col justify-center py-10 lg:py-20 bg-background-light dark:bg-background-dark overflow-hidden">
+<!-- Decorative Background Element -->
+<div class="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute top-[40%] -left-[10%] w-[400px] h-[400px] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+<div class="layout-container flex h-full grow flex-col z-10">
+<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<div class="@container">
+<div class="flex flex-col gap-10 lg:gap-16 lg:flex-row items-center">
+<div class="flex flex-col gap-6 lg:w-1/2 text-left">
+<div class="flex flex-col gap-4">
+<div class="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+                                            New: Team Collaboration Features
+                                        </div>
+<h1 class="text-4xl font-black leading-tight tracking-[-0.033em] md:text-5xl lg:text-6xl text-[#0d121b] dark:text-white">
+                                            Secure Your Data.<br/>
+<span class="text-primary">Unleash Collaboration.</span>
+</h1>
+<h2 class="text-base font-normal leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg max-w-[540px]">
+                                            Store, share, and access your files from anywhere. The secure cloud storage solution built for modern teams who need speed and reliability.
+                                        </h2>
+</div>
+<div class="flex flex-col sm:flex-row gap-3">
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-primary hover:bg-primary/90 text-white text-base font-bold leading-normal transition-all shadow-lg shadow-primary/25">
+<span class="truncate">Start for Free</span>
+</button>
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-12 px-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-[#0d121b] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 text-base font-bold leading-normal transition-all">
+<span class="truncate">View Pricing</span>
+</button>
+</div>
+<div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-2">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-background-dark bg-gray-200" data-alt="Portrait of a smiling woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDvAZ-HWDB7hJgGCVeLPuGpkeBm-lRxdf51JwBxQQS8IDb8UMTN9Q7ZHH_6vbderr_5_PZPgeoY89Ei3zTBORa3ZC2ZDXt_D_6OzpAH_pNSRG_x4HTiPoNNXLFm4Hbgq8i9VrcBi5vhKL0DQCDKVTbJU_d3Y-tOn9xtDsWIRzmmNGvmdVcYwz4t4HbgXPEVyiG03cMgXw8cheWNA2sWPnHQ8KjERRXpQXz8vsK9eCBdDXkzKj8OvLjeNDRXvRUCKtXOj2_M8MtSp3o"); background-size: cover;'></div>
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-background-dark bg-gray-300" data-alt="Portrait of a serious man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKzKduAbxM-3TDDGam0nZBl8mw7Hu0taUIWnHcY8_kRbN4OZkC9f9fFBwbct7v84ylfVfWrwxI2hY8bP_pV2UBsqz0F8XHsGueJN3W2pStokwI_5MtGMIxdarO1i3osKIzQRi3cvyBwjflWx6oPDArbJikCC_6RYjHVRPQlxLugmVj076f-9t4ezs-kwvNrWpRlMLXclks9siz5hzdAGtegnstBt6YVToZvfb8-PfvBDyAt7A-Y_hctnbBF66YUB639t6enBt2xaA"); background-size: cover;'></div>
+<div class="w-8 h-8 rounded-full border-2 border-white dark:border-background-dark bg-gray-400" data-alt="Portrait of a smiling man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAb1jqlfqFJtQysJeQvrDLo-QyjgX_3DkrCs74DFddhq9p6leXbbQr2rPLfgGCw9e37ujwvhmaIXDDHZzOky1UaTy4WLBCx_bNhyMyloyOnKdTGRLrus2c8QL9RokDLmOEi5VA8Kf_IuPuSem-OQ0o3DCUlSYWBQp0OBf1a6M5Vz5N51Eyo16LWvh_gWi2tE8bwn65gPg-YBS0ByXNokVKzFVxz7hpTMB1umzSvxXdTS6Qu1Ngnq-TS19LEKIIp27I0Hl7abnq1wqw"); background-size: cover;'></div>
+</div>
+<p>Trusted by 10,000+ teams</p>
+</div>
+</div>
+<div class="w-full lg:w-1/2">
+<div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-2">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover rounded-xl" data-alt="Abstract 3D illustration of cloud servers and data nodes in purple and blue" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC0YiXL6TJWP58MgBoN2k4FSMj2gd72mTEQdyFgMENZ-8AFv_-PCUkqQnTl86u49nYhJZ3JwJrIXfimiZ0PjO_p6gEUEj77MZWpFvWiQwNglctbfT-wHmvE8qFSowhobI3eGgfHzMLzVhjAPSOP2DPh-1_uG6oq47S9L4sJLBZEVMKmn0fOlVgFKt_gv-rIZHqus24S4TynObl_ZxRA-qxsG-1wCudws5hjhJKCCD5rqkkoAe0GQsWyK9TG9y-nayg3PgCiz-hgmmQ");'>
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/40 to-purple-600/40 mix-blend-multiply"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Logos Section -->
+<div class="flex flex-col items-center justify-center py-10 bg-white dark:bg-background-dark border-y border-gray-100 dark:border-gray-800">
+<div class="px-4 text-center">
+<p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-8">Powering data for world-class companies</p>
+<div class="flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<!-- Placeholder Logos using Text/Icons for simplicity as images aren't provided -->
+<div class="flex items-center gap-2 text-xl font-bold text-gray-800 dark:text-gray-200">
+<span class="material-symbols-outlined">diamond</span> Acme Corp
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-gray-800 dark:text-gray-200">
+<span class="material-symbols-outlined">rocket_launch</span> StarTech
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-gray-800 dark:text-gray-200">
+<span class="material-symbols-outlined">bolt</span> FastNet
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-gray-800 dark:text-gray-200">
+<span class="material-symbols-outlined">public</span> GlobalSys
+                    </div>
+<div class="flex items-center gap-2 text-xl font-bold text-gray-800 dark:text-gray-200">
+<span class="material-symbols-outlined">spa</span> EcoVibe
+                    </div>
+</div>
+</div>
+</div>
+<!-- Features Section -->
+<div class="relative flex w-full flex-col bg-background-light dark:bg-background-dark py-20">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<div class="flex flex-col gap-16">
+<div class="flex flex-col gap-4 text-center items-center">
+<h2 class="text-[#0d121b] dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.02em] max-w-[720px]">
+                                    Everything you need to manage your digital life
+                                </h2>
+<p class="text-gray-600 dark:text-gray-300 text-lg font-normal leading-normal max-w-[600px]">
+                                    Robust features designed to give you peace of mind and improve your workflow efficiency.
+                                </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Feature 1 -->
+<div class="group flex flex-col gap-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-8 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300">
+<div class="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-3xl">lock</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#0d121b] dark:text-white text-xl font-bold leading-tight">Bank-Grade Security</h3>
+<p class="text-gray-500 dark:text-gray-400 text-base leading-relaxed">Your files are encrypted with 256-bit AES protection both in transit and at rest.</p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="group flex flex-col gap-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-8 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300">
+<div class="w-14 h-14 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-3xl">group</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#0d121b] dark:text-white text-xl font-bold leading-tight">Real-time Collaboration</h3>
+<p class="text-gray-500 dark:text-gray-400 text-base leading-relaxed">Edit documents, comment, and assign tasks together with your team in real-time.</p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="group flex flex-col gap-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-8 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300">
+<div class="w-14 h-14 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-[#0d121b] dark:text-white text-xl font-bold leading-tight">Infinite Scalability</h3>
+<p class="text-gray-500 dark:text-gray-400 text-base leading-relaxed">Start small and grow big. Pay only for what you use and upgrade storage instantly.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Big Feature / Split Section -->
+<div class="py-20 bg-white dark:bg-gray-900">
+<div class="layout-container px-4 md:px-10 lg:px-40 flex justify-center">
+<div class="layout-content-container max-w-[1200px] w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="order-2 lg:order-1">
+<div class="grid grid-cols-2 gap-4">
+<div class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl aspect-[4/3] bg-cover bg-center shadow-lg transform translate-y-8" data-alt="Team working together around a laptop" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAZpWe6UsIiwPwXpVeOJvOGWsTdXlcfUlIRgjWiNtnqAKq0nvV3ET-ClPQDUHzOV9169CiujbxTG3tL8JmHxVvctqMuMABDse73nChO6DxbQQZAImJ-sjHOw_4jTuqFqzavKMoaAKiQ4Dq2gnhDvdULsfyWSt23UC_uH_jOyVT8wx8oeVR6kqwJXjQ6jGYDT0H2iVNIJXS3CBPwEw7bDCGYL5dqGFHJ814VgZMtpoKf1cEdHLM_-6lkw4G453x-oVyYBl-LFjUvY0Y');"></div>
+<div class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl aspect-[4/3] bg-cover bg-center shadow-lg" data-alt="Modern dashboard interface on a screen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBTNDVtxklrDTMTnfYUtnyqhSMexGPdo0TV1OEhSUEPgcbBh2ZfmU7gVhLTyS9xnA8ytj2hfyT2oRrDnyphmmJkvj9P4GJo_qtjcktbmswpFYk0wdTQb1kb14wxVmGpLd9wLLQmJSosxTWpZbN2YpSW1fSAYv6N3oT9IjiNgTnW40tZgho9hh_y2FaB98tE6s2PccbjgRQSd3nVdF2ovSol7SVobieFDtVsElu8DKUYpcHzhcopcihggOwuH7kl35GPVOyp9Ned6zY');"></div>
+</div>
+</div>
+<div class="order-1 lg:order-2 flex flex-col gap-6">
+<h2 class="text-3xl font-bold text-gray-900 dark:text-white">Seamless integration with your favorite tools</h2>
+<p class="text-lg text-gray-600 dark:text-gray-300">
+                            Don't change how you work. CloudVault integrates directly with Slack, Microsoft Office, Google Workspace, and Adobe Creative Cloud. 
+                        </p>
+<ul class="flex flex-col gap-3 mt-2">
+<li class="flex items-center gap-3 text-gray-700 dark:text-gray-200">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span>Automatic syncing across all devices</span>
+</li>
+<li class="flex items-center gap-3 text-gray-700 dark:text-gray-200">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span>Granular access permissions</span>
+</li>
+<li class="flex items-center gap-3 text-gray-700 dark:text-gray-200">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span>Version history up to 30 days</span>
+</li>
+</ul>
+<button class="mt-4 w-fit text-primary font-bold hover:underline flex items-center gap-1">
+                            Learn more about integrations <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Testimonial Section -->
+<div class="py-24 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800">
+<div class="layout-container px-4 md:px-10 lg:px-40 flex justify-center">
+<div class="max-w-[800px] text-center flex flex-col gap-8 items-center">
+<span class="material-symbols-outlined text-6xl text-primary/20">format_quote</span>
+<h3 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white leading-relaxed">
+                        "This platform completely changed how we handle our creative assets. It's fast, secure, and the collaboration features are intuitive. We've saved countless hours."
+                     </h3>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-gray-300 bg-cover bg-center" data-alt="Portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDJ1a7-xC8mcbysdyVaY5YULnYPjPZgWWiyqg96fXu-D4eTzxIiiTZR49ZkWWkN9MnK5Xl5QJ4MoyNnaansL0LlzAo4uEcuzHWSw9Gl-t6dbLCgxv7qFAqGYyKrW6ulk5Dm4KA7n80fNa8PEyCr2ITVKuHBRsVHd230hxOXAFm3g1M4VwEbiEHjaNY3IefDK6L9kVJnshc5xVuwaHVK32TTLMYG_VlNk4OEZl4Coyb1SYDE8W-5-g98cusdr05OpzYJcy9HR7HGIz0');"></div>
+<div class="text-left">
+<div class="font-bold text-gray-900 dark:text-white">Sarah Jenkins</div>
+<div class="text-sm text-gray-500">CTO at TechFlow</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- CTA Section -->
+<div class="py-20 px-4 md:px-10">
+<div class="max-w-[1200px] mx-auto bg-primary rounded-3xl p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden relative">
+<!-- Background Patterns -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+<div class="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/30 rounded-full -ml-10 -mb-10 blur-xl"></div>
+<div class="relative z-10 flex flex-col gap-4 max-w-[600px] text-center md:text-left">
+<h2 class="text-3xl md:text-4xl font-bold text-white">Ready to secure your data?</h2>
+<p class="text-blue-100 text-lg">Join thousands of teams who trust CloudVault. Start your free 14-day trial today. No credit card required.</p>
+</div>
+<div class="relative z-10 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+<button class="bg-white text-primary hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition-colors shadow-lg">
+                         Get Started Now
+                     </button>
+<button class="bg-transparent border border-white/30 text-white hover:bg-white/10 font-bold py-3 px-8 rounded-lg transition-colors">
+                         Contact Sales
+                     </button>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark py-12 border-t border-gray-200 dark:border-gray-800">
+<div class="px-4 md:px-10 lg:px-40 max-w-[1200px] mx-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
+<div class="col-span-2 lg:col-span-2 flex flex-col gap-4 pr-8">
+<div class="flex items-center gap-2 text-[#0d121b] dark:text-white">
+<span class="material-symbols-outlined text-2xl text-primary">cloud_circle</span>
+<span class="font-bold text-lg">CloudVault</span>
+</div>
+<p class="text-gray-500 text-sm leading-relaxed max-w-[300px]">
+                             Secure, reliable, and scalable cloud storage solutions tailored for modern businesses and individuals.
+                         </p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-gray-900 dark:text-white">Product</h4>
+<ul class="flex flex-col gap-2 text-sm text-gray-500">
+<li><a class="hover:text-primary transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Integrations</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Enterprise</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pricing</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-gray-900 dark:text-white">Resources</h4>
+<ul class="flex flex-col gap-2 text-sm text-gray-500">
+<li><a class="hover:text-primary transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Community</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Blog</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-gray-900 dark:text-white">Company</h4>
+<ul class="flex flex-col gap-2 text-sm text-gray-500">
+<li><a class="hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Legal</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-100 dark:border-gray-800">
+<p class="text-sm text-gray-400">© 2023 CloudVault Inc. All rights reserved.</p>
+<div class="flex gap-4 mt-4 md:mt-0 text-gray-400">
+<a class="hover:text-primary transition-colors" href="#"><i class="fa-brands fa-twitter"></i> Twitter</a>
+<a class="hover:text-primary transition-colors" href="#"><i class="fa-brands fa-github"></i> GitHub</a>
+<a class="hover:text-primary transition-colors" href="#"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

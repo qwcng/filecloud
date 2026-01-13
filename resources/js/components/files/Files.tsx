@@ -339,7 +339,7 @@ export function ShareModal({ fileId, onClose }: { fileId: number; onClose: () =>
       try {
         await router.post(`/filesShare/${fileId}`, {
           access_code: code,
-          expires_in: expiresAt ? parseInt(expiresAt) : null,
+          expires_in: expiresAt ? expiresAt : null,
         },{
           onSuccess: () => {
            

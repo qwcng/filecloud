@@ -58,14 +58,14 @@ const QRCodeWithLogo: React.FC<QRCodeWithLogoProps> = ({
   };
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <div ref={ref} />
-      <Button
+      <button
         onClick={downloadQRCode}
-
+        className="text-muted-foreground hover:text-foreground  font-semibold"
       >
         Pobierz QR
-      </Button>
+      </button>
     </div>
   );
 };

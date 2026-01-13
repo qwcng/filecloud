@@ -80,6 +80,9 @@ Route::get('/test123', function(){
     // Cache::store('redis')->put('route', 'rout'.time().'x', 3600); 
     return Inertia::render('Test');
 });
+Route::get('/home', function(){
+    return Inertia::render('Home');
+})->name('homePage');
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

@@ -355,4 +355,7 @@ public function filesByType(Request $request, $type)
 
     return Inertia::location(route('editFile', $file->id));
 }
+
+    
+
     }
