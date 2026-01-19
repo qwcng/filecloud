@@ -50,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/textFile/{fileId}', [FileController::class, 'showTextFile'])
         ->name('textFile');
 
+    Route::get('/search/{query}', [FileController::class, 'searchFiles'])->name('searchFiles');
    
    
 });
@@ -88,3 +89,4 @@ require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/folders.php';
 require __DIR__.'/share.php';
+require __DIR__.'/favourite.php';

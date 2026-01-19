@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Folder;
 use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
+use App\Jobs\DeleteFolderJob;
+use Illuminate\Support\Facades\DB;
 class FolderController extends Controller
 {
     public function createFolder(Request $request)
@@ -21,10 +23,10 @@ class FolderController extends Controller
             'parent_id' => $request->parent ? $request->parent : null,
         ]);
 
-        // return response()->json([
-        //     'message' => 'true',
-        //     'folder' => $folder,
-        // ]);
+        return response()->json([
+            'message' => 'true',
+            'folder' => $folder,
+        ]);
     }
    public function listFolders(Request $request, $parent = null)
 {
@@ -89,18 +91,24 @@ class FolderController extends Controller
     $folder->delete();
 }
 
-   public function deleteFolder(Request $request, $folderId){
+   public function deleteFolder(Request $request, $folderId)
+{
     $folder = Folder::findOrFail($folderId);
 
-    // 🔒 Sprawdzenie, czy folder należy do zalogowanego użytkownika
     if ($folder->user_id !== $request->user()->id) {
-        abort(403, 'Brak uprawnień do usunięcia tego folderu.');
+        abort(403, 'Brak uprawnień.');
     }
 
-    // 🧹 Usuń folder wraz z plikami i podfolderami
-    $this->deleteFolderRecursively($folder);
+    // Opcjonalnie: oznacz folder jako "w trakcie usuwania" w bazie, 
+    // aby użytkownik nie widział go na liście, zanim Job się skończy.
+    
+    // Wysyłamy do kolejki
+    DeleteFolderJob::dispatch($folder);
 
-    return response()->json(['message' => 'Folder został usunięty.']);
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Folder został dodany do kolejki usuwania. Może to potrwać kilka minut.'
+    ]);
 }
 public function changeFolderName(Request $request, $folderId){
      $folder = Folder::findOrFail($folderId);

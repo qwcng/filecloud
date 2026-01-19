@@ -5,9 +5,10 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Headphones, } from 'lucide-react';
+import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Headphones, Save, Heart, Trash2, Trash} from 'lucide-react';
 import AppLogo from './app-logo';
 import { NavMainGallery } from './nav-gallery';
+import { Input } from './ui/input';
 
 const mainNavItems: NavItem[] = [
     {
@@ -20,11 +21,21 @@ const mainNavItems: NavItem[] = [
         href : '/sharedFiles',
         icon: Share2Icon,
     },
-     {
+    {
+        title:"Ulubione pliki",
+        href:"dashboard/favorite",
+        icon:Heart,
+    },
+    {
         title: 'Dodaj pliki',
         href: 'addFile',
         icon: PlusIcon,
     },
+    {
+        title:"Kosz",
+        href:"/trash",
+        icon:Trash,
+    }
 ];
 const themeFolders: NavItem[] = [
     {
@@ -79,6 +90,8 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent className="h-92">
+                {/* search */}
+                
                 <NavMain items={mainNavItems} />
                 <NavMainGallery items={themeFolders} />
             </SidebarContent>

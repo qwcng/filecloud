@@ -1,7 +1,7 @@
 import React, { JSX, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, router, useForm} from "@inertiajs/react";
-import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon, Book } from "lucide-react";
+import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon, Book, Heart } from "lucide-react";
 import { FileArchive, FileAudio, FileImage, FileSpreadsheet, FileText } from "lucide-react";
 import axios from "axios";
 import { type BreadcrumbItem, type FileData } from "@/types";
@@ -130,8 +130,12 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
           <h2 className="text-lg font-semibold mb-2">Opcje pliku</h2>
           <ul className="list-none p-0 m-0">
             <li className="m-2 cursor-pointer hover:text-blue-600">
+                <span onClick={() => router.post(`/toggleFavorite/${file.id}`)}><Heart className="inline-block mr-2" /> Dodaj do ulubionych</span>
+            </li>
+            <li className="m-2 cursor-pointer hover:text-blue-600">
               <Link href={`/edit/${file.id}`}><EyeIcon className="inline-block mr-2" /> Podgląd</Link>
             </li>
+            
             <li className="m-2 cursor-pointer hover:text-blue-600">
               <span onClick={() =>{setInfoModalOpen(true)}}><InfoIcon className="inline-block mr-2" /> Szczegóły</span>
             </li>
@@ -428,7 +432,7 @@ export function ShareModal({ fileId, onClose }: { fileId: number; onClose: () =>
 export function UploadFileCard({folderName, refreshData}: {folderName: string; refreshData: () => void}) {
     const { data, setData, post, progress } = useForm<{ files: File[]; folder: string }>({
         files: [],
-        folder: folderName || 'root',
+        folder: folderName ==="dashboard" ? "root" :folderName,
       });
       
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -438,9 +442,10 @@ export function UploadFileCard({folderName, refreshData}: {folderName: string; r
         setData("folder", data.folder);
       }
     };
-    
+
       const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log(data);
         post('/uploadFile', {
           forceFormData: true,
           onSuccess: () => {

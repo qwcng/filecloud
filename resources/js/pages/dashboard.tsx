@@ -58,6 +58,7 @@ import { Button } from "@/components/ui/button"
 import { useTranslation, initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 import i18n from "i18next";
+import { NewFile, NewFolder } from "@/components/NavigationBar";
 
   const url = window.location.pathname;
   let fileName = url.split("/").pop();
@@ -186,28 +187,55 @@ const refreshData = () => {
           
       }, [urlr, refreshTrigger]);
 
-    useEffect(() => {
-      setFilesLoading(true);
-      console.log("Fetching files for folder:", urlr);
-      axios.get(`/files/${urlr}`).then((response) => {
-        setFilesLoading(false);
-        const mappedFiles: FileData[] = response.data.files.map((f: any) => ({
-          id: f.id,
-          name: f.original_name,
-          type: mapMimeToType(f.mime_type),
-          size: f.size,
-          created_at: f.created_at,
-          url: f.url,
-        }));
+useEffect(() => {
+    // 1. Definiujemy funkcję asynchroniczną wewnątrz efektu
+    const fetchFiles = async () => {
+        setFilesLoading(true);
         
-        setFiles(mappedFiles);
-        console.log(mappedFiles);
-        if(urlr == "sharedFile"){
-          setSharedFile(true);
-
+        // 2. Ustalamy endpoint w zależności od warunku
+        let endpoint = `/files/${urlr}`;
+        if (urlr === "favorite") {
+            endpoint = `/getFavorites`;
         }
-      });
-    }, [refreshTrigger]);
+
+        console.log(`Fetching files from: ${endpoint}`);
+
+        try {
+            // 3. Wykonujemy zapytanie (jedno miejsce, zamiast dwóch)
+            const response = await axios.get(endpoint);
+            console.log("Otrzymane dane plików:", response.data);
+            
+            // 4. Mapujemy dane (logika napisana tylko raz)
+            const mappedFiles: FileData[] = response.data.files.map((f: any) => ({
+                id: f.id,
+                name: f.original_name,
+                type: mapMimeToType(f.mime_type),
+                size: f.size,
+                created_at: f.created_at,
+                url: f.url,
+            }));
+
+            setFiles(mappedFiles);
+            console.log(mappedFiles);
+
+            // 5. Specyficzna logika dla sharedFile
+            if (urlr === "sharedFile") {
+                setSharedFile(true);
+            }
+
+        } catch (error) {
+            console.error("Błąd pobierania plików:", error);
+            // Tutaj warto dodać np. toast.error("Nie udało się pobrać plików");
+        } finally {
+            // 6. Wyłączamy loading niezależnie od sukcesu czy błędu
+            setFilesLoading(false);
+        }
+    };
+
+    fetchFiles();
+
+// Dodajemy urlr do zależności! Inaczej zmiana folderu nie odświeży widoku.
+}, [urlr, refreshTrigger]);
 useEffect(() => {
     const sorted = [...files].sort((a, b) => {
       switch (sorting) {
@@ -300,127 +328,23 @@ useEffect(() => {
 
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
           
-          <h3 className="text-lg font-semibold">📂 {t("sidebarmyFiles")}
+          <h3 className="text-lg font-semibold">📂 {t("sidebarmyFiles")} </h3>
             
 
-          </h3><button onClick={()=>{i18n.changeLanguage("pl")}}> 123 </button>
-          {/* <button className="border" onClick={()=>{setClicks(clicks+1)}}>{clicks}</button> */}
-          <Dialog>
-      <form>
-         <DialogTrigger asChild>
-          <Button variant="outline">Nowy Folder</Button>
-        </DialogTrigger>
-        {/* <DialogTrigger asChild>
-          <Button variant="outline">Open Dialog</Button>
-        </DialogTrigger> */}
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Stwórz folder.</DialogTitle>
-            <DialogDescription>
-              Podaj nazwę nowego folderu.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="name-1">Nazwa folderu</Label>
-              <Input id="name-1" name="name" defaultValue="Nowy folder" />
-            </div>
-
+         
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
+          <div className="flex gap-2">
+          <NewFolder urlr={urlr} refreshData={refreshData} />
+          <NewFile urlr={urlr} refreshData={refreshData} />
           </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button type="submit" onClick={() => {
-
-                // alert('123')
-                router.post('/createFolder', {
-                  name: (document.querySelector('input[name="name"]') as HTMLInputElement).value,
-                  parent: urlr === 'dashboard' ? null : urlr,
-                },
-              {
-                onSuccess: (folder) => {
-                  refreshData();
-
-                }
-              });
-                
-              }}>Zapisz</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </form>
-    </Dialog>
-        <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline">Nowy plik</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Nowy plik</DialogTitle>
-            <DialogDescription>
-              Podaj nazwę nowego pliku.
-              
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="filename">Nazwa pliku</Label>
-              <Input id="filename" name="filename" defaultValue="nowyplik.txt" />
-            </div>
-            
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button onClick={(e)=>{
-              e.preventDefault();
-              const filename = (document.querySelector('input[name="filename"]') as HTMLInputElement).value;
-              console.log('Tworzenie pliku o nazwie:', filename);
-              console.log('Aktualny folder:', urlr);
-              router.post('/createFile', {
-                filename: filename,
-                folder: urlr === 'dashboard' ? null : urlr,
-                
-              },
-            {
-              onSuccess: (file) => {
-                refreshData();
-                
-            ;
-              }
-            });
-
-            }}>Zapisz zmiany</Button>
-          </DialogFooter>
-        </DialogContent>
-        
-    </Dialog>
-                        <Select onValueChange={(e)=>{
-                        localStorage.setItem("lang",e);
-                    }} >
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select a language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                        <SelectLabel>Fruits</SelectLabel>
-                        <SelectItem value="en">Angielski</SelectItem>
-                        <SelectItem value="pl">Polski</SelectItem>
-                        <SelectItem value="ru">Rosyjski</SelectItem>
-                        <SelectItem value="fr">Francuski</SelectItem>
-                      
-                        </SelectGroup>
-                    </SelectContent>
-                    </Select>
-    <Select defaultValue={sorting}  onValueChange={(e)=>{
+          <Select defaultValue={sorting}  onValueChange={(e)=>{
       console.log(e);
         localStorage.setItem("sorting", e);
 
     // setSortedFiles(sorted);
       setSorting(e)}}>
+        
+        
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Sortuj" />
       </SelectTrigger>
@@ -436,11 +360,47 @@ useEffect(() => {
         </SelectGroup>
       </SelectContent>
     </Select>
+        </div>
+<Input 
+    type="text" 
+    placeholder={t("searchPlaceholder") || 'Szukaj plików...'} 
+    className="max-w-sm" 
+    onChange={(e) => {
+      const query = e.target.value.toLowerCase();
+      
+      if (query.length > 1) { // Szukaj tylko gdy są min. 2 znaki
+        axios.get(`/search/${query}`).then((response) => {
+          const mappedFiles: FileData[] = response.data.map((f: any) => ({
+                    id: f.id,
+          name: f.original_name,
+          type: mapMimeToType(f.mime_type),
+          size: f.size,
+          created_at: f.created_at,
+          url: f.url,
+        
+          }));
           
-          <button onClick={() => selecting ? setSelecting(false) : setSelecting(true)}
-          className="w-34 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 ">
+          // Kluczowe: aktualizujemy oba stany, aby sortowanie i widok się zgadzały
+          setFiles(mappedFiles);
+          setSortedFiles(mappedFiles); 
+        });
+      } else if (query.length === 0) {
+        // Jeśli wyczyścimy szukajkę, odświeżamy dane folderu
+        refreshData();
+      }
+    }} 
+  />
+    
+          <Input type="text" placeholder={ 'Szukaj plików...'} className="ml-4 max-w-sm inline-block" onChange={(e)=>{
+            const query = e.target.value.toLowerCase();
+            const filteredFiles = files.filter(file => file.name.toLowerCase().includes(query));
+            setSortedFiles(filteredFiles);
+          }} />
+          <Button onClick={() => selecting ? setSelecting(false) : setSelecting(true)}
+          className="w-34  "
+          variant={"outline"}>
             {selecting ? 'Anuluj' : 'Zaznacz pliki'}
-          </button>
+          </Button>
           {selecting ? (
             <>
               <span> zaznaczono {selectedFiles.length} plików</span>
