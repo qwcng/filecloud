@@ -1,7 +1,7 @@
 import React, { JSX, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, router, useForm} from "@inertiajs/react";
-import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon, Book, Heart } from "lucide-react";
+import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon, Book, Heart, Share, Download, FileIcon, Star } from "lucide-react";
 import { FileArchive, FileAudio, FileImage, FileSpreadsheet, FileText } from "lucide-react";
 import axios from "axios";
 import { type BreadcrumbItem, type FileData } from "@/types";
@@ -88,8 +88,10 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
       draggable
       onDragStart={handleDragStart}
       onDragEnd={(e) => {
-        e.currentTarget.style.opacity = "1";
-        e.currentTarget.style.border = "none";
+        if (e.currentTarget) {
+          e.currentTarget.style.opacity = "1";
+          e.currentTarget.style.border = "none";
+        }
         setOptionVisible(false);
       }}
     >
@@ -108,6 +110,7 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
         <h3 className="text-lg font-medium text-ellipsis">{file.name}</h3>
         <p className="text-sm text-gray-500">Rozmiar: {(file.size / 1000000).toPrecision(2)} MB</p>
         <p className="text-sm text-gray-500">Data: {file.created_at}</p>
+        
       </div>
 
       {optionVisible && (
@@ -130,7 +133,7 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
           <h2 className="text-lg font-semibold mb-2">Opcje pliku</h2>
           <ul className="list-none p-0 m-0">
             <li className="m-2 cursor-pointer hover:text-blue-600">
-                <span onClick={() => router.post(`/toggleFavorite/${file.id}`)}><Heart className="inline-block mr-2" /> Dodaj do ulubionych</span>
+                <span onClick={() => router.post(`/toggleFavorite/${file.id}`)}><Star className="inline-block mr-2" /> Dodaj do ulubionych</span>
             </li>
             <li className="m-2 cursor-pointer hover:text-blue-600">
               <Link href={`/edit/${file.id}`}><EyeIcon className="inline-block mr-2" /> Podgląd</Link>
@@ -260,79 +263,67 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
   );
 }
 export function FileModal({ file, onClose }: { file: FileData; onClose: () => void }) {
-    const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-        <div className="bg-white h-[95dvh] overflow-auto dark:bg-neutral-900 rounded-xl p-6 shadow-xl w-full max-w-md relative">
-          <button
-            onClick={onClose}
-            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-          >
-            <X className="h-5 w-5" />
-          </button>
+  return (
+    <>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+          {/* Header */}
+          <div className="p-4 border-b dark:border-neutral-800 flex justify-between items-center bg-gray-50 dark:bg-neutral-800/50">
+            <h2 className="font-semibold truncate pr-8">{file.name}</h2>
+            <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-full transition-colors">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
 
-          <button
-            onClick={() => setShowShareModal(true)}
-            className="mb-4 rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
-          >
-            🔗 Udostępnij
-          </button>
+          <div className="overflow-y-auto p-6">
+            {/* Preview Section */}
+            <div className="mb-6 bg-gray-100 dark:bg-black rounded-lg flex items-center justify-center min-h-[200px]">
+              {file.type === "mp3" && <MusicPlayer src={`/showFile/${file.id}`} title={file.name} />}
+              {file.type === "image" && <img src={`/showFile/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />}
+              {file.type === "video" && (
+                <video controls className="w-full max-h-80">
+                  <source src={`/showFile/${file.id}`} type="video/mp4" />
+                </video>
+              )}
+              {file.type === "epub" && (
+                <Button onClick={() => window.open(`/polygon/${file.id}`, "_blank")}>Otwórz czytnik EPUB</Button>
+              )}
+              {file.type === "other" && (
+                <div className="text-center p-8">
+                  <FileIcon className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm text-gray-500">Podgląd niedostępny dla tego formatu</p>
+                </div>
+              )}
+            </div>
 
-          {file.type === "mp3" && (
-            <div className="mb-4">
-              <MusicPlayer src={`/showFile/${file.id}`} title={file.name} artist="Unknown Artist" />
+            {/* Actions */}
+            <div className="flex gap-3 mb-8">
+              <Button onClick={() => setShowShareModal(true)} className="flex-1 gap-2 bg-indigo-600 hover:bg-indigo-700">
+                <Share className="h-4 w-4" /> Udostępnij
+              </Button>
+              <Button variant="outline" onClick={() => window.open(`d/${file.id}`, "_blank")} className="flex-1 gap-2">
+                <Download className="h-4 w-4" /> Pobierz
+              </Button>
             </div>
-          )}
-          {file.type === "image" && (
-            <div className="mb-4">
-              <img src={`/showFile/${file.id}`} alt={file.name} className="max-h-64 mx-auto rounded-sm" />
-            </div>
-          )}
-          {file.type === "video" && (
-            <div className="mb-4">
-              <video controls className="w-full max-h-64 rounded-sm">
-                <source src={`/showFile/${file.id}`} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          )}
-          {file.type === "epub" && (
-            <div className="mb-4">
-             <Button variant="outline" onClick={() => window.open(`/polygon/${file.id}`, "_blank")}>Otwórz czytnik EPUB</Button>
-            </div>
-          )}
-          {file.type === "other" && (
-            <div className="mb-4 text-center">
-              <button
-                className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
-                onClick={() => window.open(`d/${file.id}`, "_blank")}
-              >
-                Otwórz plik
-              </button>
-            </div>
-          )}
 
-          <h2 className="text-xl font-semibold mb-4">Szczegóły pliku</h2>
-          <button
-            onClick={() => window.open(`d/${file.id}`, "_blank")}
-            className="mb-4 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
-            Pobierz
-          </button>
-
-          <p className="mb-2"><strong>Nazwa:</strong> {file.name}</p>
-          <p className="mb-2"><strong>Typ:</strong> {file.type}</p>
-          <p className="mb-2"><strong>Rozmiar:</strong> {file.size} MB</p>
-          <p className="mb-2"><strong>Data dodania:</strong> {file.created_at}</p>
+            {/* Details Table */}
+            <div className="space-y-3 text-sm border-t dark:border-neutral-800 pt-4">
+              <div className="flex justify-between"><span className="text-gray-500">Typ:</span> <span className="font-medium">{file.type}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Rozmiar:</span> <span className="font-medium">{file.size} MB</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Data dodania:</span> <span className="font-medium">{file.created_at}</span></div>
+            </div>
+          </div>
         </div>
-
-        {showShareModal && (
-          <ShareModal fileId={file.id} onClose={() => setShowShareModal(false)} />
-        )}
       </div>
-    );
-  }
+
+      {showShareModal && (
+        <ShareModal fileId={file.id} onClose={() => setShowShareModal(false)} />
+      )}
+    </>
+  );
+}
 export function ShareModal({ fileId, onClose }: { fileId: number; onClose: () => void }) {
     const [code, setCode] = useState("");
     const [expiresAt, setExpiresAt] = useState("");
@@ -552,3 +543,225 @@ export function UploadFileCard({folderName, refreshData}: {folderName: string; r
               </form>
     );
   }
+export function DeletedFileCard({ file, onClick, refreshData }: { file: FileData; onClick: () => void; refreshData: () => void }) {
+  const icons: Record<FileData["type"], JSX.Element> = {
+    image: <FileImage className="mx-auto mb-2 h-16 w-16 text-blue-500" />,
+    pdf: <FileText className="mx-auto mb-2 h-16 w-16 text-red-500" />,
+    excel: <FileSpreadsheet className="mx-auto mb-2 h-16 w-16 text-green-500" />,
+    ppt: <FileSpreadsheet className="mx-auto mb-2 h-16 w-16 text-orange-500" />,
+    zip: <FileArchive className="mx-auto mb-2 h-16 w-16 text-yellow-500" />,
+    epub: <Book className="mx-auto mb-2 h-16 w-16 text-indigo-500" />,
+    mp3: <FileAudio className="mx-auto mb-2 h-16 w-16 text-purple-500" />,
+    other: <FileText className="mx-auto mb-2 h-16 w-16 text-gray-500" />,
+  };
+
+  const [optionVisible, setOptionVisible] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const handleContextClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setPos({ x: e.clientX, y: e.clientY });
+    setOptionVisible(true);
+  };
+
+//   useEffect(() => {
+//     const handleClickOutside = (event: MouseEvent) => {
+//       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+//         setOptionVisible(false);
+//       }
+//     };
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, []);
+ const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setData("fileId", file.id.toString());
+    e.dataTransfer.effectAllowed = "move";
+    e.currentTarget.style.opacity = "0.5";
+    e.currentTarget.style.border = "2px dashed #000";
+  };
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      // whileHover={{ scale: 1.02, boxShadow: "0 8px 20px rgba(0,0,0,0.08)" }}
+      className="relative w-72 border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
+      draggable
+      // onDragStart={handleDragStart}
+      // onDragEnd={(e) => {
+      //   e.currentTarget.style.opacity = "1";
+      //   e.currentTarget.style.border = "none";
+      //   setOptionVisible(false);
+      // }}
+    >
+      <div className="flex justify-end">
+        <EllipsisVertical
+          className="h-5 w-5 text-neutral-800 dark:text-amber-50 hover:text-neutral-600 hover:bg-neutral-300 rounded cursor-pointer"
+          onClick={handleContextClick}
+        />
+      </div>
+
+      <div
+        onClick={onClick}
+        className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer"
+      >
+        {icons[file.type]}
+        <h3 className="text-lg font-medium text-ellipsis">{file.name}</h3>
+        <p className="text-sm text-gray-500">Rozmiar: {(file.size / 1000000).toPrecision(2)} MB</p>
+        <p className="text-sm text-gray-500">Data: {file.created_at}</p>
+<p className="text-sm text-gray-500">
+  Usunie się: {new Date(new Date(file.deleted_at).setDate(new Date(file.deleted_at).getDate() + 30)).toLocaleDateString()}
+</p>      </div>
+
+      {optionVisible && (
+        <motion.div
+          ref={modalRef}
+          initial={{ opacity: 0, scale: 0.95, y: -5 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -5 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          className="fixed z-50 bg-white dark:bg-neutral-900 rounded-xl p-4 shadow-xl w-72"
+          // left upper to cursor
+          style={{ top: pos.y - 100, left: pos.x - 300 }}
+        >
+          <button
+            onClick={() => setOptionVisible(false)}
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <h2 className="text-lg font-semibold mb-2">Opcje pliku</h2>
+          <ul className="list-none p-0 m-0">
+            <li className="m-2 cursor-pointer hover:text-blue-600">
+                <span onClick={() => router.post(`/toggleFavorite/${file.id}`)}><Heart className="inline-block mr-2" /> Dodaj do ulubionych</span>
+            </li>
+            <li className="m-2 cursor-pointer hover:text-blue-600">
+              <Link href={`/edit/${file.id}`}><EyeIcon className="inline-block mr-2" /> Podgląd</Link>
+            </li>
+            
+            <li className="m-2 cursor-pointer hover:text-blue-600">
+              <span onClick={() =>{setInfoModalOpen(true)}}><InfoIcon className="inline-block mr-2" /> Szczegóły</span>
+            </li>
+            <li className="m-2 cursor-pointer hover:text-blue-600">
+  <a
+    href={`/d/${file.id}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    download
+    className="flex items-center"
+  ><DownloadIcon className="inline-block mr-2" /> Pobierz</a>
+            </li>
+            
+              {shareModalOpen && (
+                <ShareModal
+                  fileId={file.id}
+                  onClose={() => setShareModalOpen(false)}
+                />
+              )}
+            <li className="m-2 cursor-pointer hover:text-blue-600">  
+              <span onClick={() =>{setShareModalOpen(true)}}><ShareIcon className="inline-block mr-2" /> Udostępnij</span>
+            </li>
+          
+              <Dialog>
+        <DialogTrigger asChild>
+         <li className="m-2 cursor-pointer hover:text-blue-600">
+              <Edit2Icon className="inline-block mr-2" /> Zmień nazwę
+            </li>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Zmień nazwę pliku</DialogTitle>
+            <DialogDescription>
+              Zmień nazwę pliku i zapisz zmiany.
+              
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="filenamee">Nazwa pliku</Label>
+              <Input id="filenamee" name="filenamee" defaultValue={file.name} />
+            </div>
+            
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={(e)=>{
+              e.preventDefault();
+              const filename = (document.querySelector('input[name="filenamee"]') as HTMLInputElement).value;
+              router.post(`/changeFileName/${file.id}`, {
+                filename: filename,
+                
+                
+              },
+            {
+              onSuccess: (file) => {
+                refreshData();
+                
+            ;
+              }
+            });
+
+            }}>Zapisz zmiany</Button>
+          </DialogFooter>
+        </DialogContent>
+    </Dialog>
+            
+            {/* <li className="m-2 cursor-pointer text-red-600" onClick={async () => {
+              if (confirm(`Czy na pewno chcesz usunąć plik "${file.name}"?`)) {
+                try {
+                  await router.delete(`/files/${file.id}`);
+                  alert('Plik został usunięty.');
+                  refreshData();
+                  // window.location.reload(); // Odświeżenie strony po usunięciu
+                } catch (error) {
+                  console.error('Błąd podczas usuwania pliku:', error);
+                  alert('Wystąpił błąd podczas usuwania pliku.');
+                }
+              }
+            }}>
+              <Trash2Icon className="inline-block mr-2" /> Usuń
+            </li> */}
+            <li className="m-2 cursor-pointer text-red-700">
+              <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                      <div className="flex items-center">
+                          <Trash2Icon className="inline-block mr-2" /> Usuń
+                      </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                      <AlertDialogHeader>
+                          <AlertDialogTitle>Czy na pewno chcesz usunąć plik?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                              Czy na pewno chcesz usunąć plik <strong>{file.name}</strong>? Operacji tej nie można cofnąć.
+                          </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                          <AlertDialogCancel>Anuluj</AlertDialogCancel>
+                          <AlertDialogAction  onClick={async () => {
+                              try {
+                                  await router.delete(`/files/${file.id}`);
+                                  // alert('Plik został usunięty.');
+                                  refreshData();
+                                  setOptionVisible(false);
+                                  toast.success('Plik został usunięty.');
+                                  // window.location.reload(); // Odświeżenie strony po usunięciu
+                              } catch (error) {
+                                  console.error('Błąd podczas usuwania pliku:', error);
+                                  alert('Wystąpił błąd podczas usuwania pliku.');
+                              }
+                          }} className="bg-red-700 hover:bg-red-600 text-white">Usuń</AlertDialogAction>
+                      </AlertDialogFooter>
+                  </AlertDialogContent>
+              </AlertDialog>
+            </li>
+          </ul>
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}

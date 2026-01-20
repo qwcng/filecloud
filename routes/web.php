@@ -42,7 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Wyświetlenie pliku (np. obraz, audio, wideo)
     Route::get('/showFile/{file}', [FileController::class, 'showFile'])
-        ->name('showFile');
+        ->name('showFile')
+        ->withTrashed();
     Route::get('/showThumbnail/{file}', [FileController::class, 'showThumbnail'])
         ->name('showThumbnail');
 
@@ -85,6 +86,10 @@ Route::get('/home', function(){
     return Inertia::render('Home');
 })->name('homePage');
 Route::post('/createFile', [FileController::class, 'createFile'])->name('createFile');
+Route::get('/trash', function(){
+    return Inertia::render('Trash');
+});
+Route::get('/getTrashFiles', [FileController::class, 'showTrash'])->name('getTrashFiles');
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/folders.php';

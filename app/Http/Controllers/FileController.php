@@ -128,13 +128,14 @@ foreach ($request->file('files') as $file) {
             }
 
             // Usuwanie pliku z dysku
-            Storage::disk('private')->delete($file->path);
-            if (!empty($file->thumbnail) && Storage::disk('private')->exists($file->thumbnail)) {
-                Storage::disk('private')->delete($file->thumbnail);
-            }
+            // Storage::disk('private')->delete($file->path);
+            // if (!empty($file->thumbnail) && Storage::disk('private')->exists($file->thumbnail)) {
+            //     Storage::disk('private')->delete($file->thumbnail);
+            // }
 
-            // Usuwanie rekordu z bazy danych
+            // // Usuwanie rekordu z bazy danych
             $file->delete();
+            // $file->delete();
 
             // return response()->json(['message' => 'Plik usunięty']);
         }
@@ -381,5 +382,16 @@ public function filesByType(Request $request, $type)
         return response()->json($files);
     
 
+    }
+    public function showTrash(Request $request)
+    {
+        $files = UserFile::onlyTrashed()
+            ->where('user_id', $request->user()->id)
+            ->orderBy('deleted_at', 'desc')
+            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'deleted_at']);
+
+        return response()->json([
+            'files' => $files
+        ]);
     }
     }

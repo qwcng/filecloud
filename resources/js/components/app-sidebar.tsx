@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Headphones, Save, Heart, Trash2, Trash} from 'lucide-react';
+import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Headphones, Save, Heart, Trash2, Trash, Star} from 'lucide-react';
 import AppLogo from './app-logo';
 import { NavMainGallery } from './nav-gallery';
 import { Input } from './ui/input';
@@ -24,7 +24,7 @@ const mainNavItems: NavItem[] = [
     {
         title:"Ulubione pliki",
         href:"dashboard/favorite",
-        icon:Heart,
+        icon:Star,
     },
     {
         title: 'Dodaj pliki',
