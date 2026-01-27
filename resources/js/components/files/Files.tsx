@@ -1,7 +1,7 @@
 import React, { JSX, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, router, useForm} from "@inertiajs/react";
-import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon, Book, Heart, Share, Download, FileIcon, Star } from "lucide-react";
+import { EllipsisVertical, X, EyeIcon, InfoIcon, DownloadIcon, Edit2Icon, Trash2Icon, ShareIcon, Book, Heart, Share, Download, FileIcon, Star, ArrowUpLeftSquareIcon, Undo2 } from "lucide-react";
 import { FileArchive, FileAudio, FileImage, FileSpreadsheet, FileText } from "lucide-react";
 import axios from "axios";
 import { type BreadcrumbItem, type FileData } from "@/types";
@@ -34,27 +34,32 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox";
+import { DialogBuilder } from "../DialogBuilder";
+import { ref } from "process";
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "panel", href: dashboard().url },
   { title: "Pliki", href: dashboard().url },
 ];
 
-export function FileCard({ file, onClick, refreshData }: { file: FileData; onClick: () => void; refreshData: () => void }) {
+export function FileCard({ file, onClick, refreshData }: { file: FileData; onClick: () => void; refreshData: (id: number) => void }) {
   const icons: Record<FileData["type"], JSX.Element> = {
-    image: <FileImage className="mx-auto mb-2 h-16 w-16 text-blue-500" />,
-    pdf: <FileText className="mx-auto mb-2 h-16 w-16 text-red-500" />,
-    excel: <FileSpreadsheet className="mx-auto mb-2 h-16 w-16 text-green-500" />,
-    ppt: <FileSpreadsheet className="mx-auto mb-2 h-16 w-16 text-orange-500" />,
-    zip: <FileArchive className="mx-auto mb-2 h-16 w-16 text-yellow-500" />,
-    epub: <Book className="mx-auto mb-2 h-16 w-16 text-indigo-500" />,
-    mp3: <FileAudio className="mx-auto mb-2 h-16 w-16 text-purple-500" />,
-    other: <FileText className="mx-auto mb-2 h-16 w-16 text-gray-500" />,
+    image: <FileImage className="mx-auto mb-2 h-20 w-20 text-blue-500" />,
+    pdf: <FileText className="mx-auto mb-2 h-20 w-20 text-red-500" />,
+    excel: <FileSpreadsheet className="mx-auto mb-2 h-20 w-20 text-green-500" />,
+    ppt: <FileSpreadsheet className="mx-auto mb-2 h-20 w-20 text-orange-500" />,
+    zip: <FileArchive className="mx-auto mb-2 h-20 w-20 text-yellow-500" />,
+    epub: <Book className="mx-auto mb-2 h-20 w-20 text-indigo-500" />,
+    mp3: <FileAudio className="mx-auto mb-2 h-20 w-20 text-purple-500" />,
+    other: <FileText className="mx-auto mb-2 h-20 w-20 text-gray-500" />,
   };
 
   const [optionVisible, setOptionVisible] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDivElement>(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState<boolean>(file.favorite);
+
   const handleContextClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setPos({ x: e.clientX, y: e.clientY });
@@ -78,6 +83,20 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
     e.currentTarget.style.opacity = "0.5";
     e.currentTarget.style.border = "2px dashed #000";
   };
+
+  const toggleFavorite = () => {
+  setIsFavorite(prev => !prev); // 🔥 UI zmienia się od razu
+
+  router.post(`/toggleFavorite/${file.id}`, {}, {
+    preserveScroll: true,
+    onError: () => {
+      // rollback jeśli backend się wywali
+      setIsFavorite(prev => !prev);
+    },
+  });}
+  useEffect(() => {
+  setIsFavorite(file.favorite);
+}, [file.favorite]);
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -95,6 +114,10 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
         setOptionVisible(false);
       }}
     >
+      <div className="flex justify-start absolute ">
+      
+         {/* <Checkbox className="bg-neutral-900 h-6 w-6"/> */}
+      </div>
       <div className="flex justify-end">
         <EllipsisVertical
           className="h-5 w-5 text-neutral-800 dark:text-amber-50 hover:text-neutral-600 hover:bg-neutral-300 rounded cursor-pointer"
@@ -104,12 +127,19 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
 
       <div
         onClick={onClick}
-        className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer"
+        className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer flex flex-col items-center"
       >
-        {icons[file.type]}
-        <h3 className="text-lg font-medium text-ellipsis">{file.name}</h3>
-        <p className="text-sm text-gray-500">Rozmiar: {(file.size / 1000000).toPrecision(2)} MB</p>
-        <p className="text-sm text-gray-500">Data: {file.created_at}</p>
+        {file.type === "image" ?  
+        <img src={`showFile/${file.id}`} alt={file.name} className="mx-auto  h-24 w-24 object-cover rounded" />
+        : (
+          icons[file.type]
+        )
+        }
+       
+        
+        <h3 className="text-lg  text-center   font-medium w-[80%] h-6 overflow-hidden whitespace-nowrap text-ellipsis">{file.name}</h3>
+        {/* <p className="text-sm text-gray-500">Rozmiar: {(file.size / 1000000).toPrecision(2)} MB</p>
+        <p className="text-sm text-gray-500">Data: { new Date(file.created_at).toLocaleDateString()}</p> */}
         
       </div>
 
@@ -131,9 +161,52 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
             <X className="h-5 w-5" />
           </button>
           <h2 className="text-lg font-semibold mb-2">Opcje pliku</h2>
+          {file.deleted ? (<>
+                            <ul className="list-none p-0 m-0">
+                              <li className="m-2 cursor-pointer hover:text-blue-600">
+                                  <span onClick={() => {
+                                    router.post(`/restoreFile/${file.id}`)
+                                    refreshData(file.id)
+                                    }}><Undo2 className="inline-block mr-2" />Przywróć</span>
+                              </li>
+                              <li className="m-2 cursor-pointer text-red-700">
+                                <span onClick={async () => {
+                                    if (confirm(`Czy na pewno chcesz trwale usunąć plik "${file.name}"?`)) {
+                                      try {
+                                        await router.delete(`/pernamentlyDeleteFile/${file.id}`);
+                                        refreshData(file.id);
+                                        toast.success('Plik został trwale usunięty.');
+                                        // refreshData(file.id);
+                                        setOptionVisible(false);
+                                        // window.location.reload(); // Odświeżenie strony po usunięciu
+                                      } catch (error) {
+                                        console.error('Błąd podczas usuwania pliku:', error);
+                                        alert('Wystąpił błąd podczas usuwania pliku.');
+                                      }
+                                    }
+                                }}><Trash2Icon className="inline-block mr-2" /> Usuń</span>
+                              </li>
+                              </ul>
+
+                            </>
+                          ) : (
+            <>
+          
           <ul className="list-none p-0 m-0">
-            <li className="m-2 cursor-pointer hover:text-blue-600">
-                <span onClick={() => router.post(`/toggleFavorite/${file.id}`)}><Star className="inline-block mr-2" /> Dodaj do ulubionych</span>
+            <li className="m-2 cursor-pointer">
+              <span
+                onClick={toggleFavorite}
+                className={`flex items-center hover:text-blue-600 ${
+                  isFavorite ? "text-yellow-500" : ""
+                }`}
+              >
+                <Star
+                  className="inline-block mr-2"
+                  fill={isFavorite ? "gold" : "none"}
+                  color={isFavorite ? "gold" : "currentColor"}
+                />
+                {isFavorite ? "Usuń z ulubionych" : "Dodaj do ulubionych"}
+              </span>
             </li>
             <li className="m-2 cursor-pointer hover:text-blue-600">
               <Link href={`/edit/${file.id}`}><EyeIcon className="inline-block mr-2" /> Podgląd</Link>
@@ -256,8 +329,13 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
                   </AlertDialogContent>
               </AlertDialog>
             </li>
+          
           </ul>
+          </>
+          )}
+          
         </motion.div>
+        
       )}
     </motion.div>
   );
@@ -278,7 +356,9 @@ export function FileModal({ file, onClose }: { file: FileData; onClose: () => vo
           </div>
 
           <div className="overflow-y-auto p-6">
-            {/* Preview Section */}
+            
+            
+            
             <div className="mb-6 bg-gray-100 dark:bg-black rounded-lg flex items-center justify-center min-h-[200px]">
               {file.type === "mp3" && <MusicPlayer src={`/showFile/${file.id}`} title={file.name} />}
               {file.type === "image" && <img src={`/showFile/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />}
@@ -300,18 +380,75 @@ export function FileModal({ file, onClose }: { file: FileData; onClose: () => vo
 
             {/* Actions */}
             <div className="flex gap-3 mb-8">
-              <Button onClick={() => setShowShareModal(true)} className="flex-1 gap-2 bg-indigo-600 hover:bg-indigo-700">
-                <Share className="h-4 w-4" /> Udostępnij
-              </Button>
-              <Button variant="outline" onClick={() => window.open(`d/${file.id}`, "_blank")} className="flex-1 gap-2">
+              {file.deleted ? 
+              <>
+                <Button onClick={() => {
+                  router.post(`/restoreFile/${file.id}`, {}, {
+                    onSuccess: () => {
+                      toast.success('Plik został przywrócony!');
+                      onClose();
+
+                    }
+                  });
+                }} className="flex-1 gap-2 ">
+                  <ArrowUpLeftSquareIcon className="h-4 w-4" /> Przywróć
+                </Button>
+                {/* <Button variant="destructive" onClick={async () => {
+                  if (confirm(`Czy na pewno chcesz trwale usunąć plik "${file.name}"?`)) {
+                    try {
+                      await router.delete(`/files/${file.id}`);
+                      toast.success('Plik został trwale usunięty.');
+                      onClose();
+                    } catch (error) {
+                      console.error('Błąd podczas usuwania pliku:', error);
+                      alert('Wystąpił błąd podczas usuwania pliku.');
+                    }
+                  }
+                }} className="flex-1 gap-2 ">
+                  <Trash2Icon className="h-4 w-4" /> Usuń na stałe
+                </Button> */}
+                <DialogBuilder 
+                  dialogTrigger={<Button variant="destructive" className="flex-1 gap-2 "> Usuń na stałe</Button>}
+                  dialogTitle="Usuń plik na stałe"
+                  dialogDescription={`Czy na pewno chcesz trwale usunąć plik "${file.name}"? Operacji tej nie można cofnąć.`}
+                  onSave={async () => {
+                    try {
+                      await router.delete(`/pernamentlyDeleteFile/${file.id}`);
+                      toast.success('Plik został trwale usunięty.');
+                      onClose();
+                    } catch (error) {
+                      console.error('Błąd podczas usuwania pliku:', error);
+                      alert('Wystąpił błąd podczas usuwania pliku.');
+                    } 
+                  }}
+                  saveButtonText="Usuń"
+                >
+                
+                    
+                
+                  {/* Czy na pewno chcesz trwale usunąć ten plik? Operacji tej nie można cofnąć. */}
+                  </DialogBuilder>
+
+              </>
+              : (
+                <>
+                <Button onClick={() => setShowShareModal(true)} className="flex-1 gap-2 bg-indigo-600 hover:bg-indigo-700">
+                  <Share className="h-4 w-4" /> Udostępnij
+                </Button>
+                <Button variant="outline" onClick={() => window.open(`d/${file.id}`, "_blank")} className="flex-1 gap-2">
                 <Download className="h-4 w-4" /> Pobierz
               </Button>
+              </>
+              )}
+              
+             
+              
             </div>
 
             {/* Details Table */}
             <div className="space-y-3 text-sm border-t dark:border-neutral-800 pt-4">
               <div className="flex justify-between"><span className="text-gray-500">Typ:</span> <span className="font-medium">{file.type}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Rozmiar:</span> <span className="font-medium">{file.size} MB</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Rozmiar:</span> <span className="font-medium">{(file.size /100000).toPrecision(2)} MB</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Data dodania:</span> <span className="font-medium">{file.created_at}</span></div>
             </div>
           </div>
@@ -543,6 +680,109 @@ export function UploadFileCard({folderName, refreshData}: {folderName: string; r
               </form>
     );
   }
+  export function UploadFolderCard({ folderName, refreshData }: { folderName: string; refreshData: () => void }) {
+    const { data, setData, post, progress } = useForm<{ files: File[]; folder: string }>({
+        files: [],
+        folder: folderName === "dashboard" ? "root" : folderName,
+    });
+
+    const handleFolderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setData("files", [...data.files, ...Array.from(e.target.files)]);
+        }
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/uploadFile', {
+            forceFormData: true,
+            onSuccess: () => {
+                toast.success('Folder został przesłany!');
+                setData("files", []);
+                refreshData();
+            }
+        });
+    };
+
+    const removeFile = (index: number) => {
+        setData("files", data.files.filter((_, i) => i !== index));
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="relative w-72 max-w-md space-y-4">
+            <label
+                htmlFor="folder-upload"
+                className="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-500"
+            >
+                <svg
+                    className="mb-3 w-10 h-10 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                </svg>
+                <span className="text-gray-600 text-center">
+                    Kliknij lub przeciągnij folder tutaj, aby go przesłać
+                </span>
+                <input
+                    id="folder-upload"
+                    type="file"
+                    className="hidden"
+                    webkitdirectory="true"
+                    multiple
+                    onChange={handleFolderChange}
+                />
+
+                {data.files.length > 0 && (
+                    <div className="space-y-2 mt-2 w-full">
+                        {data.files.map((file, i) => (
+                            <div key={i} className="flex items-center justify-between rounded border px-3 py-2 text-sm">
+                                <span>{file.webkitRelativePath}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => removeFile(i)}
+                                    className="text-red-500 hover:text-red-700"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {progress && (
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{ width: `${progress.percentage}%` }}
+                        />
+                    </div>
+                )}
+
+                <button
+                    type="submit"
+                    disabled={data.files.length === 0}
+                    className="w-full mt-2 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                    Prześlij folder
+                </button>
+
+                <span className="block text-sm text-gray-600 text-center mt-1">
+                    {data.files.length > 0
+                        ? `${data.files.length} plików gotowych do przesłania`
+                        : "Brak plików do przesłania"}
+                </span>
+            </label>
+        </form>
+    );
+}
 export function DeletedFileCard({ file, onClick, refreshData }: { file: FileData; onClick: () => void; refreshData: () => void }) {
   const icons: Record<FileData["type"], JSX.Element> = {
     image: <FileImage className="mx-auto mb-2 h-16 w-16 text-blue-500" />,

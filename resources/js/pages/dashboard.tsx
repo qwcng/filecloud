@@ -28,7 +28,7 @@
   import { folder} from "@/routes/files";
 import { ref } from "process";
 import { motion } from "motion/react"
-import {FileCard, FileModal,ShareModal,UploadFileCard} from "@/components/files/Files"
+import {FileCard, FileModal,ShareModal,UploadFileCard, UploadFolderCard} from "@/components/files/Files"
 import {FolderCard} from "@/components/files/Folders"
 import { Toaster } from "@/components/ui/sonner"
 import { Skeleton } from "@/components/ui/skeleton";
@@ -58,7 +58,8 @@ import { Button } from "@/components/ui/button"
 import { useTranslation, initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 import i18n from "i18next";
-import { NewFile, NewFolder } from "@/components/NavigationBar";
+import { NewFile, NewFolder, UploadFilesDialog, UploadFolderDialog } from "@/components/NavigationBar";
+import { FullScreenDrop } from "@/components/custom/FullScreenDrop";
 
   const url = window.location.pathname;
   let fileName = url.split("/").pop();
@@ -213,6 +214,7 @@ useEffect(() => {
                 size: f.size,
                 created_at: f.created_at,
                 url: f.url,
+                favorite: f.is_favorite
             }));
 
             setFiles(mappedFiles);
@@ -275,7 +277,9 @@ useEffect(() => {
     
     return (
       <AppLayout breadcrumbs={breadcrumbs}>
-        <Head title="Moje Pliki" />
+        <Head title="Moje Pliki" >
+          
+        </Head>
         {sharedFile &&(
           <Dialog open={true}>
         <DialogContent className="sm:max-w-[425px]">
@@ -334,8 +338,13 @@ useEffect(() => {
          
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
           <div className="flex gap-2">
+          <UploadFilesDialog urlr={urlr} refreshData={refreshData} />
+          <UploadFolderDialog urlr={urlr} refreshData={refreshData} />
           <NewFolder urlr={urlr} refreshData={refreshData} />
           <NewFile urlr={urlr} refreshData={refreshData} />
+          {/* <FullScreenDrop urlr={urlr} refreshData={refreshData} /> */}
+
+          {/* <UploadFolderDialog urlr={urlr} refreshData={refreshData} /> */}
           </div>
           <Select defaultValue={sorting}  onValueChange={(e)=>{
       console.log(e);
@@ -447,7 +456,7 @@ useEffect(() => {
             </>
           ) : null}
           <div className="flex flex-wrap gap-4 lg:justify-start justify-center sm:">
-            <UploadFileCard folderName={urlr} refreshData={refreshData} />
+            <UploadFolderCard folderName={urlr} refreshData={refreshData} />
              {/* <FolderCard folderName="Nowy Folder" /> */}
               {foldersLoading ? (
                 <>

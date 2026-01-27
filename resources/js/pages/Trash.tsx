@@ -58,16 +58,8 @@ import { Button } from "@/components/ui/button"
 import { useTranslation, initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 import i18n from "i18next";
-import { NewFile, NewFolder } from "@/components/NavigationBar";
-  type FileData = {
-    id: number;
-    name: string;
-    type: "image" | "pdf" | "excel" | "ppt" | "zip" | "mp3" | "video" | "epub" | "other";
-    size: string;
-    created_at: string;
-    deleted_at: string;
-    url: string;
-  };
+import { NewFile, NewFolder, WipeTrash } from "@/components/NavigationBar";
+import { FileData } from "@/types/index";
 export default function Trash(){
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'panel', href: dashboard() },
@@ -93,6 +85,7 @@ useEffect(() => {
     // Fetch trashed files from the server
     axios.get('/getTrashFiles')
         .then(response => {
+          console.log(response.data.files);
           const mappedFiles: FileData[] = response.data.files.map((f: any) => ({
                 id: f.id,
                 name: f.original_name,
@@ -101,6 +94,7 @@ useEffect(() => {
                 created_at: f.created_at,
                 deleted_at: f.deleted_at,
                 url: f.url,
+                deleted: f.deleted_at,
             }));
             setFiles(mappedFiles);
             console.log(response.data);
@@ -109,19 +103,26 @@ useEffect(() => {
             console.error('Error fetching trashed files:', error);
         });
 }, []);
+const removeFileFromUI = (id: number) => {
+  setFiles(prev => prev.filter(file => file.id !== id));
+};
 return(
 
     <AppLayout
     breadcrumbs={breadcrumbs}>
+      <Head title="Kosz"></Head>
+      <Toaster position="top-center" richColors />
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
           
           <h3 className="text-lg font-semibold">🧳 Usunięte Pliki</h3>
+          <WipeTrash refreshData={() => {}} files={files} />
           <div className="flex flex-wrap gap-4 lg:justify-start justify-center">
             {files.length === 0 ? (
               <p className="text-muted-foreground col-span-full text-center">Brak usuniętych plików.</p>
             ) : (
+
               files.map((file) => (
-                <DeletedFileCard key={file.id} file={file} onClick={() =>{setSelectedFile(file)}} refreshData={undefined} />
+                <FileCard key={file.id} file={file} onClick={() =>{setSelectedFile(file)}} refreshData={removeFileFromUI} />
               ))
             )}
              {selectedFile && <FileModal file={selectedFile} onClose={() => setSelectedFile(null)} />}

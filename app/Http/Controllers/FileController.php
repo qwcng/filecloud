@@ -21,7 +21,7 @@
             $files = UserFile::where('user_id', $request->user()->id)
             ->where('folder_id', null)
                 ->orderBy('created_at', 'desc')
-                ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
+                ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'is_favorite']);
 
             return response()->json([
                 'files' => $files
@@ -135,6 +135,7 @@ foreach ($request->file('files') as $file) {
 
             // // Usuwanie rekordu z bazy danych
             $file->delete();
+            
             // $file->delete();
 
             // return response()->json(['message' => 'Plik usunięty']);
@@ -394,4 +395,34 @@ public function filesByType(Request $request, $type)
             'files' => $files
         ]);
     }
+    public function restoreFile($fileId)
+    {
+        $file = UserFile::onlyTrashed()->findOrFail($fileId);
+
+        if ($file->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $file->restore();
+
+        // return response()->json(['message' => 'Plik przywrócony']);
+    }
+    public function permanentlyDeleteFile($fileId)
+    {
+        $file = UserFile::onlyTrashed()->findOrFail($fileId);
+
+        if ($file->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Usuwanie pliku z dysku
+        Storage::disk('private')->delete($file->path);
+        if (!empty($file->thumbnail) && Storage::disk('private')->exists($file->thumbnail)) {
+            Storage::disk('private')->delete($file->thumbnail);
+        }
+
+        // Usuwanie rekordu z bazy danych
+        $file->forceDelete();
+    }
+        // return response()->json(['message' => 'Plik trwale usunięty']);}
     }

@@ -5,6 +5,10 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    base: 'https://filecloud.ct8.pl/',
+    build: {
+        outDir: 'public/build',
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
@@ -17,7 +21,9 @@ export default defineConfig({
             formVariants: true,
         }),
     ],
-    esbuild: {
+    esbuild: { 
+        
         jsx: 'automatic',
     },
+
 });

@@ -90,6 +90,10 @@ Route::get('/trash', function(){
     return Inertia::render('Trash');
 });
 Route::get('/getTrashFiles', [FileController::class, 'showTrash'])->name('getTrashFiles');
+Route::post('/restoreFile/{fileId}', [FileController::class, 'restoreFile'])->name('restoreFile');
+Route::delete('/pernamentlyDeleteFile/{fileId}', [FileController::class, 'permanentlyDeleteFile'])->name('deleteForever');
+
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/folders.php';
