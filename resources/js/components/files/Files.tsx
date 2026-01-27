@@ -130,7 +130,7 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
         className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer flex flex-col items-center"
       >
         {file.type === "image" ?  
-        <img src={`/showThumbnail/'${file.id}`} alt={file.name} className="mx-auto  h-24 w-24 object-cover rounded" />
+        <img src={`/showThumbnail/${file.id}`} alt={file.name} className="mx-auto  h-24 w-24 object-cover rounded" />
         : (
           icons[file.type]
         )
