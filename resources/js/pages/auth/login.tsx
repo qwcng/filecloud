@@ -1,4 +1,5 @@
 import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
+import oauthGoogleController from '@/actions/App/Http/Controllers/oauthGoogleController';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -70,6 +71,18 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                                 Log in
                             </Button>
+                            
+                            <button
+                                onClick={() => { window.location.href = '/auth/google'; }}
+                                className="flex items-center justify-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all"
+                                >
+                                <img 
+                                    src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" 
+                                    alt="Google Logo" 
+                                    className="h-6 w-6 mr-2"
+                                />
+                                Zaloguj przez Google
+                                </button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">

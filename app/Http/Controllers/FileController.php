@@ -78,7 +78,7 @@ foreach ($request->file('files') as $file) {
     $folderId = $request->input('folder') === 'root' ? null : $request->input('folder');
     if($type == "image"){
  $image = Image::read($file)
-                ->resize(300, 200);
+    ->cover(300, 200); 
          Storage::put(
                 "private/uploads/thumbs/{$filename}",
                 $image->encodeByExtension($file->getClientOriginalExtension(), quality: 70)

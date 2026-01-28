@@ -1,4 +1,4 @@
-  import { useState, useEffect, useRef, use } from "react";
+  import { useState, useEffect, useRef, useMemo } from "react";
   import { Head, router,useForm,Link  } from "@inertiajs/react";
   import AppLayout from "@/layouts/app-layout";
   import { type BreadcrumbItem } from "@/types";
@@ -120,7 +120,7 @@ i18n
     const [foldersLoading, setFoldersLoading] = useState(true);
     const [filesLoading, setFilesLoading] = useState(true);
     const [sorting,setSorting] = useState(localStorage.getItem("sorting") || 'dateDesc');
-    const [sortedFiles,setSortedFiles] = useState<FileData[]>([]);
+    // const [sortedFiles,setSortedFiles] = useState<FileData[]>([]);
           
     
     useEffect(() => {
@@ -238,30 +238,25 @@ useEffect(() => {
 
 // Dodajemy urlr do zależności! Inaczej zmiana folderu nie odświeży widoku.
 }, [urlr, refreshTrigger]);
-useEffect(() => {
-    const sorted = [...files].sort((a, b) => {
+const sortedFiles = useMemo(() => {
+  const sorted = [...files]; // Tworzymy kopię, by nie mutować oryginału
+  sorted.sort((a, b) => {
       switch (sorting) {
-        case "nameAsc":
-          return a.name.localeCompare(b.name);
-        case "nameDesc":
-          return b.name.localeCompare(a.name);
-        case "sizeAsc":
-          // return String(a.size).localeCompare(String(b.size));
-          return a.size - b.size;
-        case "sizeDesc":
-          return b.size - a.size;
-        case "dateAsc":
-          return a.created_at.localeCompare(b.created_at);
-        case "dateDesc":
-          return b.created_at.localeCompare(a.created_at);
-        default:
-          return 0;
+        case "nameAsc": return a.name.localeCompare(b.name);
+        case "nameDesc": return b.name.localeCompare(a.name);
+        case "sizeAsc": return parseInt(a.size) - parseInt(b.size); // Upewnij się, że size to liczba
+        case "sizeDesc": return parseInt(b.size) - parseInt(a.size);
+        case "dateAsc": return a.created_at.localeCompare(b.created_at);
+        case "dateDesc": return b.created_at.localeCompare(a.created_at);
+        default: return 0;
       }
-    });
-    // const saved = localStorage.getItem("");
-    setSortedFiles(sorted);
+  });
   
-  }, [sorting, files]);
+  // Jeśli masz filtrowanie po nazwie (wyszukiwanie lokalne), dodaj je tutaj:
+  // return sorted.filter(f => f.name.toLowerCase().includes(searchQuery));
+  
+  return sorted;
+}, [files, sorting])
 
     // useEffect(() => {
     //   alert('123');

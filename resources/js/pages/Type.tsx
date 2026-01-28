@@ -1,10 +1,11 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Head,router } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X,Loader2 } from "lucide-react";
+import { motion,AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { type BreadcrumbItem } from "@/types";
+import { downloadFile } from "@/routes";
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "panel", href: "/dashboard/" },
@@ -36,126 +37,161 @@ const transition = {
 }
 
 export function ImageCard({
-  src,
   id,
   alt,
   onClick,
 }: {
-  src: string;
   id: number;
   alt: string;
   onClick: () => void;
 }) {
-  console.log("123");
   return (
     <motion.div
-    initial={{ scale: 0.95 }}
-    animate={{ scale: 1 }}
-    
-    // transition={transition}
-      className="flex flex-col items-center w-32  [@media(max-width:450px)]:w-24 h-fit cursor-pointer"
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      className="group flex flex-col items-center w-32 [@media(max-width:450px)]:w-28 cursor-pointer"
       onClick={onClick}
     >
-        <img className="w-16 h-16 [@media(max-width:450px)]:w-16  [@media(max-width:450px)]:h-16 object-cover 2xs:rounded-lg" src={'/showThumbnail/'+id} alt={alt}  loading="lazy"/>
-      <span className="mt-1 font-bold text-sm text-neutral-800  dark:text-white w-full line-clamp-2 text-center break-words">
-        {alt}
+      {/* Kontener na zdjęcie z efektem hover */}
+      <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
+        <img
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          src={`/showThumbnail/${id}`}
+          alt={alt}
+          loading="lazy"
+        />
+        
+        {/* Subtelny overlay przy najechaniu */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+      </div>
+
+      {/* Tekst - bardziej czytelny i dopasowany do dark mode */}
+      <span className="mt-2 px-1 w-full text-center">
+        <p className="text-[13px] font-medium text-neutral-700 dark:text-neutral-200 line-clamp-1 truncate transition-colors group-hover:text-blue-500">
+          {alt}
+        </p>
+        {/* <p className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase tracking-tighter">
+          Obraz
+        </p> */}
       </span>
     </motion.div>
   );
 }
 
-export function Gallery({
-  images,
-  initialIndex,
-  onClose,
-}: {
-  images: Image[];
-  initialIndex: number;
-  onClose: () => void;
-}) {
+
+
+export function Gallery({ images, initialIndex, onClose }: { images: any[]; initialIndex: number; onClose: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [imageCache, setImageCache] = useState<{ [key: number]: string }>({});
+  const [fileAction, setFileAction] = useState(false);
+  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-useEffect(() => {
-  const currentImage = images[currentIndex];
-  if (!imageCache[currentImage.id]) {
-    fetch(`/showFile/${currentImage.id}`)
-      .then(res => res.blob())
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        setImageCache(prev => ({ ...prev, [currentImage.id]: url }));
-      });
-  }
-}, [currentIndex, images, imageCache]);
-
-  useEffect(() => {
-    setCurrentIndex(initialIndex);
-  }, [initialIndex]);
-
-
-  // Obsługa Escape i strzałek
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      } else if (e.key === "ArrowLeft") {
-        setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-      } else if (e.key === "ArrowRight") {
-        setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [images.length, onClose]);
-
-  const prevImage = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  const scrollToActive = (index: number, behavior: "smooth" | "auto" = "smooth") => {
+    const activeThumb = thumbnailRefs.current[index];
+    if (activeThumb) {
+      activeThumb.scrollIntoView({ behavior, block: "nearest", inline: "center" });
+    }
   };
 
-  const nextImage = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => scrollToActive(currentIndex, "auto"), 10);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    scrollToActive(currentIndex);
+    
+    // Prosty fetch bez zbędnej logiki
+    const currentImage = images[currentIndex];
+    if (currentImage && !imageCache[currentImage.id]) {
+      fetch(`/showFile/${currentImage.id}`)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          setImageCache((prev) => ({ ...prev, [currentImage.id]: url }));
+        });
+    }
+  }, [currentIndex]);
+
+  const prevImage = () => { setFileAction(false); setCurrentIndex((p) => (p === 0 ? images.length - 1 : p - 1)); };
+  const nextImage = () => { setFileAction(false); setCurrentIndex((p) => (p === images.length - 1 ? 0 : p + 1)); };
 
   return (
-    <div className="fixed inset-0  backdrop-blur-xs  backdrop-saturate-200 flex flex-col items-center justify-center z-50 ">
-      <ArrowLeft
-        className="absolute left-4 text-neutral-800 dark:text-white w-12 h-12 cursor-pointer"
-        onClick={prevImage}
-      />
-      <ArrowRight
-        className="absolute right-4 text-neutral-800 dark:text-white w-12 h-12 cursor-pointer"
-        onClick={nextImage}
-      />
-      <img
-        className="w-[80%] max-h-[70%] rounded-2xl object-contain "
-        src={imageCache[images[currentIndex].id]}
-        loading="lazy"
-        fetchPriority="high"
-        alt={images[currentIndex].original_name}
-      />
-      <button
-        className="absolute top-4 right-4 text-white px-4 py-2 border border-white rounded"
-        onClick={onClose}
-      >
-        Zamknij
-      </button>
-      <div className="absolute bottom-4 flex gap-2 w-[90%] overflow-x-auto p-2 justify-start scroll-smooth">
-        {images.map((img, i) => (
-          <div key={i} onClick={() => setCurrentIndex(i)}>
-            <img
-            loading="lazy"
-              className={`min-w-16 min-h-16 max-w-16 max-h-16 object-cover rounded-2xl cursor-pointer border-2 ${
-                i === currentIndex ? "border-white" : "border-transparent"
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/95 select-none overflow-hidden">
+      {/* CSS do ukrycia scrollbara */}
+      <style>{`.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between p-4 z-50">
+        <div className="text-white">
+          <h1 className="text-sm font-medium opacity-80 truncate max-w-[180px] md:max-w-md">
+            {images[currentIndex]?.original_name}
+          </h1>
+          <p className="text-[10px] text-gray-500 uppercase tracking-tighter">
+            {currentIndex + 1} / {images.length}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1 relative">
+          <button onClick={() => setFileAction(!fileAction)} className="p-2 text-white/70 hover:text-white transition-colors">
+            <Ellipsis className="w-5 h-5" />
+          </button>
+          
+          {fileAction && (
+            <div className="absolute top-12 right-10 bg-neutral-900 border border-white/10 rounded-lg shadow-xl py-1 min-w-[140px] z-[60]">
+              <button onClick={() => window.location.href = `/d/${images[currentIndex].id}`} className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors">
+                <Download className="w-4 h-4" /> Pobierz
+              </button>
+              <button className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors">
+                <Share2 className="w-4 h-4" /> Udostępnij
+              </button>
+            </div>
+          )}
+
+          <button onClick={onClose} className="p-2 text-white/70 hover:text-white transition-all">
+            <X className="w-7 h-7" />
+          </button>
+        </div>
+      </div>
+
+      {/* MAIN VIEW - usunięty AnimatePresence i ciężkie springi */}
+      <div className="relative flex-1 flex items-center justify-center touch-none overflow-hidden">
+        <button onClick={prevImage} className="hidden md:flex absolute left-4 z-30 p-4 text-white/20 hover:text-white transition-colors"><ArrowLeft className="w-8 h-8" /></button>
+
+        <motion.img
+          key={images[currentIndex].id}
+          src={imageCache[images[currentIndex].id]}
+          className="max-w-full max-h-[75vh] object-contain shadow-2xl"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -40) nextImage();
+            if (info.offset.x > 40) prevImage();
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }} // Szybki, lekki fade
+        />
+
+        <button onClick={nextImage} className="hidden md:flex absolute right-4 z-30 p-4 text-white/20 hover:text-white transition-colors"><ArrowRight className="w-8 h-8" /></button>
+      </div>
+
+      {/* MINIATURY - czyste i wycentrowane */}
+      <div className="h-24 flex items-center mb-4">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth w-full px-[50%]">
+          {images.map((img, i) => (
+            <button
+              key={img.id}
+              ref={(el) => (thumbnailRefs.current[i] = el)}
+              onClick={() => setCurrentIndex(i)}
+              className={`relative flex-shrink-0 transition-all duration-200 rounded-md overflow-hidden h-14 w-14 border-2 ${
+                i === currentIndex ? "border-white scale-110 opacity-100" : "border-transparent opacity-30"
               }`}
-              src={'/showThumbnail/'+img.id}
-              alt={img.original_name}
-            />
-          </div>
-        ))}
+            >
+              <img src={`/showThumbnail/${img.id}`} className="w-full h-full object-cover" alt="" />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

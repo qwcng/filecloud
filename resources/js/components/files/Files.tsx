@@ -435,7 +435,7 @@ export function FileModal({ file, onClose }: { file: FileData; onClose: () => vo
                 <Button onClick={() => setShowShareModal(true)} className="flex-1 gap-2 bg-indigo-600 hover:bg-indigo-700">
                   <Share className="h-4 w-4" /> Udostępnij
                 </Button>
-                <Button variant="outline" onClick={() => window.open(`d/${file.id}`, "_blank")} className="flex-1 gap-2">
+                <Button variant="outline" onClick={() => window.open(`/d/${file.id}`, "_blank")} className="flex-1 gap-2">
                 <Download className="h-4 w-4" /> Pobierz
               </Button>
               </>

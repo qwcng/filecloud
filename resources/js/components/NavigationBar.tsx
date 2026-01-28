@@ -139,12 +139,16 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
           onChange={handleFolderSelect}
           className="cursor-pointer border rounded p-2"
         />
-
+  {/* <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div> */}
         {data.files.length > 0 && (
           <div className="mt-2 max-h-48 overflow-y-auto space-y-1 border p-2 rounded">
             {data.files.map((file, i) => (
               <div key={i} className="flex justify-between items-center text-sm">
                 <span className="truncate">{file.webkitRelativePath}</span>
+                {/* loading animation */}
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500">
+
+                </div>
                 <button
                   type="button"
                   onClick={() => removeFile(i)}
