@@ -38,6 +38,7 @@ import {
 import { DialogBuilder } from "./DialogBuilder";
 import { toast } from "sonner";
 import { files } from "jszip";
+import { ref } from "process";
 
 interface NavigationBarProps {
   urlr: string;
@@ -60,10 +61,12 @@ export function NewFolder({ urlr, refreshData }: { urlr: string; refreshData: ()
         parent: urlr === "dashboard" ? null : urlr,
       },
       {
-        onSuccess: () => {
+        onSuccess: (page) => {
+          toast.success("Folder został utworzony!");
           refreshData();
           // Resetujemy nazwę po sukcesie (opcjonalnie)
           setFolderName("Nowy folder");
+          // refreshData();
         },
       }
     );

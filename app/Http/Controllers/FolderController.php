@@ -23,10 +23,10 @@ class FolderController extends Controller
             'parent_id' => $request->parent ? $request->parent : null,
         ]);
 
-        return response()->json([
-            'message' => 'true',
-            'folder' => $folder,
-        ]);
+        // return response()->json([
+        //     'message' => 'true',
+        //     'folder' => $folder,
+        // ]);
     }
    public function listFolders(Request $request, $parent = null)
 {

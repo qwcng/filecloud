@@ -340,28 +340,58 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
     </motion.div>
   );
 }
-export function FileModal({ file, onClose }: { file: FileData; onClose: () => void }) {
+
+
+// Zakładam, że te komponenty/narzędzia masz zaimportowane w projekcie
+// import { Button } from "./ui/button"; 
+// import { MusicPlayer } from "./MusicPlayer";
+// import { ShareModal } from "./ShareModal";
+// import { DialogBuilder } from "./DialogBuilder";
+// import { router } from "@inertiajs/react"; // lub inne narzędzie do routingu
+// import { toast } from "react-hot-toast";
+
+export function FileModal({ file, onClose }: { file: any; onClose: () => void }) {
   const [showShareModal, setShowShareModal] = useState(false);
+
+  // Zamykanie modala klawiszem Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+      {/* Tło (Backdrop) - Kliknięcie tutaj wywołuje onClose */}
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+        onClick={onClose}
+      >
+        {/* Kontener Modala - e.stopPropagation zapobiega zamykaniu przy kliknięciu wewnątrz */}
+        <div 
+          className="bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="p-4 border-b dark:border-neutral-800 flex justify-between items-center bg-gray-50 dark:bg-neutral-800/50">
             <h2 className="font-semibold truncate pr-8">{file.name}</h2>
-            <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-full transition-colors">
+            <button 
+              onClick={onClose} 
+              className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-full transition-colors"
+            >
               <X className="h-5 w-5" />
             </button>
           </div>
 
           <div className="overflow-y-auto p-6">
-            
-            
-            
+            {/* Preview Section */}
             <div className="mb-6 bg-gray-100 dark:bg-black rounded-lg flex items-center justify-center min-h-[200px]">
               {file.type === "mp3" && <MusicPlayer src={`/showFile/${file.id}`} title={file.name} />}
-              {file.type === "image" && <img src={`/showFile/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />}
+              {file.type === "image" && (
+                <img src={`/showFile/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />
+              )}
               {file.type === "video" && (
                 <video controls className="w-full max-h-80">
                   <source src={`/showFile/${file.id}`} type="video/mp4" />
@@ -380,76 +410,72 @@ export function FileModal({ file, onClose }: { file: FileData; onClose: () => vo
 
             {/* Actions */}
             <div className="flex gap-3 mb-8">
-              {file.deleted ? 
-              <>
-                <Button onClick={() => {
-                  router.post(`/restoreFile/${file.id}`, {}, {
-                    onSuccess: () => {
-                      toast.success('Plik został przywrócony!');
-                      onClose();
-
-                    }
-                  });
-                }} className="flex-1 gap-2 ">
-                  <ArrowUpLeftSquareIcon className="h-4 w-4" /> Przywróć
-                </Button>
-                {/* <Button variant="destructive" onClick={async () => {
-                  if (confirm(`Czy na pewno chcesz trwale usunąć plik "${file.name}"?`)) {
-                    try {
-                      await router.delete(`/files/${file.id}`);
-                      toast.success('Plik został trwale usunięty.');
-                      onClose();
-                    } catch (error) {
-                      console.error('Błąd podczas usuwania pliku:', error);
-                      alert('Wystąpił błąd podczas usuwania pliku.');
-                    }
-                  }
-                }} className="flex-1 gap-2 ">
-                  <Trash2Icon className="h-4 w-4" /> Usuń na stałe
-                </Button> */}
-                <DialogBuilder 
-                  dialogTrigger={<Button variant="destructive" className="flex-1 gap-2 "> Usuń na stałe</Button>}
-                  dialogTitle="Usuń plik na stałe"
-                  dialogDescription={`Czy na pewno chcesz trwale usunąć plik "${file.name}"? Operacji tej nie można cofnąć.`}
-                  onSave={async () => {
-                    try {
-                      await router.delete(`/pernamentlyDeleteFile/${file.id}`);
-                      toast.success('Plik został trwale usunięty.');
-                      onClose();
-                    } catch (error) {
-                      console.error('Błąd podczas usuwania pliku:', error);
-                      alert('Wystąpił błąd podczas usuwania pliku.');
-                    } 
-                  }}
-                  saveButtonText="Usuń"
-                >
-                
-                    
-                
-                  {/* Czy na pewno chcesz trwale usunąć ten plik? Operacji tej nie można cofnąć. */}
-                  </DialogBuilder>
-
-              </>
-              : (
+              {file.deleted ? (
                 <>
-                <Button onClick={() => setShowShareModal(true)} className="flex-1 gap-2 bg-indigo-600 hover:bg-indigo-700">
-                  <Share className="h-4 w-4" /> Udostępnij
-                </Button>
-                <Button variant="outline" onClick={() => window.open(`/d/${file.id}`, "_blank")} className="flex-1 gap-2">
-                <Download className="h-4 w-4" /> Pobierz
-              </Button>
-              </>
+                  <Button 
+                    onClick={() => {
+                      router.post(`/restoreFile/${file.id}`, {}, {
+                        onSuccess: () => {
+                          toast.success('Plik został przywrócony!');
+                          onClose();
+                        }
+                      });
+                    }} 
+                    className="flex-1 gap-2"
+                  >
+                    <ArrowUpLeftSquareIcon className="h-4 w-4" /> Przywróć
+                  </Button>
+
+                  <DialogBuilder 
+                    dialogTrigger={<Button variant="destructive" className="flex-1 gap-2">Usuń na stałe</Button>}
+                    dialogTitle="Usuń plik na stałe"
+                    dialogDescription={`Czy na pewno chcesz trwale usunąć plik "${file.name}"? Operacji tej nie można cofnąć.`}
+                    onSave={async () => {
+                      try {
+                        await router.delete(`/pernamentlyDeleteFile/${file.id}`);
+                        toast.success('Plik został trwale usunięty.');
+                        onClose();
+                      } catch (error) {
+                        console.error('Błąd podczas usuwania pliku:', error);
+                        alert('Wystąpił błąd podczas usuwania pliku.');
+                      } 
+                    }}
+                    saveButtonText="Usuń"
+                  />
+                </>
+              ) : (
+                <>
+                  <Button 
+                    onClick={() => setShowShareModal(true)} 
+                    className="flex-1 gap-2 bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    <Share className="h-4 w-4" /> Udostępnij
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => window.open(`/d/${file.id}`, "_blank")} 
+                    className="flex-1 gap-2"
+                  >
+                    <Download className="h-4 w-4" /> Pobierz
+                  </Button>
+                </>
               )}
-              
-             
-              
             </div>
 
             {/* Details Table */}
             <div className="space-y-3 text-sm border-t dark:border-neutral-800 pt-4">
-              <div className="flex justify-between"><span className="text-gray-500">Typ:</span> <span className="font-medium">{file.type}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Rozmiar:</span> <span className="font-medium">{(file.size /100000).toPrecision(2)} MB</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Data dodania:</span> <span className="font-medium">{file.created_at}</span></div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Typ:</span> 
+                <span className="font-medium">{file.type}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Rozmiar:</span> 
+                <span className="font-medium">{(file.size / 1000000).toFixed(2)} MB</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Data dodania:</span> 
+                <span className="font-medium">{file.created_at}</span>
+              </div>
             </div>
           </div>
         </div>

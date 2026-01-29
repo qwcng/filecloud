@@ -320,7 +320,14 @@ public function filesByType(Request $request, $type)
         $files = UserFile::where('user_id', $request->user()->id)
         ->whereIn('mime_type', $newType)
         ->orderBy('created_at', 'desc')
-        ->get();
+        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'is_favorite']);
+    }
+    if($type === 'document'){
+        $newType = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];
+        $files = UserFile::where('user_id', $request->user()->id)
+        ->whereIn('mime_type', $newType)
+        ->orderBy('created_at', 'desc')
+        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'is_favorite']);
     }
     // $files = UserFile::where('user_id', $request->user()->id)
     //     ->where('mime_type', $type)

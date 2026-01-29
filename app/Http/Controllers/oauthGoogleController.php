@@ -26,7 +26,7 @@ class oauthGoogleController extends Controller
         ], [
             'name' => $googleUser->name,
             'google_id' => $googleUser->id,
-            'password' => bcrypt(Str::random(16)), // Hasło nie będzie używane, ale jest wymagane w bazie
+            'password' => bcrypt(Str::random(16)),
         ]);
 
         Auth::login($user);
