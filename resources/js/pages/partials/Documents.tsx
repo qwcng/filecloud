@@ -20,7 +20,7 @@ export function DocumentCard({
     if (['xls', 'xlsx', 'csv'].includes(ext!)) return <FileGeneric className="text-green-600" />;
     return <FileGeneric className="text-neutral-400" />;
   };
-
+//just a comment for commit
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
