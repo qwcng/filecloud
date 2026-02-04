@@ -42,7 +42,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: "Pliki", href: dashboard().url },
 ];
 
-export function FileCard({ file, onClick, refreshData }: { file: FileData; onClick: () => void; refreshData: (id: number) => void }) {
+export function FileCard({ file, onClick, refreshData, sharing=false }: { file: FileData; onClick: () => void; refreshData: (id: number) => void; sharing:boolean }) {
   const icons: Record<FileData["type"], JSX.Element> = {
     image: <FileImage className="mx-auto mb-2 h-20 w-20 text-blue-500" />,
     pdf: <FileText className="mx-auto mb-2 h-20 w-20 text-red-500" />,
@@ -129,12 +129,15 @@ export function FileCard({ file, onClick, refreshData }: { file: FileData; onCli
         onClick={onClick}
         className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer flex flex-col items-center"
       >
-        {file.type === "image" ?  
-        <img src={`/showThumbnail/${file.id}`} alt={file.name} className="mx-auto  h-24 w-24 object-cover rounded" />
-        : (
-          icons[file.type]
-        )
-        }
+       {file.type === "image" ? (
+            <img
+              src={sharing ? `/share/file/${file.id}/thumbnail` : `/showThumbnail/${file.id}`}
+              alt={file.name}
+              className="h-24 w-24 object-cover rounded shadow-sm"
+            />
+          ) : (
+            icons[file.type] || icons.other
+          )}
        
         
         <h3 className="text-lg  text-center   font-medium w-[80%] h-6 overflow-hidden whitespace-nowrap text-ellipsis">{file.name}</h3>

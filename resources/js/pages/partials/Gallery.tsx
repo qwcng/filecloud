@@ -80,7 +80,7 @@ export function ImageCard({
 
 
 
-export function Gallerye({ images, initialIndex, onClose }: { images: any[]; initialIndex: number; onClose: () => void }) {
+export function Gallerye({ images, initialIndex, onClose,sharing = false }: { images: any[]; initialIndex: number; onClose: () => void, sharing:boolean }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [imageCache, setImageCache] = useState<{ [key: number]: string }>({});
   const [fileAction, setFileAction] = useState(false);
@@ -104,6 +104,7 @@ export function Gallerye({ images, initialIndex, onClose }: { images: any[]; ini
     
     // Prosty fetch bez zbędnej logiki
     const currentImage = images[currentIndex];
+    if(!sharing){
     if (currentImage && !imageCache[currentImage.id]) {
       fetch(`/showFile/${currentImage.id}`)
         .then((res) => res.blob())
@@ -111,6 +112,16 @@ export function Gallerye({ images, initialIndex, onClose }: { images: any[]; ini
           const url = URL.createObjectURL(blob);
           setImageCache((prev) => ({ ...prev, [currentImage.id]: url }));
         });
+    }}
+    else{
+      if (currentImage && !imageCache[currentImage.id]) {
+      fetch(`/share/file/${currentImage.id}`)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          setImageCache((prev) => ({ ...prev, [currentImage.id]: url }));
+        });
+    }
     }
   }, [currentIndex]);
 
@@ -198,7 +209,11 @@ export function Gallerye({ images, initialIndex, onClose }: { images: any[]; ini
                 i === currentIndex ? "border-white scale-110 opacity-100" : "border-transparent opacity-30"
               }`}
             >
-              <img src={`/showThumbnail/${img.id}`} className="w-full h-full object-cover" alt="" />
+              {sharing?(
+              <img src={`/share/file/${img.id}/thumbnail`} className="w-full h-full object-cover" alt="" />
+              ):(
+                <img src={`/showThumbnail/${img.id}`} className="w-full h-full object-cover" alt="" />
+              )}
             </button>
           ))}
         </div>

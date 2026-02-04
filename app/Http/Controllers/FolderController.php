@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Folder;
-use Illuminate\Container\Attributes\Storage;
+// use Illuminate\Container\Attributes\Storage;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\DeleteFolderJob;
+use App\Models\SavedFolder;
 use Illuminate\Support\Facades\DB;
 class FolderController extends Controller
 {
@@ -30,29 +32,70 @@ class FolderController extends Controller
     }
    public function listFolders(Request $request, $parent = null)
 {
-    if ($parent === 'dashboard' || $parent === null) {
-        $parent = null;
+    $user = $request->user();
+
+    // 1. Obsługa zakładki "Udostępnione dla mnie"
+    if ($parent === 'sahar') {
+        $savedFolders = SavedFolder::where('user_id', $user->id)
+            ->where('active', true)
+            ->with('folder') // ładujemy relację do oryginalnego folderu
+            ->get()
+            ->map(function ($saved) {
+                $folder = $saved->folder;
+                return [
+                    'id' => $folder->id,
+                    'name' => $folder->name,
+                    'created_at' => $saved->created_at, // data zapisu
+                    'files_count' => $folder->recursiveFilesCount(),
+                    'is_shared' => true // flaga dla UI
+                ];
+            });
+
+        return response()->json($savedFolders);
     }
 
-    // wczytujemy całe drzewo folderów + pliki
-    $folders = Folder::where('user_id', $request->user()->id)
-        ->where('parent_id', $parent)
-        ->with(['children.children.children', 'children.files', 'files'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+    // 2. Normalizacja parent_id
+    if ($parent === 'dashboard' || $parent === null) {
+        $parentId = null;
+    } else {
+        $parentId = $parent;
+    }
 
-    // dodajemy total_files_count
-    $folders = $folders->map(function ($folder) {
+    // 3. Sprawdzenie dostępu do podfolderów
+    // Jeśli nie jesteśmy w root (null), sprawdzamy czy mamy prawo widzieć dzieci tego folderu
+    if ($parentId !== null) {
+        $isOwner = Folder::where('id', $parentId)->where('user_id', $user->id)->exists();
+        $isSaved = SavedFolder::where('folder_id', $parentId)->where('user_id', $user->id)->exists();
+
+        if (!$isOwner && !$isSaved) {
+            return response()->json(['message' => 'Brak dostępu'], 403);
+        }
+    }
+
+    // 4. Pobieranie folderów
+    $query = Folder::where('parent_id', $parentId);
+
+    if ($parentId === null) {
+        // W głównym widoku pokazujemy tylko MOJE foldery
+        $query->where('user_id', $user->id);
+    } else {
+        // Wewnątrz konkretnego folderu pokazujemy wszystkie jego dzieci 
+        // (niezależnie od ownera, bo dostęp sprawdziliśmy wyżej)
+    }
+
+    $folders = $query->orderBy('created_at', 'desc')->get();
+
+    // 5. Mapowanie danych
+    $result = $folders->map(function ($folder) {
         return [
             'id' => $folder->id,
             'name' => $folder->name,
             'created_at' => $folder->created_at,
-            'filesCount' => $folder->files()->count(), // lokalne
-            'files_count' => $folder->recursiveFilesCount() // rekurencyjne
+            'files_count' => $folder->recursiveFilesCount()
         ];
     });
 
-    return response()->json($folders);
+    return response()->json($result);
 }
     private function deleteFolderRecursively(Folder $folder){
     // Usuń wszystkie pliki w tym folderze

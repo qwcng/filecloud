@@ -4,7 +4,8 @@
 
     use App\Models\UserFile;
     use App\Models\Folder;
-    use Illuminate\Http\Request;
+use App\Models\SavedFolder;
+use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Storage;
     use Inertia\Inertia;
     use App\Models\SharedFile;
@@ -29,22 +30,42 @@
         }
 
         public function folder(Request $request, $folder)
-        {   
-            if ($folder === 'dashboard') {
-                $folderr = null;
-            }
-            else {
-                $folderr = $folder;
-            }
-            $files = UserFile::where('user_id', $request->user()->id)
-                ->where('folder_id', $folderr)
-                ->orderBy('created_at', 'desc')
-                ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
+{   
+    // 1. Ustalenie ID folderu (standardowo u Ciebie)
+    $folderId = ($folder === 'dashboard') ? null : $folder;
 
-            return response()->json([
-                'files' => $files
-            ]);
+    // 2. Sprawdzenie dostępu, jeśli to nie jest root (null)
+    if ($folderId !== null) {
+        $isOwner = Folder::where('id', $folderId)
+            ->where('user_id', $request->user()->id)
+            ->exists();
+
+        $isSaved = SavedFolder::where('folder_id', $folderId)
+            ->where('user_id', $request->user()->id)
+            ->where('active', true)
+            ->exists();
+
+        // Jeśli nie mój i nie zapisany -> brak dostępu
+        if (!$isOwner && !$isSaved) {
+            return response()->json(['message' => 'Nie masz uprawnień do tego folderu'], 403);
         }
+    }
+
+    // 3. Pobieranie plików 
+    // UWAGA: Musimy pobrać pliki z tego folderu, niezależnie od tego, kto jest ich właścicielem
+    // (bo w zapisanym folderze pliki należą do twórcy folderu, a nie do Ciebie)
+    $files = UserFile::where('folder_id', $folderId)
+        ->when($folderId === null, function ($query) use ($request) {
+            // Jeśli root (null), pokazujemy tylko MOJE pliki
+            return $query->where('user_id', $request->user()->id);
+        })
+        ->orderBy('created_at', 'desc')
+        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
+
+    return response()->json([
+        'files' => $files
+    ]);
+}
 
 
         public function uploadFile(Request $request)

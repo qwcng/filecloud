@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Head } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Toaster } from '@/components/ui/sonner';
 import { FileCard, FileModal } from '@/components/files/Files';
-import { Gallery, Gallerye } from './partials/Gallery';
+import { Gallerye } from './partials/Gallery';
+import { Button } from '@/components/ui/button';
 
 interface FileData {
     id: number;
@@ -14,18 +15,34 @@ interface FileData {
     size: string;
     created_at: string;
     is_favorite: boolean;
-    type?: string; // Dodane dla zgodności z mapowaniem
+    type?: string;
     name?: string;
     url?: string;
 }
 
+// Prosty kontener dla osób niezalogowanych - brak Sidebaru
+const GuestLayout = ({ children }: { children: React.ReactNode }) => (
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 flex flex-col">
+        {/* <header className="h-16 border-b dark:border-neutral-800 bg-white dark:bg-neutral-900 flex items-center px-6">
+            <span className="text-lg font-bold dark:text-white">CloudShare</span>
+        </header> */}
+        <main className="flex-1 container mx-auto p-4 lg:p-8">
+            {children}
+        </main>
+    </div>
+);
+
 export default function SharedFolder({ folderId }: { folderId: string }) {
+    // Pobieramy dane o autoryzacji z Inertia
+    const { auth } = usePage().props as any;
+    const isLogged = !!auth.user;
+
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState<FileData[] | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [gallery,setGallery] = useState<boolean>(false);
-    const[selectedFile,setSelectedFile]= useState<FileData>();
+    const [gallery, setGallery] = useState<boolean>(false);
+    const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const handleChange = (value: string, index: number) => {
@@ -96,13 +113,30 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
         }
     };
 
-    // Automatyczna weryfikacja po wypełnieniu wszystkich pól
     useEffect(() => {
         if (code.every(char => char !== '')) {
             handleVerify();
         }
     }, [code]);
 
+    const closeGallery = () => setGallery(false);
+
+    const handleClick = (file: FileData) => {
+        if (file.type === "image") {
+            setGallery(true);
+        } else {
+            setSelectedFile(file);
+        }
+    };
+
+    // Wybór layoutu na podstawie zalogowania
+    const Layout = isLogged ? AppLayout : GuestLayout;
+    const handleFolderSave = ()=>{
+        router.post(`/saveSharedFolder/${folderId}`,{
+            access_code: code.join('')
+        })
+    }
+    // EKRAN WPISYWANIA KODU (zawsze bez sidebaru)
     if (!files) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950 py-12 px-4">
@@ -149,26 +183,28 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
             </div>
         );
     }
-    const closeGallery = () => {
-        setGallery(!gallery)
-    }
-    const handleClick=(file)=>{
-        if(file.type === "image"){
-            setGallery(true);
-        }
-        else{
-            setSelectedFile(file)
-        }
-    }
+
+    // WIDOK PLIKÓW (z layoutem zależnym od logowania)
     return (
-        <AppLayout>
+        <Layout>
             <Head title="Udostępnione Pliki" />
             <Toaster position="top-center" richColors />
             
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl font-bold dark:text-white">Udostępnione pliki</h1>
-                    <p className="text-sm text-muted-foreground">Masz dostęp do poniższych zasobów.</p>
+                    <p className="text-sm text-muted-foreground">
+                        {isLogged ? "Przeglądasz pliki jako zalogowany użytkownik." : "Masz dostęp do poniższych zasobów."}
+                        
+                    </p>
+                    {isLogged?(
+                            <>
+                            <Button variant={"outline"} onClick={handleFolderSave}> Zapisz Folder</Button>
+                            </>
+                        ):(
+                            <>
+                            </>
+                        )}
                 </div>
 
                 <div className="flex flex-wrap gap-4 lg:justify-start justify-center mt-4">
@@ -178,15 +214,22 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
                         </div>
                     ) : (
                         files.map((file) => (
-                            <FileCard key={file.id} file={file as any} onClick={()=>{handleClick(file)}}/>
+                            <FileCard key={file.id} file={file as any} onClick={() => handleClick(file)} sharing={true} />
                         ))
                     )}
+
                     {selectedFile && <FileModal file={selectedFile} onClose={() => setSelectedFile(null)} />}
+                    
                     {gallery && (
-                   <Gallerye images={files.filter(file => file.type === 'image')} initialIndex={0} onClose={closeGallery} />
+                        <Gallerye 
+                            images={files.filter(file => file.type === 'image')} 
+                            initialIndex={0} 
+                            onClose={closeGallery} 
+                            sharing={true} 
+                        />
                     )}
-                   </div>
+                </div>
             </div>
-        </AppLayout>
+        </Layout>
     );
 }

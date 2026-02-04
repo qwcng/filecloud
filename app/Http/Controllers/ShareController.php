@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Folder;
+use App\Models\SavedFolder;
 use App\Models\SharedFile;
 use App\Models\SharedFolder;
 use App\Models\UserFile;
@@ -218,7 +219,7 @@ class ShareController extends Controller
             ['folder_id' => $folderId],
             [
                 'user_id' => auth()->id(),
-                'access_code' => '123456',
+                'access_code' => $request->accesscode,
                 'active' => true,
                 'expires_at' => $request->expires_in
                     ? Carbon::now()->addHours($request->expires_in)
@@ -255,6 +256,7 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
     if (!$folder) {
         return response()->json(['message' => 'Kod dostępu jest nieprawidłowy lub link wygasł.'], 403);
     }
+    
 
     // 2. Pobierz pliki z tego folderu w wymaganym formacie
     $files = $folder->files()
@@ -270,8 +272,8 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
                 'is_favorite'   => (bool)$file->is_favorite,
             ];
         });
-
-    return response()->json($files);
+        session()->put("folder_access_{$folder->id}", true);
+        return response()->json($files);
 }
     public function getSharedFolders(Request $request){
         $folders = SharedFolder::where('user_id', $request->user()->id)
@@ -280,4 +282,55 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
         ;
         return response()->json($folders);
     }
+    public function showSharedFiles(UserFile $file)
+    {
+    // Tutaj już nie sprawdzamy auth(), bo middleware sprawdziło sesję folderu
+    $path = Storage::disk('private')->path($file->path);
+    
+    return response()->file($path, [
+        'Content-Disposition' => 'inline',
+        'Cache-Control' => 'private, max-age=3600',
+    ]);
+    }
+    public function showSharedFilesThumbnail(UserFile $file)
+    {
+    // Tutaj już nie sprawdzamy auth(), bo middleware sprawdziło sesję folderu
+    $path = Storage::disk('private')->path($file->thumbnail);
+    
+    return response()->file($path, [
+        'Content-Disposition' => 'inline',
+        'Cache-Control' => 'private, max-age=3600',
+    ]);
+    }
+public function saveSharedFolder(Request $request, $folderId) 
+{
+    // 1. Sprawdzasz czy link udostępniania istnieje i czy kod pasuje
+    $share = SharedFolder::where('folder_id', $folderId)
+        ->where('access_code', $request->access_code)
+        ->first();
+
+    if (!$share) {
+        return response()->json(['message' => 'Nieprawidłowy kod dostępu'], 403);
+    }
+
+    // 2. Zapisujesz folder dla użytkownika (używając nowej tabeli)
+    // updateOrCreate zapobiega duplikatom, jeśli user kliknie dwa razy
+    $saved = SavedFolder::updateOrCreate(
+        [
+            'user_id' => auth()->id(),
+            'folder_id' => $folderId
+        ],
+        [
+            'active' => true // jeśli wcześniej był nieaktywny, ustawiamy na true
+        ]
+    );
+
+    return response()->json([
+        'message' => 'Folder został zapisany w Twojej kolekcji',
+        'folder' => $saved->load('folder') // od razu zwracamy dane folderu
+    ]);
+}
+public function getSavedFolders(){
+    
+}
 }

@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ShareController;
-
+use App\Http\Middleware\CheckFolderAccess;
 Route::get('/share/{fileId}', [ShareController::class, 'shareFile'])->name('shareFile');
 Route::post('/share/{fileId}/check', [ShareController::class, 'checkAccessCode'])->name('checkAccessCode');
 Route::get('/share/{fileId}/show', [ShareController::class, 'showSharedFile'])->name('showSharedFile');
@@ -26,3 +26,14 @@ Route::post('/folderShare/{folderId}/share', [ShareController::class, 'shareFold
 Route::post('/folderShare/{folderId}/check', [ShareController::class, 'getSharedFilesFromFolder'])->name('checkFolderAccessCode');
 Route::get('/folderShare/{folderId}/show', [ShareController::class, 'showSharedFolder'])->name('showSharedFolder');
 Route::get('/getSharedFolders', [ShareController::class, 'getSharedFolders']);
+Route::get('/share/file/{file}', [ShareController::class, 'showSharedFiles'])
+    ->name('file.shared.show')
+    ->middleware(CheckFolderAccess::class);
+Route::get('/share/file/{file}', [ShareController::class, 'showSharedFiles'])
+    ->name('file.shared.show')
+    ->middleware(CheckFolderAccess::class);
+Route::get('/share/file/{file}/thumbnail', [ShareController::class, 'showSharedFilesThumbnail'])
+    ->name('file.shared.show')
+    ->middleware(CheckFolderAccess::class);
+
+Route::post('/saveSharedFolder/{folderId}',[ShareController::class,'saveSharedFolder'] );

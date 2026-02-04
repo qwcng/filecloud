@@ -80,7 +80,7 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
 
   const handleShare = (folder)=>{
     router.post(`/folderShare/${folder}/share`,{
-      access_code : accesCode
+      accesscode : accesCode
     },
   {
     onSuccess:()=>{
