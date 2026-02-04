@@ -1,4 +1,4 @@
-  import { useState, useEffect, useRef, useMemo } from "react";
+  import { useState, useEffect, useRef, useMemo, useCallback } from "react";
   import { Head, router,useForm,Link  } from "@inertiajs/react";
   import AppLayout from "@/layouts/app-layout";
   import { type BreadcrumbItem } from "@/types";
@@ -60,7 +60,7 @@ import HttpApi from "i18next-http-backend";
 import i18n from "i18next";
 import { NewFile, NewFolder, UploadFilesDialog, UploadFolderDialog } from "@/components/NavigationBar";
 import { FullScreenDrop } from "@/components/custom/FullScreenDrop";
-
+import debounce from 'lodash/debounce';
   const url = window.location.pathname;
   let fileName = url.split("/").pop();
 
@@ -120,6 +120,7 @@ i18n
     const [foldersLoading, setFoldersLoading] = useState(true);
     const [filesLoading, setFilesLoading] = useState(true);
     const [sorting,setSorting] = useState(localStorage.getItem("sorting") || 'dateDesc');
+    const [searchTerm, setSearchTerm] = useState("");
     // const [sortedFiles,setSortedFiles] = useState<FileData[]>([]);
           
     
@@ -144,7 +145,34 @@ const refreshData = () => {
       console.log("Current URL segment:", urlr);
 
     }, [ urlr,refreshTrigger]);
+    const debouncedSearch = useCallback(
+  debounce((query: string) => {
+    if (query.length > 1) {
+      axios.get(`/search/${query}`).then((response) => {
+        const mappedFiles: FileData[] = response.data.map((f: any) => ({
+          id: f.id,
+          name: f.original_name,
+          type: mapMimeToType(f.mime_type),
+          size: f.size,
+          created_at: f.created_at,
+          url: f.url,
+        }));
 
+        setFiles(mappedFiles);
+        console.log("Search resultss:", mappedFiles);
+      }).catch(err => console.error("Search error:", err));
+    } else if (query.length === 0) {
+      refreshData();
+    }
+  }, 300), // Czekaj 300ms po ostatnim klawiszu
+  []
+);
+
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  setSearchTerm(value); // Aktualizujemy input natychmiast, żeby nie było laga w UI
+  debouncedSearch(value.toLowerCase());
+};
     const mapMimeToType = (mime: string): FileData["type"] => {
       if (mime.startsWith("image/")) return "image";
       if (mime.startsWith("audio/")) return "mp3";
@@ -365,41 +393,15 @@ const sortedFiles = useMemo(() => {
       </SelectContent>
     </Select>
         </div>
-<Input 
-    type="text" 
-    placeholder={t("searchPlaceholder") || 'Szukaj plików...'} 
-    className="max-w-sm" 
-    onChange={(e) => {
-      const query = e.target.value.toLowerCase();
-      
-      if (query.length > 1) { // Szukaj tylko gdy są min. 2 znaki
-        axios.get(`/search/${query}`).then((response) => {
-          const mappedFiles: FileData[] = response.data.map((f: any) => ({
-                    id: f.id,
-          name: f.original_name,
-          type: mapMimeToType(f.mime_type),
-          size: f.size,
-          created_at: f.created_at,
-          url: f.url,
-        
-          }));
+    <Input 
+      type="text" 
+      value={searchTerm}
+      placeholder={t("searchPlaceholder") || 'Szukaj plików...'} 
+      className="max-w-sm" 
+      onChange={handleSearchChange}
+    />
+    {/* <Button variant={"outline"} className="w-5 "><</Button>    */}
           
-          // Kluczowe: aktualizujemy oba stany, aby sortowanie i widok się zgadzały
-          setFiles(mappedFiles);
-          setSortedFiles(mappedFiles); 
-        });
-      } else if (query.length === 0) {
-        // Jeśli wyczyścimy szukajkę, odświeżamy dane folderu
-        refreshData();
-      }
-    }} 
-  />
-    
-          <Input type="text" placeholder={ 'Szukaj plików...'} className="ml-4 max-w-sm inline-block" onChange={(e)=>{
-            const query = e.target.value.toLowerCase();
-            const filteredFiles = files.filter(file => file.name.toLowerCase().includes(query));
-            setSortedFiles(filteredFiles);
-          }} />
           <Button onClick={() => selecting ? setSelecting(false) : setSelecting(true)}
           className="w-34  "
           variant={"outline"}>
@@ -449,7 +451,7 @@ const sortedFiles = useMemo(() => {
                 }
               }}> Usuń zaznaczone pliki</button>
             </>
-          ) : null}
+          ) : null} 
           <div className="flex flex-wrap gap-4 lg:justify-start justify-center sm:">
             <UploadFolderCard folderName={urlr} refreshData={refreshData} />
              {/* <FolderCard folderName="Nowy Folder" /> */}

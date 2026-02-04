@@ -9,6 +9,26 @@ import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Hea
 import AppLogo from './app-logo';
 import { NavMainGallery } from './nav-gallery';
 import { Input } from './ui/input';
+import { useContext } from 'react';
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpApi from "i18next-http-backend";
+import i18n from "i18next";
+i18n
+  .use(HttpApi)                  // 🔥 musisz włączyć backend
+  .use(initReactI18next)
+  .init({
+    supportedLngs: ["en", "pl","ru","fr"],
+    fallbackLng: "en",
+    lng: localStorage.getItem("lang") || "pl",
+
+    backend: {
+      loadPath: "/locales/{{lng}}/translation.json"
+    },
+
+    interpolation: {
+      escapeValue: false
+    }
+  });
 
 const mainNavItems: NavItem[] = [
     {
@@ -75,6 +95,7 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const {t, i18n} = useTranslation();
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

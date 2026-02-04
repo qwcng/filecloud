@@ -1,7 +1,7 @@
 import React from "react";
 // import { useState, useEffect, useRef } from "react";
 import { Head, router, useForm, Link } from "@inertiajs/react";
-import { Edit2Icon, EllipsisVertical, Trash2Icon, X } from "lucide-react";
+import { Edit2Icon, EllipsisVertical, Share, Trash2Icon, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -31,12 +31,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { DialogBuilder } from "../DialogBuilder";
 
 
 export function FolderCard({ folderName, href, onFolderClick, folderId, filesCount }: { folderName: string; href: string; onFolderClick: () => void; folderId: number; filesCount: number }) {
   const [optionVisible, setOptionVisible] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDivElement>(null);
+  const[accesCode,setAccesCode]= useState()
 
   const handleContextClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -76,6 +78,17 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
 
+  const handleShare = (folder)=>{
+    router.post(`/folderShare/${folder}/share`,{
+      access_code : accesCode
+    },
+  {
+    onSuccess:()=>{
+      console.log("Pomyślnie udostepniono plik")
+    }
+  })
+
+  }
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -175,6 +188,24 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
           </DialogFooter>
         </DialogContent>
     </Dialog>
+            <li>
+              <DialogBuilder
+              dialogTrigger={ <li className="flex items-center cursor-pointer mt-2 hover:text-red-500">
+                          <Share className="inline-block mr-2" /> Udostępnij
+                      </li>}
+              dialogTitle="Czy chcesz udostępnić cały folder?"
+              dialogDescription={`Czy aby napewno chcesz udostępnić folder ${folderName}?`}
+              saveButtonText="Udostępnij"
+              onSave={()=>handleShare(folderId)}
+              >
+                <>
+                <h3>Podaj kod dostępu</h3>
+                <Input type="number" onChange={(e)=>{setAccesCode(e.target.value)}}/>
+                
+
+                </>
+              </DialogBuilder>
+            </li>
              <AlertDialog>
                   <AlertDialogTrigger asChild>
                       <li className="flex items-center cursor-pointer mt-2 hover:text-red-500">

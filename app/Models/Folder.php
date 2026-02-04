@@ -31,7 +31,12 @@ class Folder extends Model
     foreach ($this->children as $child) {
         $count += $child->recursiveFilesCount(); // pliki w podfolderach
     }
+    
 
     return $count;
 }
+    public function sharedFolder()
+    {
+        return $this->hasOne(SharedFolder::class, 'folder_id');
+    }
 }

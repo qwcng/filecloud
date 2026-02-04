@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Folder;
 use App\Models\SharedFile;
+use App\Models\SharedFolder;
 use App\Models\UserFile;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -63,9 +65,9 @@ class ShareController extends Controller
             ->where('active', true)
             ->first();
 
-        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
-            abort(404, 'Link nieaktywny');
-        }
+        // if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+        //     abort(404, 'Link nieaktywny');
+        // }
 
         return Inertia::render('ShareFile', [
             'fileId' => $file->id,
@@ -83,9 +85,9 @@ class ShareController extends Controller
             ->where('active', true)
             ->first();
 
-        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
-            // return response()->json(['success' => false, 'message' => 'Link wygasł'], 403);
-        }
+        // if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+        //     // return response()->json(['success' => false, 'message' => 'Link wygasł'], 403);
+        // }
 
         if ($share->access_code !== $request->code) {
             // return response()->json(['success' => false, 'message' => 'Niepoprawny kod'], 403);
@@ -112,9 +114,9 @@ class ShareController extends Controller
             ->where('active', true)
             ->first();
 
-        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
-            abort(403, 'Link nieaktywny');
-        }
+        // if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+        //     abort(403, 'Link nieaktywny');
+        // }
 
         if ($share->access_code !== $code) {
             abort(403, 'Niepoprawny kod dostępu');
@@ -135,9 +137,9 @@ class ShareController extends Controller
             ->where('active', true)
             ->first();
 
-        if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
-            abort(403, 'Link nieaktywny');
-        }
+        // if (!$share || ($share->expires_at && $share->expires_at->isPast())) {
+        //     abort(403, 'Link nieaktywny');
+        // }
 
         if ($share->access_code !== $code) {
             abort(403, 'Niepoprawny kod dostępu');
@@ -203,5 +205,79 @@ class ShareController extends Controller
 
         return response()->json(['message' => 'Kod dostępu zaktualizowany']);
     }
-    
+    public function shareFolder(Folder $folder, Request $request, $folderId)
+    {
+        // if($folder->user_id !== auth()->id()) {
+        //     abort(403);
+        // }
+       $request->validate([
+            // 'access_code' => 'required|string|size:6',
+            'expires_in' => 'nullable', // liczba godzin
+        ]);
+        SharedFolder::updateOrCreate(
+            ['folder_id' => $folderId],
+            [
+                'user_id' => auth()->id(),
+                'access_code' => '123456',
+                'active' => true,
+                'expires_at' => $request->expires_in
+                    ? Carbon::now()->addHours($request->expires_in)
+                    : null,
+            ]
+        );
+        return response()->json([
+            'message' => 'Folder został udostępniony',
+            // 'share_url' => route('createFolderShare', $folder->id),
+            // 'access_code' => $share->access_code,
+            // 'expires_at' => $share->expires_at,
+        ]);
+      
+    }
+public function getSharedFilesFromFolder(Request $request, $folderId)
+{
+    // Walidacja - upewniamy się, że kod został przesłany
+    $request->validate([
+        'access_code' => 'required|string',
+    ]);
+
+    // 1. Znajdź folder sprawdzając dostęp, ważność i poprawność kodu
+    $folder = Folder::where('id', $folderId)
+        ->whereHas('sharedFolder', function ($query) use ($request) {
+            $query->where('active', true)
+                  ->where('access_code', $request->access_code) // Weryfikacja kodu
+                  ->where(function ($q) {
+                      $q->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                  });
+        })->first();
+
+    // Jeśli nie znaleziono folderu (zły kod, nieaktywny lub wygasł)
+    if (!$folder) {
+        return response()->json(['message' => 'Kod dostępu jest nieprawidłowy lub link wygasł.'], 403);
+    }
+
+    // 2. Pobierz pliki z tego folderu w wymaganym formacie
+    $files = $folder->files()
+        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'is_favorite'])
+        ->map(function ($file) {
+            return [
+                'id'            => $file->id,
+                'original_name' => $file->original_name,
+                'path'          => $file->path,
+                'mime_type'     => $file->mime_type,
+                'size'          => number_format($file->size / 1024 / 1024, 2) . ' MB',
+                'created_at'    => $file->created_at->toDateTimeString(),
+                'is_favorite'   => (bool)$file->is_favorite,
+            ];
+        });
+
+    return response()->json($files);
+}
+    public function getSharedFolders(Request $request){
+        $folders = SharedFolder::where('user_id', $request->user()->id)
+        ->get()
+
+        ;
+        return response()->json($folders);
+    }
 }

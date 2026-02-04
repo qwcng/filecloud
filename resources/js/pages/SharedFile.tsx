@@ -31,6 +31,8 @@ import { router } from "@inertiajs/react";
 import QrCodeGenerator from "@/components/QRcodeGenerator";
 import QRCodeStyling from "qr-code-styling";
 import OpenSharedLink from "@/components/OpenSharedLink";
+import { FolderCard } from "@/components/files/Folders";
+import { DialogBuilder } from "@/components/DialogBuilder";
 interface FileType {
   id: number;
   name: string;
@@ -45,6 +47,7 @@ export default function SharedFileTest() {
   const [files, setFiles] = useState<FileType[]>([]);
   const [code, setCode] = useState<number>();
   const [link, setLink] = useState<string>("");
+  
   useEffect(() => {
   // dane testowe
   axios.get('/getSharedFiles').then(response => {
@@ -61,6 +64,13 @@ export default function SharedFileTest() {
   const [dialog, setDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<FileType | null>(null);
   const[action, setAction] = useState<string | undefined>(undefined);
+  const[folders,setFolders]=useState();
+useEffect(()=>{
+  axios.get('/getSharedFolders').then((response)=>{
+    console.log(response.data)
+    setFolders(response.data)
+  })
+},[]);
   // filtrowanie po nazwie
   const filteredFiles = files.filter(file =>
     file.name.toLowerCase().includes(query.toLowerCase())
@@ -257,6 +267,32 @@ const handleSubmit = () => {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+    <h3>Udostępnione Foldery</h3>
+      {folders?.map((folder) => (
+        <>
+          <FolderCard 
+            key={folder.folder_id} // Essential for React performance
+            folderId={folder.folder_id}
+            folderName={folder.name} 
+            href={folder.slug || folder.folder_id.toString()} 
+            filesCount={folder.files_count || 0}
+            onFolderClick={() => {
+              // Optional: logic to refresh data or navigate
+              console.log(`Clicked folder: ${folder.name}`);
+            }}
+          />
+          <DialogBuilder
+          dialogTrigger={<a className="font-bold">wiecej</a>}
+
+          >
+
+            <QrCodeGenerator url={`${window.location.origin}/folderShare/${folder.folder_id}`} />
+            <Input defaultValue={`${window.location.origin}/folderShare/${folder.folder_id}`}/>
+            <h4>Kod: nwm</h4>
+          </DialogBuilder>
+          </>
+        ))}
       </div>
     </AppLayout>
   );

@@ -1,9 +1,10 @@
-import { FileText, FileCode, File as FileGeneric, MoreVertical, Eye } from "lucide-react";
+import { FileText, FileCode, File as FileGeneric, MoreVertical, Eye, FileImage, FileSpreadsheet, FileArchive, Book, FileAudio } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, JSX } from "react";
 import { FileModal } from "@/components/files/Files";
 import { Loader2 } from "lucide-react";
+import { FileData } from "@/types/Files";
 
 export function DocumentCard({ 
   file, 
@@ -46,6 +47,48 @@ export function DocumentCard({
     </motion.div>
   );
 }
+export function Card({
+  file,
+}: {
+  file: FileData;
+}) {
+   const icons: Record<FileData["type"], JSX.Element> = {
+    image: <FileImage className="mx-auto mb-2 h-20 w-20 text-blue-500" />,
+    pdf: <FileText className="mx-auto mb-2 h-20 w-20 text-red-500" />,
+    excel: <FileSpreadsheet className="mx-auto mb-2 h-20 w-20 text-green-500" />,
+    ppt: <FileSpreadsheet className="mx-auto mb-2 h-20 w-20 text-orange-500" />,
+    zip: <FileArchive className="mx-auto mb-2 h-20 w-20 text-yellow-500" />,
+    epub: <Book className="mx-auto mb-2 h-20 w-20 text-indigo-500" />,
+    mp3: <FileAudio className="mx-auto mb-2 h-20 w-20 text-purple-500" />,
+    other: <FileText className="mx-auto mb-2 h-20 w-20 text-gray-500" />,
+  };
+  return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      className="group flex flex-col items-center w-34 [@media(max-width:450px)]:w-24 cursor-pointer"
+      
+    >
+      {/* Kontener na zdjęcie z efektem hover */}
+      <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
+        {icons[file.type]}
+        
+        {/* Subtelny overlay przy najechaniu */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+      </div>
+
+      {/* Tekst - bardziej czytelny i dopasowany do dark mode */}
+      <span className="mt-2 px-1 w-full text-center">
+        <p className="text-[13px] font-medium text-neutral-700 dark:text-neutral-200 line-clamp-1 truncate transition-colors group-hover:text-blue-500">
+          {file.original_name}
+        </p>
+        {/* <p className="text-[10px] text-neutral-400 dark:text-neutral-500 uppercase tracking-tighter">
+          Obraz
+        </p> */}
+      </span>
+    </motion.div>
+  );
+}
 export function DocumentsComponent() {
   const [documents, setDocuments] = useState([]);
   const [selectedFile, setSelectedFile] = useState<any>(null);
@@ -73,10 +116,9 @@ export function DocumentsComponent() {
       {/* Grid z listą dokumentów */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {documents.map((doc: any) => (
-          <DocumentCard 
-            key={doc.id} 
-            file={doc} 
-            onClick={() => setSelectedFile(doc)} 
+          <Card 
+            key={doc.id}
+            file={doc}
           />
         ))}
 

@@ -80,7 +80,7 @@ export function ImageCard({
 
 
 
-export function Gallery({ images, initialIndex, onClose }: { images: any[]; initialIndex: number; onClose: () => void }) {
+export function Gallerye({ images, initialIndex, onClose }: { images: any[]; initialIndex: number; onClose: () => void }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [imageCache, setImageCache] = useState<{ [key: number]: string }>({});
   const [fileAction, setFileAction] = useState(false);
@@ -126,7 +126,7 @@ export function Gallery({ images, initialIndex, onClose }: { images: any[]; init
       <div className="flex items-center justify-between p-4 z-50">
         <div className="text-white">
           <h1 className="text-sm font-medium opacity-80 truncate max-w-[180px] md:max-w-md">
-            {images[currentIndex]?.original_name}
+            {images[currentIndex]?.name}
           </h1>
           <p className="text-[10px] text-gray-500 uppercase tracking-tighter">
             {currentIndex + 1} / {images.length}
@@ -232,13 +232,13 @@ export  function GalleryComponent() {
             id={img.id}
             key={index}
             src={img.id}
-            alt={img.original_name}
+            alt={img.name}
             onClick={() => openGallery(index)}
           />
         ))}
       </div>
       {showGallery && (
-        <Gallery
+        <Gallerye
           images={images}
           initialIndex={selectedIndex}
           onClose={closeGallery}

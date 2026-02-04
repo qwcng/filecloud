@@ -16,3 +16,13 @@ Route::delete('/filesShare/{file}', [ShareController::class, 'removeShare'])->na
 Route::get('/getSharedFiles', [ShareController::class, 'getSharedFiles'])->name('sharedFiles');
 Route::post('/revokeSharedFile', [ShareController::class, 'revokeSharedFile'])->name('revokeSharedFile');
 Route::post('/updateShareCode', [ShareController::class, 'updateShareCode'])->name('updateShareCode');
+
+
+// Route::get('/folderShare/{folderId}', [ShareController::class, 'shareFolder'])->name('shareFolder');
+Route::get('/folderShare/{folderId}', function ($folderId) {
+    return Inertia::render('SharedFolder', ['folderId' => $folderId]);
+})->name('shareFolderPage');
+Route::post('/folderShare/{folderId}/share', [ShareController::class, 'shareFolder'])->name('createFolderShare');
+Route::post('/folderShare/{folderId}/check', [ShareController::class, 'getSharedFilesFromFolder'])->name('checkFolderAccessCode');
+Route::get('/folderShare/{folderId}/show', [ShareController::class, 'showSharedFolder'])->name('showSharedFolder');
+Route::get('/getSharedFolders', [ShareController::class, 'getSharedFolders']);

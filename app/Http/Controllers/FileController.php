@@ -374,17 +374,7 @@ public function filesByType(Request $request, $type)
         $files = UserFile::where('user_id', $request->user()->id)
             ->where('original_name', 'like', '%' . $query . '%')
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($file) {
-                    return [
-                        'id' => $file->id,
-                        'name' => $file->original_name,
-                        'size' => number_format($file->size / 1024 / 1024, 2),
-                        'date' => $file->created_at->format('Y-m-d'),
-                        'url' => route('downloadFile', $file->id),
-                        'type' => $file->type,
-                    ];
-                });
+            ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'is_favorite']);
             // ->get();
 
         return response()->json($files);
