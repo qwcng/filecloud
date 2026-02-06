@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\FolderController;
 use App\Models\SharedFile;
 use Illuminate\Support\Facades\Cache;
 
@@ -92,7 +93,7 @@ Route::get('/trash', function(){
 Route::get('/getTrashFiles', [FileController::class, 'showTrash'])->name('getTrashFiles');
 Route::post('/restoreFile/{fileId}', [FileController::class, 'restoreFile'])->name('restoreFile');
 Route::delete('/pernamentlyDeleteFile/{fileId}', [FileController::class, 'permanentlyDeleteFile'])->name('deleteForever');
-
+Route::get('/downloadFolder/{folderId}', [FolderController::class,'downloadFolder']);
 
 
 require __DIR__.'/oauth.php';

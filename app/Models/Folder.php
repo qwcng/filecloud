@@ -39,4 +39,21 @@ class Folder extends Model
     {
         return $this->hasOne(SharedFolder::class, 'folder_id');
     }
+    public function isInsideAny(array $allowedFolderIds)
+{
+    // 1. Sprawdź, czy ten folder jest na liście
+    if (in_array($this->id, $allowedFolderIds)) {
+        return true;
+    }
+
+    // 2. Jeśli ma rodzica, sprawdź rekurencyjnie w górę
+    if ($this->parent_id) {
+        // Ładujemy rodzica, jeśli nie jest jeszcze załadowany
+        $parent = $this->parent ?: $this->belongsTo(Folder::class, 'parent_id')->first();
+        
+        return $parent ? $parent->isInsideAny($allowedFolderIds) : false;
+    }
+
+    return false;
+}
 }

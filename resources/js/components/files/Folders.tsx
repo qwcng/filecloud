@@ -1,11 +1,11 @@
 import React from "react";
 // import { useState, useEffect, useRef } from "react";
 import { Head, router, useForm, Link } from "@inertiajs/react";
-import { Edit2Icon, EllipsisVertical, Share, Trash2Icon, X } from "lucide-react";
+import { Download, Edit2Icon, EllipsisVertical, Share, Trash2Icon, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 import MusicPlayer from "@/components/MusicPlayer";
 import {
   AlertDialog,
@@ -88,6 +88,10 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
     }
   })
 
+  }
+  const  handleDownloadFolder = ()=>{
+    window.location.href =`downloadFolder/${folderId}`
+    toast.success("Rozpoczynanie pobierania folderu")
   }
   return (
     <motion.div
@@ -188,7 +192,7 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
           </DialogFooter>
         </DialogContent>
     </Dialog>
-            <li>
+            
               <DialogBuilder
               dialogTrigger={ <li className="flex items-center cursor-pointer mt-2 hover:text-red-500">
                           <Share className="inline-block mr-2" /> Udostępnij
@@ -205,7 +209,11 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
 
                 </>
               </DialogBuilder>
-            </li>
+                  <li className="flex items-center cursor-pointer mt-2 hover:text-blue-500" >
+                      
+                      <button onClick={ handleDownloadFolder}><Download className="inline-block mr-2" /> Pobierz </button>
+                      
+                  </li>
              <AlertDialog>
                   <AlertDialogTrigger asChild>
                       <li className="flex items-center cursor-pointer mt-2 hover:text-red-500">

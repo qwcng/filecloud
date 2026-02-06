@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use App\Jobs\DeleteFolderJob;
 use App\Models\SavedFolder;
 use Illuminate\Support\Facades\DB;
+use ZipArchive;
+
 class FolderController extends Controller
 {
     public function createFolder(Request $request)
@@ -170,4 +172,53 @@ public function changeFolderName(Request $request, $folderId){
     
 
 }
+    public function downloadFolder($folderId)
+{
+    $folder = Folder::with(['files', 'children'])->findOrFail($folderId);
+
+    // Sprawdzamy dostęp (Twoja nowa metoda!)
+    if (!$folder->user_id === auth()->id() && !SavedFolder::where('folder_id', $folderId)->where('user_id', auth()->id())->exists()) {
+        abort(403);
+    }
+
+    $zip = new ZipArchive;
+    $zipFileName = $folder->name . '.zip';
+    $zipPath = storage_path('app/private/zip' . $zipFileName);
+
+    // Upewnij się, że katalog temp istnieje
+    if (!file_exists(storage_path('app/private/zip'))) {
+        mkdir(storage_path('app/private/zip'), 0755, true);
+    }
+
+    if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+        $this->addFolderToZip($folder, $zip, "");
+        $zip->close();
+    }
+
+    return response()->download($zipPath)->deleteFileAfterSend(true);
+}
+
+/**
+ * Funkcja pomocnicza do rekurencyjnego dodawania plików
+ */
+    private function addFolderToZip($folder, $zip, $zipPath)
+    {
+        $currentPath = $zipPath . $folder->name . "/";
+        
+        // Dodaj pusty katalog do ZIP
+        $zip->addEmptyDir($currentPath);
+
+        // Dodaj pliki z tego folderu
+        foreach ($folder->files as $file) {
+            $fullPath = Storage::disk('private')->path($file->path);
+            if (file_exists($fullPath)) {
+                $zip->addFile($fullPath, $currentPath . $file->original_name);
+            }
+        }
+
+        // Rekurencja dla podfolderów
+        foreach ($folder->children as $child) {
+            $this->addFolderToZip($child, $zip, $currentPath);
+        }
+    }
 }

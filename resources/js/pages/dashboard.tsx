@@ -39,6 +39,8 @@ import HttpApi from "i18next-http-backend";
 import i18n from "i18next";
 import { NewFile, NewFolder, UploadFilesDialog, UploadFolderDialog } from "@/components/NavigationBar";
 import debounce from 'lodash/debounce';
+import FullScreenDrop from "@/components/custom/FullScreenDrop";
+import { toast } from "sonner";
 
 // --- Konfiguracja i18n ---
 if (!i18n.isInitialized) {
@@ -182,50 +184,74 @@ export default function Dashboard() {
     setUrlr(segment === 'dashboard' ? '' : segment);
   }, [refreshTrigger]);
 
-  useEffect(() => {
-    setFoldersLoading(true);
-    axios.get(`/folders/${urlr}`).then((res) => {
-      setFolders(res.data);
-      setFoldersLoading(false);
-    });
-  }, [urlr, refreshTrigger]);
+useEffect(() => {
+    // 1. Definiujemy kontroler do przerywania zapytań (zapobiega nadpisywaniu danych przez stare requesty)
+    const controller = new AbortController();
 
-  useEffect(() => {
-    const fetchFiles = async () => {
-      setFilesLoading(true);
-      let endpoint = urlr === "favorite" ? `/getFavorites` : `/files/${urlr}`;
-      
-      try {
-        const response = await axios.get(endpoint);
-        const mapped: FileData[] = response.data.files.map((f: any) => ({
-          id: f.id,
-          name: f.original_name,
-          type: mapMimeToType(f.mime_type),
-          size: f.size,
-          created_at: f.created_at,
-          url: f.url,
-          favorite: f.is_favorite
-        }));
-        setFiles(mapped);
-        if (urlr === "sharedFile") setSharedFile(true);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setFilesLoading(false);
-      }
+    const fetchData = async () => {
+        // Czyścimy stare pliki/foldery, żeby user wiedział, że ładujemy nowe (opcjonalne)
+        // setFiles([]); 
+        // setFolders([]);
+        
+        setFilesLoading(true);
+        setFoldersLoading(true);
+
+        const filesEndpoint = urlr === "favorite" ? `/getFavorites` : `/files/${urlr}`;
+
+        try {
+            // Promise.all sprawia, że strona nie "skacze" – wszystko wskakuje w tym samym momencie
+            const [filesRes, foldersRes, pathRes] = await Promise.all([
+                axios.get(filesEndpoint, { signal: controller.signal }),
+                axios.get(`/folders/${urlr}`, { signal: controller.signal }),
+                axios.get(`/pathTo/${urlr}`, { signal: controller.signal })
+            ]);
+
+            // Mapowanie plików (Backend PHP jest szybszy, ale tu robimy to bezpiecznie)
+            const mappedFiles: FileData[] = filesRes.data.files.map((f: any) => ({
+                id: f.id,
+                name: f.original_name,
+                type: mapMimeToType(f.mime_type),
+                size: f.size,
+                created_at: f.created_at,
+                url: f.url,
+                favorite: f.is_favorite
+            }));
+
+            // Aktualizacja stanów – React 18 zgrupuje te 3 wywołania w jeden render!
+            setFiles(mappedFiles);
+            setFolders(foldersRes.data);
+            
+            const bc: BreadcrumbItem[] = [
+                { title: "panel", href: dashboard().url + "/" },
+                ...pathRes.data.map((f: any) => ({ 
+                    title: f.name, 
+                    href: `/dashboard/${f.id}` 
+                }))
+            ];
+            setBreadcrumbs(bc);
+
+            if (urlr === "sharedFile") setSharedFile(true);
+
+        } catch (err) {
+            // Nie logujemy błędów, jeśli sami przerwaliśmy zapytanie (Abort)
+            if (axios.isCancel(err)) {
+                console.log("Request canceled");
+            } else {
+                console.error("Błąd ładowania danych:", err);
+            }
+        } finally {
+            setFilesLoading(false);
+            setFoldersLoading(false);
+        }
     };
-    fetchFiles();
-  }, [urlr, refreshTrigger]);
 
-  useEffect(() => {
-    axios.get(`/pathTo/${urlr}`).then((res) => {
-      const bc: BreadcrumbItem[] = [
-        { title: "panel", href: dashboard().url + "/" },
-        ...res.data.map((f: any) => ({ title: f.name, href: `/dashboard/${f.id}` }))
-      ];
-      setBreadcrumbs(bc);
-    });
-  }, [urlr, refreshTrigger]);
+    fetchData();
+
+    // 2. Cleanup function – klucz do performance przy szybkim klikaniu
+    return () => {
+        controller.abort();
+    };
+}, [urlr, refreshTrigger]); // Wywalamy pozostałe useEffecty obsługujące te dane
 
   // --- Sortowanie (Memoized) ---
   const sortedFiles = useMemo(() => {
@@ -247,6 +273,29 @@ export default function Dashboard() {
   // --- Ścieżka dla Shared Dialog ---
   const cleanedSharePath = useMemo(() => shareLink.replace(window.location.origin + '/', ''), [shareLink]);
 
+  const handleQuickUpload = async (fileList: FileList) => {
+    const formData = new FormData();
+    // Dodajemy wszystkie pliki do FormData
+    Array.from(fileList).forEach((file) => {
+      formData.append("files[]", file);
+    });
+    
+    // Jeśli urlr to ID folderu, dodaj go
+    if (urlr) formData.append("folder_id", urlr);
+
+    const id = toast.loading("Przesyłanie plików...");
+
+    try {
+      await axios.post("/uploadFile/", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      toast.success("Pliki przesłane pomyślnie!", { id });
+      refreshData(); // Twoja funkcja odświeżająca cache i dane
+    } catch (error) {
+      toast.error("Błąd przesyłania", { id });
+      console.error(error);
+    }
+  };
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Moje Pliki" />
@@ -283,7 +332,7 @@ export default function Dashboard() {
 
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <h3 className="text-lg font-semibold">📂 {t("sidebarmyFiles")} </h3>
-
+        <FullScreenDrop onFilesDropped={handleQuickUpload} />
         {/* Toolbar Akcji */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
           <div className="flex gap-2">

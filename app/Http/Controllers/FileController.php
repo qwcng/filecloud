@@ -206,34 +206,34 @@ foreach ($request->file('files') as $file) {
             return Storage::disk('private')->download($file->path, $file->original_name);
         }
         public function showFile(UserFile $file)
-    {
-        if ($file->user_id !== auth()->id()) {
-            abort(403);
-        }
+{
+    // Używamy nowej metody z modelu
+    if (!$file->hasAccessTo(auth()->user())) {
+        abort(403, 'Brak dostępu do pliku.');
+    }
 
-        $path = Storage::disk('private')->path($file->path);
-        return response()->file($path, [
-        // 'Content-Type' => 'application/epub+zip',
-        'Content-Disposition' => 'inline', // <- kluczowe
+    $path = Storage::disk('private')->path($file->path);
+
+    // Sprawdzamy czy plik fizycznie istnieje na dysku
+    if (!Storage::disk('private')->exists($file->path)) {
+        abort(404, 'Plik nie istnieje na serwerze.');
+    }
+
+    return response()->file($path, [
+        'Content-Disposition' => 'inline',
         'Cache-Control' => 'public, max-age=31536000, immutable',
     ]);
-         // 👈 zwróci obrazek inline
-    }
+}
     public function showThumbnail(UserFile $file)
     {
-        if ($file->user_id !== auth()->id()) {
-            abort(403);
-        }
-        if($file->thumbnail == null){
-            return null;
-        }
+        if (!$file->hasAccessTo(auth()->user())) abort(403);
         
+        if (!$file->thumbnail || !Storage::disk('private')->exists($file->thumbnail)) {
+            // Zwróć domyślną ikonę, jeśli miniatura nie istnieje
+            return response()->file(public_path('images/default-thumbnail.png'));
+        }
 
-        $path = Storage::disk('private')->path($file->thumbnail);
-         return response()->file($path, [
-            'Cache-Control' => 'public, max-age=31536000, immutable',
-        ]);
-    
+        return response()->file(Storage::disk('private')->path($file->thumbnail));
     }
     public function showTextFile($fileId)
     {
