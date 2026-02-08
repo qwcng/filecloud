@@ -133,6 +133,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
             <img
               src={sharing ? `/share/file/${file.id}/thumbnail` : `/showThumbnail/${file.id}`}
               alt={file.name}
+              
               className="h-24 w-24 object-cover rounded shadow-sm"
             />
           ) : (
@@ -149,7 +150,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
       {optionVisible && (
         <motion.div
           ref={modalRef}
-          initial={{ opacity: 0, scale: 0.95, y: -5 }}
+          // initial={{ opacity: 0, scale: 0.95, y: -5 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -5 }}
           transition={{ duration: 0.15, ease: "easeOut" }}
