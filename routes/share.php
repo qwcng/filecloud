@@ -37,3 +37,5 @@ Route::get('/share/file/{file}/thumbnail', [ShareController::class, 'showSharedF
     ->middleware(CheckFolderAccess::class);
 
 Route::post('/saveSharedFolder/{folderId}',[ShareController::class,'saveSharedFolder'] );
+
+Route::get('/getSavedFolders',[ShareController::class, 'getSavedFolders']);

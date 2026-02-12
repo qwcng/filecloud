@@ -110,14 +110,14 @@ export default function ShareFile() {
             </video>
           )}
 
-          {fileData.type === "other" && (
+          {/* {fileData.type === "other" && (
             <button
               className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
               onClick={() => window.open(fileData.url, "_blank")}
             >
               Otwórz plik
             </button>
-          )}
+          )} */}
 
           <p className="mt-2"><strong>Typ:</strong> {fileData.type}</p>
           <p><strong>Rozmiar:</strong> {fileData.size} MB</p>

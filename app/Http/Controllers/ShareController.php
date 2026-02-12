@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\file_download;
+use App\Models\FileDownload;
 use App\Models\Folder;
 use App\Models\SavedFolder;
 use App\Models\SharedFile;
@@ -11,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Psy\VersionUpdater\Downloader\FileDownloader;
 
 class ShareController extends Controller
 {
@@ -110,7 +113,13 @@ class ShareController extends Controller
         $code = $request->query('code'); // pobieramy kod z GET
 
         $file = UserFile::withoutGlobalScopes()->findOrFail($fileId);
+        FileDownload::create([
+            'user_id'=> auth()->id(),
+            'client'=> $request->ip(),
+            'file_id'=> $fileId,
+            
 
+        ]);
         $share = SharedFile::where('file_id', $file->id)
             ->where('active', true)
             ->first();
@@ -133,6 +142,13 @@ class ShareController extends Controller
         }
 
         $file = UserFile::withoutGlobalScopes()->findOrFail($fileId);
+        FileDownload::create([
+            'user_id'=> auth()->id(),
+            'client'=> $request->ip(),
+            'file_id'=> $fileId,
+            
+
+        ]);
 
         $share = SharedFile::where('file_id', $file->id)
             ->where('active', true)
@@ -282,9 +298,16 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
         ;
         return response()->json($folders);
     }
-    public function showSharedFiles(UserFile $file)
+    public function showSharedFiles(Request $request,UserFile $file)
     {
     // Tutaj już nie sprawdzamy auth(), bo middleware sprawdziło sesję folderu
+    FileDownload::create([
+            'user_id'=> auth()->id(),
+            'client'=> $request->ip(),
+            'file_id'=> $file,
+            
+
+        ]);
     $path = Storage::disk('private')->path($file->path);
     
     return response()->file($path, [
