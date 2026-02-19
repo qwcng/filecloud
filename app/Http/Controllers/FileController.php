@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
-    use Illuminate\Support\Str;
+use Defuse\Crypto\Crypto;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
     
     class FileController extends Controller
@@ -78,10 +80,13 @@ use Illuminate\Http\Request;
         $uploadedFiles = [];
 
 foreach ($request->file('files') as $file) {
-    $filename = time() . '_' . $file->getClientOriginalName();
+    $filename = time().'_'.Str::random(10).'_'.$file->getClientOriginalName();
     // $path = $file->storeAs('uploads', $filename, 'private');
     $mime = $file->getMimeType();
-     $path = $file->store('uploads', 'private');
+
+    //  $path = $file->store('uploads', 'private');
+     $encryptedContent = Crypt::encrypt(file_get_contents($file->getRealPath()));
+     Storage::disk('private')->put("uploads/{$filename}", $encryptedContent);
     
 
     $type = match (true) {
@@ -102,7 +107,7 @@ foreach ($request->file('files') as $file) {
     ->cover(300, 200); 
          Storage::put(
                 "private/uploads/thumbs/{$filename}",
-                $image->encodeByExtension($file->getClientOriginalExtension(), quality: 70)
+                Crypt::encryptString($image->encodeByExtension($file->getClientOriginalExtension(), quality: 70))
             );
         }
     // generowanie miniaturki tylko dla obrazów
@@ -114,12 +119,13 @@ foreach ($request->file('files') as $file) {
     $userFile = UserFile::create([
         'user_id' => $request->user()->id,
         'original_name' => $file->getClientOriginalName(),
-        'path' => $path,
+        'path' => 'uploads/' . $filename,
         'mime_type' => $mime,
         'size' => $file->getSize(),
         'type' => $type,
         'folder_id' => $folderId,
-        'thumbnail' => $type === 'image' ? "uploads/thumbs/$filename" : null // zapis miniaturki w bazie
+        'thumbnail' => $type === 'image' ? "uploads/thumbs/$filename" : null,
+        'encrypted' => true,
     ]);
 
     // $uploadedFiles[] = [
@@ -202,8 +208,15 @@ foreach ($request->file('files') as $file) {
             if ($file->user_id !== auth()->id()) {
                 abort(403);
             }
-
+            if($file->encrypted){
+                $encrypted = Storage::get($file->path);
+                $decrypted = Crypt::decrypt($encrypted);
+                return response($decrypted)
+                ->header('Content-Type', $file->mime_type);
+            }
+            else{
             return Storage::disk('private')->download($file->path, $file->original_name);
+            }
         }
         public function showFile(UserFile $file)
 {
@@ -212,17 +225,25 @@ foreach ($request->file('files') as $file) {
         abort(403, 'Brak dostępu do pliku.');
     }
 
-    $path = Storage::disk('private')->path($file->path);
-
-    // Sprawdzamy czy plik fizycznie istnieje na dysku
-    if (!Storage::disk('private')->exists($file->path)) {
-        abort(404, 'Plik nie istnieje na serwerze.');
+    // $path = Storage::disk('private')->path($file->path);
+    if($file->encrypted){
+        $encrypted = Storage::disk('private')->get($file->path);
+        $decrypted = Crypt::decrypt($encrypted);
+    } else {
+        $decrypted = Storage::disk('private')->get($file->path);
     }
 
-    return response()->file($path, [
-        'Content-Disposition' => 'inline',
-        'Cache-Control' => 'public, max-age=31536000, immutable',
-    ]);
+    // Sprawdzamy czy plik fizycznie istnieje na dysku
+    // if (!Storage::disk('private')->exists($file->path)) {
+    //     abort(404, 'Plik nie istnieje na serwerze.');
+    // }
+
+   
+        return response($decrypted)
+        ->header('Content-Type', 'image/jpeg')
+        ->header('Content-Disposition', 'inline')
+       ->header('Cache-Control', 'max-age=31536000, public');
+        // ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"');
 }
     public function showThumbnail(UserFile $file)
     {
@@ -232,8 +253,17 @@ foreach ($request->file('files') as $file) {
             // Zwróć domyślną ikonę, jeśli miniatura nie istnieje
             return response()->file(public_path('images/default-thumbnail.png'));
         }
+        if($file->encrypted){
+            $encrypted = Storage::disk('private')->get($file->thumbnail);
+            $decrypted = Crypt::decryptString($encrypted);
+        } else {
+            $decrypted = Storage::disk('private')->get($file->thumbnail);
+        }
+       
 
-        return response()->file(Storage::disk('private')->path($file->thumbnail));
+       return response($decrypted)->header('Content-Type', 'image/jpeg')
+       ->header('Content-Disposition', 'inline')
+       ->header('Cache-Control', 'max-age=31536000, public');
     }
     public function showTextFile($fileId)
     {

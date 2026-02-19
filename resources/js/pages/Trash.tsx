@@ -103,8 +103,12 @@ useEffect(() => {
             console.error('Error fetching trashed files:', error);
         });
 }, []);
-const removeFileFromUI = (id: number) => {
-  setFiles(prev => prev.filter(file => file.id !== id));
+const removeFileFromUI = (id?: number) => {
+    if (id) {
+        setFiles((prev) => prev.filter((file) => file.id !== id));
+    } else {
+        setFiles([]); // Czyści całą listę (dla opcji "Opróżnij kosz")
+    }
 };
 return(
 
@@ -115,7 +119,7 @@ return(
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
           
           <h3 className="text-lg font-semibold">🧳 Usunięte Pliki</h3>
-          <WipeTrash refreshData={() => {}} files={files} />
+         <WipeTrash files={files} refreshData={removeFileFromUI} />
           <div className="flex flex-wrap gap-4 lg:justify-start justify-center">
             {files.length === 0 ? (
               <p className="text-muted-foreground col-span-full text-center">Brak usuniętych plików.</p>

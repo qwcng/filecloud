@@ -18,4 +18,9 @@ class SharedFile extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    public function downloads()
+    {
+        return $this->hasMany(FileDownload::class, 'file_id','file_id');
+
+    }
 }

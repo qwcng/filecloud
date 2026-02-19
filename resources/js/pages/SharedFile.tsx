@@ -39,8 +39,8 @@ interface FileType {
   size: string;
   expires_at: string | null;
   shared_at: string;
-
   code: string;
+  downloads: number;
 }
 
 export default function SharedFileTest() {
@@ -139,6 +139,7 @@ const handleSubmit = () => {
                   <TableHead>Data dodania</TableHead>
                   <TableHead> Wygasa </TableHead>
                   <TableHead>Kod dostępu</TableHead>
+                  <TableHead> Pobrania </TableHead>
                   <TableHead>Akcje</TableHead>
 
                 </TableRow>
@@ -152,14 +153,12 @@ const handleSubmit = () => {
                     <TableCell>{new Date(file.shared_at).toLocaleString()}</TableCell>
                     <TableCell>{file.expires_at ? new Date(file.expires_at).toLocaleString() : "Nigdy"}</TableCell>
                     <TableCell>{file.code}</TableCell>
+                    <TableCell>{file.downloads}</TableCell>
                     <TableCell>
                      <Select 
                       value={undefined}
                     onValueChange={(e)=>{handleaction(file)(e)
                                                 setAction(e);
-                                    
-                      
-                                            
                      }
                     
                     }

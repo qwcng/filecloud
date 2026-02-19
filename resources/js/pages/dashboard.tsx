@@ -93,7 +93,7 @@ export default function Dashboard() {
 
   const handleToggleSelecting = () => {
     setSelecting(!selecting);
-    if (selecting) setSelectedFiles([]); // Czyścimy przy wyłączaniu
+    if (selecting) setSelectedFiles([]);
   };
 
   const handleSortingChange = (value: string) => {
@@ -114,6 +114,10 @@ export default function Dashboard() {
       setSelectedFiles(prev => prev.filter(f => f.id !== file.id));
     }
   };
+  const hideFileAfterMove = (fileId: number) => {
+
+    setFiles(prev => prev.filter(f => f.id !== fileId));
+  }
 
   const handleBulkDelete = async () => {
     if (selectedFiles.length === 0) return;
@@ -185,55 +189,70 @@ export default function Dashboard() {
   }, [refreshTrigger]);
 
 useEffect(() => {
-    // 1. Definiujemy kontroler do przerywania zapytań (zapobiega nadpisywaniu danych przez stare requesty)
     const controller = new AbortController();
 
     const fetchData = async () => {
-        // Czyścimy stare pliki/foldery, żeby user wiedział, że ładujemy nowe (opcjonalne)
-        // setFiles([]); 
-        // setFolders([]);
-        
         setFilesLoading(true);
         setFoldersLoading(true);
 
-        const filesEndpoint = urlr === "favorite" ? `/getFavorites` : `/files/${urlr}`;
-
         try {
-            // Promise.all sprawia, że strona nie "skacze" – wszystko wskakuje w tym samym momencie
-            const [filesRes, foldersRes, pathRes] = await Promise.all([
-                axios.get(filesEndpoint, { signal: controller.signal }),
-                axios.get(`/folders/${urlr}`, { signal: controller.signal }),
-                axios.get(`/pathTo/${urlr}`, { signal: controller.signal })
-            ]);
-
-            // Mapowanie plików (Backend PHP jest szybszy, ale tu robimy to bezpiecznie)
-            const mappedFiles: FileData[] = filesRes.data.files.map((f: any) => ({
-                id: f.id,
-                name: f.original_name,
-                type: mapMimeToType(f.mime_type),
-                size: f.size,
-                created_at: f.created_at,
-                url: f.url,
-                favorite: f.is_favorite
-            }));
-
-            // Aktualizacja stanów – React 18 zgrupuje te 3 wywołania w jeden render!
-            setFiles(mappedFiles);
-            setFolders(foldersRes.data);
+            // 1. Definiujemy zmienne na dane (wartości domyślne)
+            let filesRes, foldersRes, pathRes;
             
-            const bc: BreadcrumbItem[] = [
-                { title: "panel", href: dashboard().url + "/" },
-                ...pathRes.data.map((f: any) => ({ 
-                    title: f.name, 
-                    href: `/dashboard/${f.id}` 
-                }))
-            ];
-            setBreadcrumbs(bc);
+            // 2. Obsługa specyficznych przypadków (WIDOKI SPECJALNE)
+            if (urlr === "favorite") {
+                // Dla ulubionych pobieramy TYLKO pliki
+                filesRes = await axios.get(`/getFavorites`, { signal: controller.signal });
+                
+                // Resetujemy foldery i ścieżkę, bo w "ulubionych" ich nie ma/są inne
+                setFolders([]);
+                setBreadcrumbs([{ title: "Ulubione", href: "#" }]);
+            } 
+            else if (urlr === "sharedFile") {
+                // Logika dla udostępnionych (jeśli potrzebujesz czegoś innego)
+                setSharedFile(true);
+                // Tutaj dodaj odpowiedni request jeśli trzeba
+            } 
+            else if(urlr==="saved"){
+              foldersRes = await axios.get(`/folders/${urlr}`, { signal: controller.signal });
+              setFolders(foldersRes.data);
+            }
+            else {
+                // 3. WIDOK STANDARDOWEGO FOLDERA (PROMISE.ALL)
+                // Tutaj Promise.all ma sens, bo potrzebujemy kompletu danych
+                [filesRes, foldersRes, pathRes] = await Promise.all([
+                    axios.get(`/files/${urlr}`, { signal: controller.signal }),
+                    axios.get(`/folders/${urlr}`, { signal: controller.signal }),
+                    axios.get(`/pathTo/${urlr}`, { signal: controller.signal })
+                ]);
 
-            if (urlr === "sharedFile") setSharedFile(true);
+                // Ustawiamy foldery i breadcrumbs tylko w tym przypadku
+                setFolders(foldersRes.data);
+                const bc: BreadcrumbItem[] = [
+                    { title: "panel", href: dashboard().url + "/" },
+                    ...pathRes.data.map((f: any) => ({ 
+                        title: f.name, 
+                        href: `/dashboard/${f.id}` 
+                    }))
+                ];
+                setBreadcrumbs(bc);
+            }
+
+            // 4. Mapowanie i ustawianie plików (wspólne dla większości widoków)
+            if (filesRes && filesRes.data.files) {
+                const mappedFiles: FileData[] = filesRes.data.files.map((f: any) => ({
+                    id: f.id,
+                    name: f.original_name,
+                    type: mapMimeToType(f.mime_type),
+                    size: f.size,
+                    created_at: f.created_at,
+                    url: f.url,
+                    favorite: f.is_favorite
+                }));
+                setFiles(mappedFiles);
+            }
 
         } catch (err) {
-            // Nie logujemy błędów, jeśli sami przerwaliśmy zapytanie (Abort)
             if (axios.isCancel(err)) {
                 console.log("Request canceled");
             } else {
@@ -247,12 +266,14 @@ useEffect(() => {
 
     fetchData();
 
-    // 2. Cleanup function – klucz do performance przy szybkim klikaniu
     return () => {
         controller.abort();
     };
 }, [urlr, refreshTrigger]); // Wywalamy pozostałe useEffecty obsługujące te dane
 
+const hideFromUi = (fileId: number) => {
+  setFiles(prev => prev.filter(f => f.id !== fileId));
+} 
   // --- Sortowanie (Memoized) ---
   const sortedFiles = useMemo(() => {
     const sorted = [...files];
@@ -395,6 +416,7 @@ useEffect(() => {
                 key={folder.id}
                 href={folder.id.toString()}
                 onFolderClick={refreshData}
+                onMove={hideFromUi}
                 folderName={folder.name}
                 folderId={folder.id}
                 filesCount={folder.files_count}

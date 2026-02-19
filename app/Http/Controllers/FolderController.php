@@ -37,7 +37,7 @@ class FolderController extends Controller
     $user = $request->user();
 
     // 1. Obsługa zakładki "Udostępnione dla mnie"
-    if ($parent === 'sahar') {
+    if ($parent === 'saved') {
         $savedFolders = SavedFolder::where('user_id', $user->id)
             ->where('active', true)
             ->with('folder') // ładujemy relację do oryginalnego folderu

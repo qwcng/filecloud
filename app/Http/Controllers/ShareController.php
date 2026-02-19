@@ -12,6 +12,7 @@ use App\Models\UserFile;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Inertia\Inertia;
 use Psy\VersionUpdater\Downloader\FileDownloader;
 
@@ -185,6 +186,7 @@ class ShareController extends Controller
                     'shared_at' => $share->created_at->toDateTimeString(),
                     'expires_at' => $share->expires_at ? $share->expires_at : null,
                     'code' => $share->access_code,
+                    'downloads' => $share->downloads->count(),
                 ];
             });
 
@@ -308,22 +310,41 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
             
 
         ]);
+    if($file->encrypted){
+        $encrypted = Storage::disk('private')->get($file->path);
+        $decrypted = Crypt::decrypt($encrypted);
+        return response($decrypted)
+        ->header('Content-Type', $file->mime_type)
+        ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"')
+        ->header('Cache-Control', 'max-age=31536000, public');
+    }
+    else{
     $path = Storage::disk('private')->path($file->path);
     
     return response()->file($path, [
         'Content-Disposition' => 'inline',
         'Cache-Control' => 'private, max-age=3600',
     ]);
+}
     }
     public function showSharedFilesThumbnail(UserFile $file)
     {
-    // Tutaj już nie sprawdzamy auth(), bo middleware sprawdziło sesję folderu
+
+    if ($file->encrypted && $file->thumbnail) {
+        $encrypted = Storage::disk('private')->get($file->thumbnail);
+        $decrypted = Crypt::decryptString($encrypted);
+        return response($decrypted)->header('Content-Type', 'image/jpeg')
+        ->header('Content-Disposition', 'inline')
+        ->header('Cache-Control', 'max-age=31536000, public');
+    } elseif ($file->thumbnail) {
+      
     $path = Storage::disk('private')->path($file->thumbnail);
     
     return response()->file($path, [
         'Content-Disposition' => 'inline',
         'Cache-Control' => 'private, max-age=3600',
     ]);
+}
     }
 public function saveSharedFolder(Request $request, $folderId) 
 {

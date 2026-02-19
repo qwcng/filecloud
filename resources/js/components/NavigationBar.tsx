@@ -289,23 +289,30 @@ export function NewFile({ urlr, refreshData }: { urlr: string; refreshData: () =
   
    
 }
-export function WipeTrash({ refreshData, files }: { refreshData: () => void; files: any[] }) {
-    const handleWipeTrash = () => {
-      files.map((file) => {
-        axios.delete(`/pernamentlyDeleteFile/${file.id}`)
-          .then(() => {
-            toast.success(`Plik ${file.name} został trwale usunięty.`);
-            refreshData();
-          })
-          .catch((error) => {
-            toast.error(`Błąd podczas usuwania pliku ${file.name}: ${error.message}`);
-          });
-        });
-    }
+export function WipeTrash({ refreshData, files }: { refreshData: (id?: number) => void; files: any[] }) {
+    const handleWipeTrash = async () => {
+        if (files.length === 0) return;
+
+        const toastId = toast.loading("Usuwanie plików...");
+
+        try {
+            // Wykonujemy wszystkie usunięcia równolegle
+            await Promise.all(
+                files.map((file) => axios.delete(`/pernamentlyDeleteFile/${file.id}`))
+            );
+
+            toast.success("Kosz został opróżniony", { id: toastId });
+            refreshData(); // Wywołanie bez ID wyczyści całą tablicę w stanie
+        } catch (error) {
+            toast.error("Nie udało się usunąć wszystkich plików", { id: toastId });
+            console.error(error);
+        }
+    };
+
     return (
-      <Button variant="destructive" onClick={handleWipeTrash}>
-        <Trash2 className="w-4 h-4 mr-2" />
-        Opróżnij kosz
-      </Button>
+        <Button variant="destructive" onClick={handleWipeTrash} disabled={files.length === 0}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Opróżnij kosz ({files.length})
+        </Button>
     );
-  }
+}

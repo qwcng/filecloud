@@ -20,6 +20,7 @@ class UserFile extends Model
         'size',
         'type',
         'thumbnail',
+        'encrypted',
     ];
 
     public function user() {
@@ -51,5 +52,9 @@ class UserFile extends Model
         // 4. Sprawdź rekurencyjnie w górę drzewa folderów
         // Upewnij się, że relacja folder() jest załadowana
         return $this->folder ? $this->folder->isInsideAny($savedFolderIds) : false;
+    }
+    public function downloads()
+    {
+        return $this->hasMany(FileDownload::class, 'file_id');
     }
 }

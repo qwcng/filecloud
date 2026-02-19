@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button"
 import { DialogBuilder } from "../DialogBuilder";
 
 
-export function FolderCard({ folderName, href, onFolderClick, folderId, filesCount }: { folderName: string; href: string; onFolderClick: () => void; folderId: number; filesCount: number }) {
+export function FolderCard({ folderName, href, onFolderClick, folderId, filesCount, onMove }: { folderName: string; href: string; onFolderClick: () => void; folderId: number; filesCount: number; onMove?: () => void }) {
   const [optionVisible, setOptionVisible] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDivElement>(null);
@@ -63,13 +63,20 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const fileId = e.dataTransfer.getData("fileId");
+    // const previousFiles = [...files]; // Kopia zapasowa w razie błędu
+ 
     if (!fileId) return;
 
     try {
+      // const ref = useRef(fileId);
       console.log(`Przenoszenie pliku ${fileId} do folderu ${folderId}`);
       await axios.patch(`/files/${fileId}/move`, { folder_id: folderId });
       toast.success(`Plik przeniesiony do ${folderName}`);
-      onFolderClick(); // odśwież pliki/foldery
+      if (onMove) onMove(); // Ukryj przeniesiony plik z UI
+
+
+      
+      
     } catch (err) {
       console.error(err);
       toast.error("Nie udało się przenieść pliku");

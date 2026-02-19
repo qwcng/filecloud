@@ -6,6 +6,8 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\FolderController;
 use App\Models\SharedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -95,7 +97,12 @@ Route::post('/restoreFile/{fileId}', [FileController::class, 'restoreFile'])->na
 Route::delete('/pernamentlyDeleteFile/{fileId}', [FileController::class, 'permanentlyDeleteFile'])->name('deleteForever');
 Route::get('/downloadFolder/{folderId}', [FolderController::class,'downloadFolder']);
 
-
+Route::get('/decrypt', function(){
+    $encrypted = Storage::get('private/uploads/1771491663_8d4a0187aa4b045f51786fbc93965031.jpg');
+    $decrypted = Crypt::decrypt($encrypted);
+    return response($decrypted,200)->header('Content-Type', 'image/jpeg')
+    ->header('Content-Length', strlen($decrypted));
+});
 require __DIR__.'/oauth.php';
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
