@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\DeleteFolderJob;
 use App\Models\SavedFolder;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use ZipArchive;
 
@@ -178,7 +179,7 @@ public function changeFolderName(Request $request, $folderId){
 
     // Sprawdzamy dostęp (Twoja nowa metoda!)
     if (!$folder->user_id === auth()->id() && !SavedFolder::where('folder_id', $folderId)->where('user_id', auth()->id())->exists()) {
-        abort(403);
+        abort(403); 
     }
 
     $zip = new ZipArchive;
@@ -210,10 +211,20 @@ public function changeFolderName(Request $request, $folderId){
 
         // Dodaj pliki z tego folderu
         foreach ($folder->files as $file) {
-            $fullPath = Storage::disk('private')->path($file->path);
-            if (file_exists($fullPath)) {
-                $zip->addFile($fullPath, $currentPath . $file->original_name);
+            
+            if (Storage::disk('private')->exists($file->path)) {
+
+            $content = Storage::disk('private')->get($file->path);
+            if ($file->encrypted) {
+                try {
+                    $content = Crypt::decrypt($content);
+                } catch (\Exception $e) {
+                    Log::error("Nie udało się odszyfrować pliku {$file->id} do ZIPa: " . $e->getMessage());
+                    continue;
+                }
             }
+            $zip->addFromString($currentPath . $file->original_name, $content);
+        }
         }
 
         // Rekurencja dla podfolderów
