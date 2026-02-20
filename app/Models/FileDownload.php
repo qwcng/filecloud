@@ -16,4 +16,5 @@ class FileDownload extends Model
     public function file():BelongsTo{
         return $this->belongsTo(UserFile::class);
     }
+    
 }

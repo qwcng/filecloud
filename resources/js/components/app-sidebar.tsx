@@ -60,7 +60,7 @@ const mainNavItems: NavItem[] = [
         title:"Kosz",
         href:"/trash",
         icon:Trash,
-    }
+    }   
 ];
 const themeFolders: NavItem[] = [
     {

@@ -319,7 +319,9 @@ const hideFromUi = (fileId: number) => {
   };
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Moje Pliki" />
+      <Head title="Moje Pliki" >
+        <meta name="robots" content="noindex, nofollow"></meta>
+      </Head>
 
       {/* Modal Udostępniania */}
       {sharedFile && (
