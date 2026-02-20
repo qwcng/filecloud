@@ -75,8 +75,8 @@ export default function Welcome() {
                             <a className="font-medium text-lg">Products</a>
                             <a className="font-medium text-lg">About Us</a>
                             <hr className="dark:border-neutral-800" />
-                            <a className="font-medium text-lg">Login</a>
-                            <a className="rounded-lg bg-blue-500 py-3 text-center text-white">Get Started</a>
+                            <a href='/login' className="font-medium text-lg">Login</a>
+                            <a href='/register' className="rounded-lg bg-blue-500 py-3 text-center text-white">Get Started</a>
                         </div>
                     )}
                 </header>
