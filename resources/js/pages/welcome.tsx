@@ -61,10 +61,18 @@ export default function Welcome() {
                             <a className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">Pricing</a>
                             <a className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">Products</a>
                             <a className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">About Us</a>
+                            {auth.user ? (
+                                <a href='/dashboard' className="rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 px-5 py-2.5 text-white shadow-sm hover:shadow-md hover:scale-[1.02] transition cursor-pointer">
+                                    Dashboard
+                                </a>
+                            ) : (
+                                <>
                             <a href='/login' className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">Login</a>
                             <a href='/register' className="rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 px-5 py-2.5 text-white shadow-sm hover:shadow-md hover:scale-[1.02] transition cursor-pointer">
                                 Get Started
                             </a>
+                            </>
+                            )}
                         </nav>
                     </div>
 
@@ -75,7 +83,11 @@ export default function Welcome() {
                             <a className="font-medium text-lg">Products</a>
                             <a className="font-medium text-lg">About Us</a>
                             <hr className="dark:border-neutral-800" />
-                            <a href='/login' className="font-medium text-lg">Login</a>
+                            {auth.user ? (
+                                <a href='/dashboard' className="font-medium text-lg">Dashboard</a>
+                            ) : (
+                                <a href='/login' className="font-medium text-lg">Login</a>
+                            )}
                             <a href='/register' className="rounded-lg bg-blue-500 py-3 text-center text-white">Get Started</a>
                         </div>
                     )}

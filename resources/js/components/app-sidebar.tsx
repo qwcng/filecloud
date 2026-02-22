@@ -1,7 +1,7 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
@@ -9,10 +9,11 @@ import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Hea
 import AppLogo from './app-logo';
 import { NavMainGallery } from './nav-gallery';
 import { Input } from './ui/input';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation, initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 import i18n from "i18next";
+import Axios from 'axios';
 i18n
   .use(HttpApi)                  // 🔥 musisz włączyć backend
   .use(initReactI18next)
@@ -29,6 +30,8 @@ i18n
       escapeValue: false
     }
   });
+
+
 
 const mainNavItems: NavItem[] = [
     {
@@ -100,7 +103,20 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+      const [capacity, setCapacity] = useState({ used: 0, total: 100 });
+useEffect(() => {
+    fetchStorageCapacity();
+    console.log('fetchStorageCapacity called');
+}, []);
+const fetchStorageCapacity = () => {
+    Axios.get('/getStorageCapacity')
+        .then(response => {
+            setCapacity(response.data);
+            localStorage.setItem('storage_capacity', JSON.stringify(response.data));
+        });
+};
     const {t, i18n} = useTranslation();
+    const {state} = useSidebar();
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -127,6 +143,19 @@ export function AppSidebar() {
 
             <SidebarFooter>
                 <NavFooter items={footerNavItems} className="mt-auto" />
+                {state === 'collapsed'  ? (
+                    <>
+
+                    </>
+                ):(
+                <div className="my-4 border-t border-sidebar-border/50" >
+                    <span className="text-sm text-sidebar-foreground/70">Zajętość dysku: {capacity.used}GB / {capacity.total}GB</span>
+                    <div className="w-[90%] bg-gradient-to-r from-blue-900 to-cyan-800 rounded-full h-2 mt-1">
+                        <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full" style={{ width: `${(capacity.used / capacity.total * 100)}%` }}></div>
+                    </div>
+
+                </div>
+                )}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

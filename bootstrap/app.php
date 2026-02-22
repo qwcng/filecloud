@@ -29,7 +29,11 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            
         ]);
+        // ->validateCsrfTokens(except: [
+        //     '/uploadFile',
+        // ]);
 
         // 🔑 Alias middleware
         $middleware->alias([

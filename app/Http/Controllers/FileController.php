@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
     use App\Models\SharedFile;
     use Carbon\Carbon;
 use Defuse\Crypto\Crypto;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
@@ -86,7 +87,7 @@ foreach ($request->file('files') as $file) {
 
     //  $path = $file->store('uploads', 'private');
      $encryptedContent = Crypt::encrypt(file_get_contents($file->getRealPath()));
-     Storage::disk('private')->put("uploads/{$filename}", $encryptedContent);
+     Storage::disk('private')->put("uploads/".auth()->id()."/{$filename}", $encryptedContent);
     
 
     $type = match (true) {
@@ -106,7 +107,7 @@ foreach ($request->file('files') as $file) {
  $image = Image::read($file)
     ->cover(300, 200); 
          Storage::put(
-                "private/uploads/thumbs/{$filename}",
+                "private/uploads/thumbs/".auth()->id()."/{$filename}",
                 Crypt::encryptString($image->encodeByExtension($file->getClientOriginalExtension(), quality: 70))
             );
         }
@@ -119,12 +120,12 @@ foreach ($request->file('files') as $file) {
     $userFile = UserFile::create([
         'user_id' => $request->user()->id,
         'original_name' => $file->getClientOriginalName(),
-        'path' => 'uploads/' . $filename,
+        'path' => 'uploads/'. auth()->id() . "/{$filename}",
         'mime_type' => $mime,
         'size' => $file->getSize(),
         'type' => $type,
         'folder_id' => $folderId,
-        'thumbnail' => $type === 'image' ? "uploads/thumbs/$filename" : null,
+        'thumbnail' => $type === 'image' ? "uploads/thumbs/".auth()->id()."/{$filename}" : null,
         'encrypted' => true,
     ]);
 
@@ -238,9 +239,10 @@ foreach ($request->file('files') as $file) {
     //     abort(404, 'Plik nie istnieje na serwerze.');
     // }
 
-   
+    
         return response($decrypted)
-        ->header('Content-Type', 'image/jpeg')
+        ->header('Content-Type', 'application/octet-stream')
+        // ->header('Content-Type', 'image/jpeg')
         ->header('Content-Disposition', 'inline')
        ->header('Cache-Control', 'max-age=31536000, public');
         // ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"');
@@ -262,6 +264,7 @@ foreach ($request->file('files') as $file) {
        
 
        return response($decrypted)->header('Content-Type', 'image/jpeg')
+       ->header('Content-Type', 'application/octet-stream')
        ->header('Content-Disposition', 'inline')
        ->header('Cache-Control', 'max-age=31536000, public');
     }
@@ -472,5 +475,19 @@ public function filesByType(Request $request, $type)
         // Usuwanie rekordu z bazy danych
         $file->forceDelete();
     }
+   public function getCapacity(Request $request){
+    $userId = $request->user()->id;
+
+    $capacity = Cache::remember("user:{$userId}:capacity", 60, function() use ($userId) {
+        $used = UserFile::where('user_id', $userId)->sum('size');
+        $total = 1 * 1024 * 1024 * 1024; // 15 GB
+        return [
+            'used' => round($used / (1024*1024*1024), 2),
+            'total' => round($total / (1024*1024*1024), 2),
+        ];
+    });
+
+    return response()->json($capacity);
+}
         // return response()->json(['message' => 'Plik trwale usunięty']);}
     }

@@ -110,7 +110,7 @@ const handleSubmit = () => {
   setDialog(false);
 }
   return (
-    <AppLayout breadcrumbs={[{ title: "Udostępnione pliki", href: "/shared-files" }]}>
+    <>
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <h3 className="text-lg font-semibold">📂 Udostępnione pliki</h3>
 
@@ -293,6 +293,7 @@ const handleSubmit = () => {
           </>
         ))}
       </div>
-    </AppLayout>
+    </>
   );
 }
+SharedFileTest.layout = page => <AppLayout>{page}</AppLayout>

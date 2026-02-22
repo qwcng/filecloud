@@ -103,6 +103,7 @@ Route::get('/decrypt', function(){
     return response($decrypted,200)->header('Content-Type', 'image/jpeg')
     ->header('Content-Length', strlen($decrypted));
 });
+Route::get('/getStorageCapacity', [FileController::class, 'getCapacity'])->name('getStorageCapacity');
 require __DIR__.'/oauth.php';
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

@@ -321,6 +321,7 @@ const hideFromUi = (fileId: number) => {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Moje Pliki" >
         <meta name="robots" content="noindex, nofollow"></meta>
+        
       </Head>
 
       {/* Modal Udostępniania */}
@@ -409,7 +410,7 @@ const hideFromUi = (fileId: number) => {
 
         {/* Sekcja Folderów */}
         <div className="flex flex-wrap gap-4 lg:justify-start justify-center">
-          <UploadFolderCard folderName={urlr} refreshData={refreshData} />
+          {/* <UploadFolderCard folderName={urlr} refreshData={refreshData} /> */}
           {foldersLoading ? (
             Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-24 w-72 rounded-lg" />)
           ) : (

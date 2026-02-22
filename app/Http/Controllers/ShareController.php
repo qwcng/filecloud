@@ -163,9 +163,19 @@ class ShareController extends Controller
             abort(403, 'Niepoprawny kod dostępu');
         }
 
-        // 👇 zamiast pobierania – wyświetlamy inline (np. obrazek, pdf itp.)
+        
         $path = Storage::disk('private')->path($file->path);
+        if($file->encrypted){
+            $encrypted = Storage::disk('private')->get($file->path);
+            $decrypted = Crypt::decrypt($encrypted);
+            return response($decrypted)
+            // ->header('Content-Type', $file->mime_type)
+            // ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"')
+            ->header('Cache-Control', 'max-age=31536000, public');
+        }
+        else{
         return response()->file($path);
+        }
     }
     public function getSharedFiles(Request $request)
     {
