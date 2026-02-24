@@ -187,6 +187,8 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
             controls
+            autoPlay
+            
           />
         ) : (
           <>
