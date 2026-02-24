@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Head,router } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
-import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X,Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X,Loader2, FileVideo } from "lucide-react";
 import { motion,AnimatePresence, scale } from "framer-motion";
 import axios from "axios";
 import { type BreadcrumbItem } from "@/types";
@@ -39,6 +39,7 @@ const transition = {
 export function ImageCard({
   id,
   alt,
+  type,
   onClick,
 }: {
   id: number;
@@ -54,12 +55,20 @@ export function ImageCard({
     >
       {/* Kontener na zdjęcie z efektem hover */}
       <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
+        {type.includes('video')?(
+          <FileVideo
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          
+        />
+        )
+          :(
         <img
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           src={`/showThumbnail/${id}`}
           alt={alt}
           loading="lazy"
         />
+        )}
         
         {/* Subtelny overlay przy najechaniu */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
@@ -169,7 +178,18 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
       {/* MAIN VIEW - usunięty AnimatePresence i ciężkie springi */}
       <div className="relative flex-1 flex items-center justify-center touch-none overflow-hidden">
         <button onClick={prevImage} className="hidden md:flex absolute left-4 z-30 p-4 text-white/20 hover:text-white transition-colors"><ArrowLeft className="w-8 h-8" /></button>
-
+        {images[currentIndex]?.mime_type.includes('video') ? (
+           <motion.video
+            key={images[currentIndex].id}
+            src={imageCache[images[currentIndex].id]}
+            className="max-w-full max-h-[75vh] object-contain shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            controls
+          />
+        ) : (
+          <>
         <motion.img
           key={images[currentIndex].id}
           src={imageCache[images[currentIndex].id]}
@@ -193,6 +213,8 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
           animate={{ opacity: 1 }}
           transition={{ duration: 0.2 }}
         />
+        </>
+        )}
 
         <button onClick={nextImage} className="hidden md:flex absolute right-4 z-30 p-4 text-white/20 hover:text-white transition-colors"><ArrowRight className="w-8 h-8" /></button>
       </div>
@@ -247,6 +269,7 @@ export  function GalleryComponent() {
             id={img.id}
             key={index}
             src={img.id}
+            type={img.mime_type}
             alt={img.name}
             onClick={() => openGallery(index)}
           />
