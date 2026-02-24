@@ -370,7 +370,7 @@ public function filesByType(Request $request, $type)
     }
     // if image is mime type
     if ($type === 'image') {
-        $newType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml','video/mp4'];
+        $newType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml','video/mp4','video/quicktime'];
         $files = UserFile::where('user_id', $request->user()->id)
         ->whereIn('mime_type', $newType)
         ->orderBy('created_at', 'desc')
