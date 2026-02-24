@@ -307,7 +307,7 @@ const hideFromUi = (fileId: number) => {
     const id = toast.loading("Przesyłanie plików...");
 
     try {
-      await axios.post("/uploadFile/", formData, {
+      await axios.post("/uploadFile", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       toast.success("Pliki przesłane pomyślnie!", { id });
