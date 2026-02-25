@@ -1,21 +1,21 @@
 <?php
-
     namespace App\Http\Controllers;
-
     use App\Models\UserFile;
     use App\Models\Folder;
-use App\Models\SavedFolder;
-use Illuminate\Http\Request;
+    use App\Models\SavedFolder;
+    use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Storage;
     use Inertia\Inertia;
     use App\Models\SharedFile;
     use Carbon\Carbon;
-use Defuse\Crypto\Crypto;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
+    use Defuse\Crypto\Crypto;
+    use Illuminate\Support\Facades\Cache;
+    use Illuminate\Support\Facades\Crypt;
+    use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
-    
+    use Ercsctt\FileEncryption\Facades\FileEncrypter;
+use Illuminate\Support\Facades\Log;
+
     class FileController extends Controller
     {
         // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -81,13 +81,14 @@ use Illuminate\Support\Str;
         $uploadedFiles = [];
 
 foreach ($request->file('files') as $file) {
-    $filename = time().'_'.Str::random(10).'_'.$file->getClientOriginalName();
+    $filename = time().'_'.Str::random(16).'.enc';
     // $path = $file->storeAs('uploads', $filename, 'private');
     $mime = $file->getMimeType();
 
     //  $path = $file->store('uploads', 'private');
+    FileEncrypter::encryptFile($file->getRealPath(), storage_path("app/private/uploads/".auth()->id()."/{$filename}"));
      $encryptedContent = Crypt::encrypt(file_get_contents($file->getRealPath()));
-     Storage::disk('private')->put("uploads/".auth()->id()."/{$filename}", $encryptedContent);
+    //  Storage::disk('private')->put("uploads/".auth()->id()."/{$filename}", $encryptedContent);
     
 
     $type = match (true) {
@@ -111,7 +112,34 @@ foreach ($request->file('files') as $file) {
                 Crypt::encryptString($image->encodeByExtension($file->getClientOriginalExtension(), quality: 70))
             );
         }
-    // generowanie miniaturki tylko dla obrazów
+    if($type =="video"){
+        try {
+        $ffmpeg = \FFMpeg\FFMpeg::create();
+        $video = $ffmpeg->open($file->getRealPath());
+         $video
+            ->filters()
+            ->resize(new \FFMpeg\Coordinate\Dimension(320, 240))
+            ->synchronize();
+         $video->frame(\FFMpeg\Coordinate\TimeCode::fromSeconds(2))->save(storage_path("app/private/uploads/thumbs/temp/{$filename}"));
+        
+       
+       
+         $thumbnailPath = "uploads/thumbs/".auth()->id()."/{$filename}";
+        Storage::disk('private')->put($thumbnailPath, Crypt::encryptString(file_get_contents(storage_path("app/private/uploads/thumbs/temp/{$filename}"))));
+         unlink(storage_path("app/private/uploads/thumbs/temp/{$filename}"));
+        }
+        catch (\Exception $e) {
+            Log::error("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
+                // Możesz też ustawić domyślną miniaturę dla wideo, jeśli generowanie się nie powiedzie
+                Storage::disk('private')->put("uploads/thumbs/".auth()->id()."/{$filename}", Crypt::encryptString(file_get_contents(public_path('logo.png'))));
+            // dd("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
+            
+        }
+    
+            //  Storage::disk('private')->put("uploads/thumbs/".auth()->id()."/{$filename}", Crypt::encryptString(file_get_contents(public_path('logo.png'))));
+
+        // unlink(storage_path("app/{$thumbnailPath}"));
+    }
    
 
     
@@ -125,7 +153,7 @@ foreach ($request->file('files') as $file) {
         'size' => $file->getSize(),
         'type' => $type,
         'folder_id' => $folderId,
-        'thumbnail' => $type === 'image' ? "uploads/thumbs/".auth()->id()."/{$filename}" : null,
+        'thumbnail' => $type === 'image' || $type === 'video' ? "uploads/thumbs/".auth()->id()."/{$filename}" : null,
         'encrypted' => true,
     ]);
 
@@ -209,15 +237,20 @@ foreach ($request->file('files') as $file) {
             if ($file->user_id !== auth()->id()) {
                 abort(403);
             }
-            if($file->encrypted){
-                $encrypted = Storage::get($file->path);
+            if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
+                $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
+        
+       
+            } else if(!$file->encrypted){ 
+                $decrypted = Storage::disk('private')->get($file->path);
+            }
+            else if($file->encrypted){  
+                $encrypted = Storage::disk('private')->get($file->path);
                 $decrypted = Crypt::decrypt($encrypted);
-                return response($decrypted)
-                ->header('Content-Type', $file->mime_type);
             }
-            else{
-            return Storage::disk('private')->download($file->path, $file->original_name);
-            }
+            return response($decrypted)
+                ->header('Content-Type', $file->mime_type)
+                ->header('Content-Disposition', 'attachment; filename="' . $file->original_name . '"');
         }
         public function showFile(UserFile $file)
 {
@@ -227,13 +260,19 @@ foreach ($request->file('files') as $file) {
     }
 
     // $path = Storage::disk('private')->path($file->path);
-    if($file->encrypted){
-        $encrypted = Storage::disk('private')->get($file->path);
-        $decrypted = Crypt::decrypt($encrypted);
-    } else {
+    if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
+       $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
+        
+       
+    } else if(!$file->encrypted){ 
         $decrypted = Storage::disk('private')->get($file->path);
     }
-
+    else if($file->encrypted){  
+        $encrypted = Storage::disk('private')->get($file->path);
+        $decrypted = Crypt::decrypt($encrypted);
+    }   
+   
+    
     // Sprawdzamy czy plik fizycznie istnieje na dysku
     // if (!Storage::disk('private')->exists($file->path)) {
     //     abort(404, 'Plik nie istnieje na serwerze.');
@@ -253,7 +292,7 @@ foreach ($request->file('files') as $file) {
         
         if (!$file->thumbnail || !Storage::disk('private')->exists($file->thumbnail)) {
             // Zwróć domyślną ikonę, jeśli miniatura nie istnieje
-            return response()->file(public_path('images/default-thumbnail.png'));
+            return response()->file(public_path('logo.png'));
         }
         if($file->encrypted){
             $encrypted = Storage::disk('private')->get($file->thumbnail);
@@ -264,7 +303,7 @@ foreach ($request->file('files') as $file) {
        
 
        return response($decrypted)->header('Content-Type', 'image/jpeg')
-       ->header('Content-Type', 'application/octet-stream')
+    //    ->header('Content-Type', 'application/octet-stream')
        ->header('Content-Disposition', 'inline')
        ->header('Cache-Control', 'max-age=31536000, public');
     }

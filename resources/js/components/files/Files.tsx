@@ -129,7 +129,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
         onClick={onClick}
         className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer flex flex-col items-center"
       >
-       {file.type === "image" ? (
+       {file.type === "image" || file.type === "video" ? (
             <img
               src={sharing ? `/share/file/${file.id}/thumbnail` : `/showThumbnail/${file.id}`}
               alt={file.name}

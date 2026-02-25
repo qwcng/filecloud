@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\DeleteFolderJob;
 use App\Models\SavedFolder;
+use Ercsctt\FileEncryption\Facades\FileEncrypter;
+// use Ercsctt\FileEncryption\FileEncrypter;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use ZipArchive;
@@ -215,15 +217,19 @@ public function changeFolderName(Request $request, $folderId){
             if (Storage::disk('private')->exists($file->path)) {
 
             $content = Storage::disk('private')->get($file->path);
-            if ($file->encrypted) {
-                try {
-                    $content = Crypt::decrypt($content);
-                } catch (\Exception $e) {
-                    Log::error("Nie udało się odszyfrować pliku {$file->id} do ZIPa: " . $e->getMessage());
-                    continue;
-                }
+            if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
+                $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
+        
+       
+            } else if(!$file->encrypted){ 
+                $decrypted = Storage::disk('private')->get($file->path);
             }
-            $zip->addFromString($currentPath . $file->original_name, $content);
+            else if($file->encrypted){  
+                $encrypted = Storage::disk('private')->get($file->path);
+                $decrypted = Crypt::decrypt($encrypted);
+            }
+            $zip->addFromString($currentPath . $file->original_name, $decrypted);
+
         }
         }
 

@@ -10,6 +10,8 @@ use App\Models\SharedFile;
 use App\Models\SharedFolder;
 use App\Models\UserFile;
 use Carbon\Carbon;
+use Ercsctt\FileEncryption\Facades\FileEncrypter;
+// use Ercsctt\FileEncryption\FileEncrypter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -132,8 +134,20 @@ class ShareController extends Controller
         if ($share->access_code !== $code) {
             abort(403, 'Niepoprawny kod dostępu');
         }
-
-        return Storage::disk('private')->download($file->path, $file->original_name);
+        if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
+                $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
+        
+       
+            } else if(!$file->encrypted){ 
+                $decrypted = Storage::disk('private')->get($file->path);
+            }
+            else if($file->encrypted){  
+                $encrypted = Storage::disk('private')->get($file->path);
+                $decrypted = Crypt::decrypt($encrypted);
+            }
+            return response($decrypted)->header('Content-Type', $file->mime_type)
+            ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"')
+            ->header('Cache-Control', 'max-age=31536000, public');
     }
     public function showSharedFile(Request $request, $fileId)
     {
@@ -165,17 +179,20 @@ class ShareController extends Controller
 
         
         $path = Storage::disk('private')->path($file->path);
-        if($file->encrypted){
-            $encrypted = Storage::disk('private')->get($file->path);
-            $decrypted = Crypt::decrypt($encrypted);
-            return response($decrypted)
-            // ->header('Content-Type', $file->mime_type)
-            // ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"')
+        if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
+                $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
+        
+       
+            } else if(!$file->encrypted){ 
+                $decrypted = Storage::disk('private')->get($file->path);
+            }
+            else if($file->encrypted){  
+                $encrypted = Storage::disk('private')->get($file->path);
+                $decrypted = Crypt::decrypt($encrypted);
+            }
+            return response($decrypted)->header('Content-Type', $file->mime_type)
+            ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"')
             ->header('Cache-Control', 'max-age=31536000, public');
-        }
-        else{
-        return response()->file($path);
-        }
     }
     public function getSharedFiles(Request $request)
     {
@@ -320,23 +337,21 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
             
 
         ]);
-    if($file->encrypted){
-        $encrypted = Storage::disk('private')->get($file->path);
-        $decrypted = Crypt::decrypt($encrypted);
-        return response($decrypted)
-        ->header('Content-Type', $file->mime_type)
-        ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"')
-        ->header('Cache-Control', 'max-age=31536000, public');
-    }
-    else{
-    $path = Storage::disk('private')->path($file->path);
-    
-    return response()->file($path, [
-        'Content-Disposition' => 'inline',
-        'Cache-Control' => 'private, max-age=3600',
-    ]);
-}
-    }
+        if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
+                        $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
+                
+            
+                    } else if(!$file->encrypted){ 
+                        $decrypted = Storage::disk('private')->get($file->path);
+                    }
+                    else if($file->encrypted){  
+                        $encrypted = Storage::disk('private')->get($file->path);
+                        $decrypted = Crypt::decrypt($encrypted);
+                    }
+                    return response($decrypted)->header('Content-Type', $file->mime_type)
+                    ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"')
+                    ->header('Cache-Control', 'max-age=31536000, public');
+            }
     public function showSharedFilesThumbnail(UserFile $file)
     {
 

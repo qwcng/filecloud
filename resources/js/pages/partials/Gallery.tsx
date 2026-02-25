@@ -56,9 +56,11 @@ export function ImageCard({
       {/* Kontener na zdjęcie z efektem hover */}
       <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-shadow group-hover:shadow-xl group-hover:shadow-blue-500/10">
         {type.includes('video')?(
-          <FileVideo
+           <img
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          
+          src={`/showThumbnail/${id}`}
+          alt={alt}
+          loading="lazy"
         />
         )
           :(
@@ -186,6 +188,7 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
+            poster={`/showThumbnail/${images[currentIndex].id}`}
             controls
             autoPlay
             
