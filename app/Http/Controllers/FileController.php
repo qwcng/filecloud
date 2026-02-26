@@ -140,7 +140,12 @@ foreach ($request->file('files') as $file) {
             dd(["error" => "Błąd podczas generowania miniatury wideo: " . $e->getMessage(),
             "file" => $file->getClientOriginalName(),
         // $ffmpeg->getConfiguration()->get('ffprobe.binaries'),
-        base_path('ffmpeg/ffprobe')]);
+        base_path('ffmpeg/ffprobe'),
+           "exists" => function_exists('proc_open'),
+              "ffmpeg_exists" => file_exists(base_path('ffmpeg/ffmpeg')),
+                "ffprobe_exists" => file_exists(base_path('ffmpeg/ffprobe')),
+                "shell" =>shell_exec("ffprobe -help")
+        ]);
             
         }
     
