@@ -114,9 +114,9 @@ foreach ($request->file('files') as $file) {
         }
     if($type =="video"){
         try {
-        $ffmpeg = \FFMpeg\FFMpeg::create([
-           
-            
+       $ffmpeg = \FFMpeg\FFMpeg::create([
+            'ffmpeg.binaries'  => base_path('ffmpeg/ffmpeg'),
+            'ffprobe.binaries' => base_path('ffmpeg/ffprobe'),
         ]);
         
         $video = $ffmpeg->open($file->getRealPath());
@@ -140,13 +140,17 @@ foreach ($request->file('files') as $file) {
             dd(["error" => "Błąd podczas generowania miniatury wideo: " . $e->getMessage(),
             "file" => $file->getClientOriginalName(),
         // $ffmpeg->getConfiguration()->get('ffprobe.binaries'),
-        base_path('ffmpeg/ffprobe'),
+            
            "exists" => function_exists('proc_open'),
               "ffmpeg_exists" => file_exists(base_path('ffmpeg/ffmpeg')),
                 "ffprobe_exists" => file_exists(base_path('ffmpeg/ffprobe')),
                 "shell" =>shell_exec("ffprobe -help"),
                 "version" => shell_exec(base_path('ffmpeg/ffprobe') . ' -version')
+                
         ]);
+        $ffprobePath = base_path('ffmpeg/ffprobe');
+        $version = shell_exec($ffprobePath . ' -version 2>&1');
+        dd($version);
             
         }
     
