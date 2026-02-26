@@ -134,7 +134,7 @@ foreach ($request->file('files') as $file) {
             Log::error("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
                 // Możesz też ustawić domyślną miniaturę dla wideo, jeśli generowanie się nie powiedzie
                 Storage::disk('private')->put("uploads/thumbs/".auth()->id()."/{$filename}", Crypt::encryptString(file_get_contents(public_path('logo.png'))));
-            dd("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
+            // dd("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
             
         }
     
