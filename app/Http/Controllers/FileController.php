@@ -115,8 +115,8 @@ foreach ($request->file('files') as $file) {
     if($type =="video"){
         try {
         $ffmpeg = \FFMpeg\FFMpeg::create([
-            'ffmpeg.binaries'  =>   base_path('ffmpeg/ffmpeg'),
-            'ffprobe.binaries' =>  base_path('ffmpeg/ffprobe'),
+            'ffmpeg.binaries'  =>   base_path('ffmpeg'),
+            'ffprobe.binaries' =>  base_path('ffmpeg'),
         ]);
         $video = $ffmpeg->open($file->getRealPath());
          $video
