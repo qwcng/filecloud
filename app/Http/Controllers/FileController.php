@@ -114,11 +114,9 @@ foreach ($request->file('files') as $file) {
         }
     if($type =="video"){
         try {
-       $ffmpeg = \FFMpeg\FFMpeg::create([
-            'ffmpeg.binaries'  => base_path('ffmpeg/ffmpeg'),
-            'ffprobe.binaries' => base_path('ffmpeg/ffprobe'),
+        $ffmpeg = \FFMpeg\FFMpeg::create([
+            
         ]);
-        
         $video = $ffmpeg->open($file->getRealPath());
          $video
             ->filters()
@@ -135,22 +133,8 @@ foreach ($request->file('files') as $file) {
         catch (\Exception $e) {
             Log::error("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
                 // Możesz też ustawić domyślną miniaturę dla wideo, jeśli generowanie się nie powiedzie
-
                 Storage::disk('private')->put("uploads/thumbs/".auth()->id()."/{$filename}", Crypt::encryptString(file_get_contents(public_path('logo.png'))));
-        //     dd(["error" => "Błąd podczas generowania miniatury wideo: " . $e->getMessage(),
-        //     "file" => $file->getClientOriginalName(),
-        // // $ffmpeg->getConfiguration()->get('ffprobe.binaries'),
-            
-        //    "exists" => function_exists('proc_open'),
-        //       "ffmpeg_exists" => file_exists(base_path('ffmpeg/ffmpeg')),
-        //         "ffprobe_exists" => file_exists(base_path('ffmpeg/ffprobe')),
-        //         "shell" =>shell_exec("ffprobe -help"),
-        //         "version" => shell_exec(base_path('ffmpeg/ffprobe') . ' -version')
-                
-        // ]);
-        $ffprobePath = base_path('ffmpeg/ffprobe');
-        $version = shell_exec($ffprobePath . ' -version 2>&1');
-        dd($version);
+            dd("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
             
         }
     
