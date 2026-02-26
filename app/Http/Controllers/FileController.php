@@ -115,9 +115,10 @@ foreach ($request->file('files') as $file) {
     if($type =="video"){
         try {
         $ffmpeg = \FFMpeg\FFMpeg::create([
-            'ffmpeg.binaries'  =>   base_path('ffmpeg'),
-            'ffprobe.binaries' =>  base_path('ffmpeg'),
+            'ffmpeg.binaries'  =>   base_path('ffmpeg/ffmpeg'),
+            'ffprobe.binaries' =>  base_path('ffmpeg/ffprobe'),
         ]);
+        $ffmpeg->getConfiguration()->set('ffmpeg.threads', 4);
         $video = $ffmpeg->open($file->getRealPath());
          $video
             ->filters()
