@@ -137,17 +137,17 @@ foreach ($request->file('files') as $file) {
                 // Możesz też ustawić domyślną miniaturę dla wideo, jeśli generowanie się nie powiedzie
 
                 Storage::disk('private')->put("uploads/thumbs/".auth()->id()."/{$filename}", Crypt::encryptString(file_get_contents(public_path('logo.png'))));
-            dd(["error" => "Błąd podczas generowania miniatury wideo: " . $e->getMessage(),
-            "file" => $file->getClientOriginalName(),
-        // $ffmpeg->getConfiguration()->get('ffprobe.binaries'),
+        //     dd(["error" => "Błąd podczas generowania miniatury wideo: " . $e->getMessage(),
+        //     "file" => $file->getClientOriginalName(),
+        // // $ffmpeg->getConfiguration()->get('ffprobe.binaries'),
             
-           "exists" => function_exists('proc_open'),
-              "ffmpeg_exists" => file_exists(base_path('ffmpeg/ffmpeg')),
-                "ffprobe_exists" => file_exists(base_path('ffmpeg/ffprobe')),
-                "shell" =>shell_exec("ffprobe -help"),
-                "version" => shell_exec(base_path('ffmpeg/ffprobe') . ' -version')
+        //    "exists" => function_exists('proc_open'),
+        //       "ffmpeg_exists" => file_exists(base_path('ffmpeg/ffmpeg')),
+        //         "ffprobe_exists" => file_exists(base_path('ffmpeg/ffprobe')),
+        //         "shell" =>shell_exec("ffprobe -help"),
+        //         "version" => shell_exec(base_path('ffmpeg/ffprobe') . ' -version')
                 
-        ]);
+        // ]);
         $ffprobePath = base_path('ffmpeg/ffprobe');
         $version = shell_exec($ffprobePath . ' -version 2>&1');
         dd($version);
