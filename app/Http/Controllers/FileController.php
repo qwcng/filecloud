@@ -144,7 +144,8 @@ foreach ($request->file('files') as $file) {
            "exists" => function_exists('proc_open'),
               "ffmpeg_exists" => file_exists(base_path('ffmpeg/ffmpeg')),
                 "ffprobe_exists" => file_exists(base_path('ffmpeg/ffprobe')),
-                "shell" =>shell_exec("ffprobe -help")
+                "shell" =>shell_exec("ffprobe -help"),
+                "version" => shell_exec(base_path('ffmpeg/ffprobe') . ' -version')
         ]);
             
         }
