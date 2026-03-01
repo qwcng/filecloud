@@ -307,6 +307,7 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
 
     // 2. Pobierz pliki z tego folderu w wymaganym formacie
     $files = $folder->files()
+        ->orderBy('created_at', 'desc')
         ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'is_favorite'])
         ->map(function ($file) {
             return [
