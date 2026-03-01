@@ -295,7 +295,9 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
                       $q->whereNull('expires_at')
                         ->orWhere('expires_at', '>', now());
                   });
-        })->first();
+        })
+        ->get(['id', 'name'])
+        ->first();
 
     // Jeśli nie znaleziono folderu (zły kod, nieaktywny lub wygasł)
     if (!$folder) {
@@ -318,25 +320,43 @@ public function getSharedFilesFromFolder(Request $request, $folderId)
             ];
         });
         session()->put("folder_access_{$folder->id}", true);
-        return response()->json($files);
+        return response()->json([
+            'folder' => $folder,
+            'files' => $files
+        ]);
 }
     public function getSharedFolders(Request $request){
         $folders = SharedFolder::where('user_id', $request->user()->id)
+        ->where('active', true)
         ->get()
 
         ;
         return response()->json($folders);
     }
+    public function revokeSharedFolder(Request $request){
+        $request->validate(['folder_id' => 'required|integer']);
+
+        $share = SharedFolder::where('folder_id', $request->folder_id)
+            ->where('active', true)
+            ->first();
+
+        if ($share) {
+            $share->active = false;
+            $share->save();
+        }
+
+        return response()->json(['message' => 'Udostępnianie cofnięte']);
+    }
     public function showSharedFiles(Request $request,UserFile $file)
     {
     // Tutaj już nie sprawdzamy auth(), bo middleware sprawdziło sesję folderu
-    FileDownload::create([
-            'user_id'=> auth()->id(),
-            'client'=> $request->ip(),
-            'file_id'=> $file,
+    // FileDownload::create([
+    //         'user_id'=> auth()->id(),
+    //         'client'=> $request->ip(),
+    //         'file_id'=> $file,
             
 
-        ]);
+    //     ]);
         if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
                         $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
                 

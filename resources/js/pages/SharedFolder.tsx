@@ -44,6 +44,7 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
     const [gallery, setGallery] = useState<boolean>(false);
     const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    const [folder, setFolder] = useState<any>(null);
 
     const handleChange = (value: string, index: number) => {
         if (!/^\d*$/.test(value)) return;
@@ -95,14 +96,15 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
             const response = await axios.post(`/folderShare/${folderId}/check`, {
                 access_code: fullCode
             });
-            const mappedFiles = response.data.map((f: any) => ({
+            const mappedFiles = response.data.files.map((f: any) => ({
                 id: f.id,
                 name: f.original_name,
-                type: mapMimeToType(f.mime_type),
+                mime_type: mapMimeToType(f.mime_type),
                 size: f.size,
                 created_at: f.created_at,
                 url: f.url,
             }));
+            setFolder(response.data.folder);
             setFiles(mappedFiles);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Błędny kod dostępu lub link wygasł');
@@ -122,7 +124,7 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
     const closeGallery = () => setGallery(false);
 
     const handleClick = (file: FileData) => {
-        if (file.type === "image") {
+        if (file.mime_type === "image" || file.mime_type === "video") {
             setGallery(true);
         } else {
             setSelectedFile(file);
@@ -192,9 +194,9 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
             
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-2xl font-bold dark:text-white">Udostępnione pliki</h1>
+                    <h1 className="text-2xl font-bold dark:text-white">Przeglądasz folder : <span className="text-blue-500">{folder?.name || "Udostępnione Pliki"}</span></h1>
                     <p className="text-sm text-muted-foreground">
-                        {isLogged ? "Przeglądasz pliki jako zalogowany użytkownik." : "Masz dostęp do poniższych zasobów."}
+                        {isLogged ? "Przeglądasz pliki jako zalogowany użytkownik." : "Masz dostęp do poniższych zasobów. Zaloguj się, aby mieć możliwość zapisania folderu na swoim koncie."}
                         
                     </p>
                     {isLogged?(
@@ -218,11 +220,11 @@ export default function SharedFolder({ folderId }: { folderId: string }) {
                         ))
                     )}
 
-                    {selectedFile && <FileModal file={selectedFile} onClose={() => setSelectedFile(null)} />}
+                    {selectedFile && <FileModal file={selectedFile} onClose={() => setSelectedFile(null)} sharing={true} />}
                     
                     {gallery && (
                         <Gallerye 
-                            images={files.filter(file => file.type === 'image')} 
+                            images={files.filter(file => file.mime_type === 'image' || file.mime_type === 'video')} 
                             initialIndex={0} 
                             onClose={closeGallery} 
                             sharing={true} 

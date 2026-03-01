@@ -26,6 +26,7 @@ Route::post('/folderShare/{folderId}/share', [ShareController::class, 'shareFold
 Route::post('/folderShare/{folderId}/check', [ShareController::class, 'getSharedFilesFromFolder'])->name('checkFolderAccessCode');
 Route::get('/folderShare/{folderId}/show', [ShareController::class, 'showSharedFolder'])->name('showSharedFolder');
 Route::get('/getSharedFolders', [ShareController::class, 'getSharedFolders']);
+Route::post('/revokeSharedFolder', [ShareController::class, 'revokeSharedFolder'])->name('revokeSharedFolder');
 Route::get('/share/file/{file}', [ShareController::class, 'showSharedFiles'])
     ->name('file.shared.show')
     ->middleware(CheckFolderAccess::class);

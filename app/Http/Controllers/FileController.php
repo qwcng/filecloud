@@ -415,7 +415,18 @@ public function filesByType(Request $request, $type)
         $files = UserFile::where('user_id', $request->user()->id)
         ->whereIn('mime_type', $newType)
         ->orderBy('created_at', 'desc')
-        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'mime_type', 'created_at', 'is_favorite']);
+        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'mime_type', 'created_at', 'is_favorite'])
+        ->map(function ($file) {
+            return [
+                'id'            => $file->id,
+                'name' => $file->original_name,
+                'path'          => $file->path,
+                'mime_type'     => $file->mime_type,
+                'size'          => number_format($file->size / 1024 / 1024, 2) . ' MB',
+                'created_at'    => $file->created_at->toDateTimeString(),
+                'is_favorite'   => (bool)$file->is_favorite,
+            ];
+        });
     }
     if($type === 'document'){
         $newType = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];

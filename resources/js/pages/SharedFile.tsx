@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Ban, Download, EyeIcon, PenLine, ShareIcon, TvMinimal } from "lucide-react";
+import { Ban, CopyIcon, Download, EyeIcon, PenLine, ShareIcon, TvMinimal,Copy} from "lucide-react";
 import { Tab } from "@headlessui/react";
 import { router } from "@inertiajs/react";
 import QrCodeGenerator from "@/components/QRcodeGenerator";
@@ -33,6 +33,8 @@ import QRCodeStyling from "qr-code-styling";
 import OpenSharedLink from "@/components/OpenSharedLink";
 import { FolderCard } from "@/components/files/Folders";
 import { DialogBuilder } from "@/components/DialogBuilder";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 interface FileType {
   id: number;
   name: string;
@@ -113,7 +115,7 @@ const handleSubmit = () => {
     <>
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <h3 className="text-lg font-semibold">📂 Udostępnione pliki</h3>
-
+        <Toaster richColors position="top-center"/>
         <div className="flex items-center gap-2 my-4">
           <OpenSharedLink />
          
@@ -249,7 +251,12 @@ const handleSubmit = () => {
                 
                 Udostępnij plik <strong>{selectedFile?.name}</strong> ponownie, kopiując link lub udotepniając kod QR:
                 <div className="w-full flex justify-center mb-5"><QrCodeGenerator url={`${window.location.origin}/share/${selectedFile?.id}`} /></div>
-                <Input readOnly value={`${window.location.origin}/share/${selectedFile?.id}`} />
+                <div className="w-full flex justify-center mb-5">
+                   <Input readOnly value={`${window.location.origin}/share/${selectedFile?.id}`} />
+                  <Button variant="outline" onClick={() =>{ navigator.clipboard.writeText(`${window.location.origin}/share/${selectedFile?.id}`)
+                                                             toast.success("Link skopiowany do schowka")}}><CopyIcon/>copy</Button>
+               
+                </div>
 
               </>
             ) : null}
@@ -271,7 +278,7 @@ const handleSubmit = () => {
       {folders?.map((folder) => (
         <>
           <FolderCard 
-            key={folder.folder_id} // Essential for React performance
+            key={folder.folder_id}
             folderId={folder.folder_id}
             folderName={folder.name} 
             href={folder.slug || folder.folder_id.toString()} 
@@ -287,8 +294,28 @@ const handleSubmit = () => {
           >
 
             <QrCodeGenerator url={`${window.location.origin}/folderShare/${folder.folder_id}`} />
-            <Input defaultValue={`${window.location.origin}/folderShare/${folder.folder_id}`}/>
-            <h4>Kod: nwm</h4>
+             <div className="w-full flex justify-center mb-5">
+                   <Input readOnly value={`${window.location.origin}/folderShare/${folder.folder_id}`} />
+                  <Button variant="outline" onClick={() =>{ navigator.clipboard.writeText(`${window.location.origin}/folderShare/${folder.folder_id}`)
+                                                             toast.success("Link skopiowany do schowka")}}><CopyIcon/>copy</Button>
+                </div>
+            
+            <h4>Kod: {folder.access_code}</h4>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="outline" onClick={() => {
+                router.post('/revokeSharedFolder', {
+                  folder_id: folder.folder_id,
+                }, {
+                  onSuccess: () => {
+                    toast.success("Dostęp do folderu został cofnięty");
+                    // Optional: refresh data or navigate
+                  }
+                });
+              }
+              }> Cofnij dostęp </Button>
+              
+            </div>
           </DialogBuilder>
           </>
         ))}

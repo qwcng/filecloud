@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Head,router } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
-import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X,Loader2, FileVideo } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X,Loader2, FileVideo, Info } from "lucide-react";
 import { motion,AnimatePresence, scale } from "framer-motion";
 import axios from "axios";
 import { type BreadcrumbItem } from "@/types";
 import { downloadFile } from "@/routes";
+import { info } from "console";
+import { FileModal } from "@/components/files/Files";
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "panel", href: "/dashboard/" },
@@ -97,6 +99,7 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
   const [fileAction, setFileAction] = useState(false);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [scale, setScale] = useState(1);
+  const [info, setInfo] = useState(false);
 
   const scrollToActive = (index: number, behavior: "smooth" | "auto" = "smooth") => {
     const activeThumb = thumbnailRefs.current[index];
@@ -170,6 +173,14 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
               </button>
             </div>
           )}
+          <button onClick={() => setInfo(!info)} className="p-2 text-white/70 hover:text-white transition-colors">
+             <Info className="w-5 h-5" />
+             
+          </button>
+            {/* {info && (
+              console.log(images[currentIndex].name),
+              <FileModal fileId={images[currentIndex].} onClose={() => setInfo(false)} />
+            )} */}
 
           <button onClick={onClose} className="p-2 text-white/70 hover:text-white transition-all">
             <X className="w-7 h-7" />

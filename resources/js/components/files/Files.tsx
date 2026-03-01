@@ -354,7 +354,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
 // import { router } from "@inertiajs/react"; // lub inne narzędzie do routingu
 // import { toast } from "react-hot-toast";
 
-export function FileModal({ file, onClose }: { file: any; onClose: () => void }) {
+export function FileModal({ file, onClose,sharing = false }: { file: any; onClose: () => void }) {
   const [showShareModal, setShowShareModal] = useState(false);
 
   // Zamykanie modala klawiszem Escape
@@ -365,6 +365,7 @@ export function FileModal({ file, onClose }: { file: any; onClose: () => void })
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+  
 
   return (
     <>
@@ -398,7 +399,10 @@ export function FileModal({ file, onClose }: { file: any; onClose: () => void })
               )}
               {file.type === "video" && (
                 <video controls className="w-full max-h-80">
-                  <source src={`/showFile/${file.id}`} type="video/mp4" />
+                  <source 
+                    src={sharing ? `/share/file/${file.id}` : `/showFile/${file.id}`} 
+                    type={file.mime_type} 
+                  />
                 </video>
               )}
               {file.type === "epub" && (
@@ -504,14 +508,15 @@ export function ShareModal({ fileId, onClose }: { fileId: number; onClose: () =>
           expires_in: expiresAt ? expiresAt : null,
         },{
           onSuccess: () => {
-           
-            // toast.success('Plik został udostępniony!')
+           navigator.clipboard.writeText(window.location.origin + `/share/${fileId}`);
+            toast.success('Plik został udostępniony oraz link został skopiowany do schowka! ')
+       
+       
+
         }
         
       });
-        // alert(
-        //   "✅ Plik został udostępniony! \n Znajdziesz go pod linkiem localhost:800/share/" + fileId
-        // );
+        
         
       } catch (err: any) {
         console.error(err);
