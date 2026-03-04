@@ -114,11 +114,16 @@ foreach ($request->file('files') as $file) {
         }
     if($type =="video"){
         try {
-        $ffmpeg = \FFMpeg\FFMpeg::create([
+            if(env('APP_ENV') === 'local'){
+                $ffmpeg = \FFMpeg\FFMpeg::create();
+               
+            } else {
+                $ffmpeg = \FFMpeg\FFMpeg::create([
                'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
                 'ffprobe.binaries' => '/usr/local/bin/ffprobe',
                 'timeout' => 60,
         ]);
+    }
         $video = $ffmpeg->open($file->getRealPath());
          $video
             ->filters()

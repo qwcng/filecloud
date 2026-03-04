@@ -34,6 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // ->validateCsrfTokens(except: [
         //     '/uploadFile',
         // ]);
+         $middleware->validateCsrfTokens(except: [
+            'getFileByType/*',
+            'showFile/*',
+            '/uploadFile',
+        ]);
 
         // 🔑 Alias middleware
         $middleware->alias([
