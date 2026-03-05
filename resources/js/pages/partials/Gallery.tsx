@@ -167,7 +167,7 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
           {fileAction && (
             <div className="absolute top-12 right-10 bg-neutral-900 border border-white/10 rounded-lg shadow-xl py-1 min-w-[140px] z-[60]">
             <a 
-            href={`/d/${images[currentIndex].id}`} 
+            href={`${window.location.origin}/d/${images[currentIndex].id}`} 
             download 
             className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors"
           >
