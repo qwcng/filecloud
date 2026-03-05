@@ -410,42 +410,40 @@ public function saveEditedFile(Request $request, $fileId)
 
     // return response()->json(['message' => 'File updated successfully']);
 }
+
 public function filesByType(Request $request, $type)
 {
     $validTypes = ['image', 'audio', 'video', 'document', 'text', 'other'];
     if (!in_array($type, $validTypes)) {
         abort(400, 'Invalid file type');
     }
-    // if image is mime type
+
+    $query = UserFile::where('user_id', $request->user()->id)
+        ->orderBy('created_at', 'desc');
+
     if ($type === 'image') {
-        $newType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml','video/mp4','video/quicktime'];
-        $files = UserFile::where('user_id', $request->user()->id)
-        ->whereIn('mime_type', $newType)
-        ->orderBy('created_at', 'desc')
-        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'mime_type', 'created_at', 'is_favorite'])
-        ->map(function ($file) {
-            return [
-                'id'            => $file->id,
-                'name' => $file->original_name,
-                'path'          => $file->path,
-                'mime_type'     => $file->mime_type,
-                'size'          => number_format($file->size / 1024 / 1024, 2) . ' MB',
-                'created_at'    => $file->created_at->toDateTimeString(),
-                'is_favorite'   => (bool)$file->is_favorite,
-            ];
-        });
+        $mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'video/mp4', 'video/quicktime'];
+        $query->whereIn('mime_type', $mimes);
+    } elseif ($type === 'document') {
+        $mimes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];
+        $query->whereIn('mime_type', $mimes);
     }
-    if($type === 'document'){
-        $newType = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];
-        $files = UserFile::where('user_id', $request->user()->id)
-        ->whereIn('mime_type', $newType)
-        ->orderBy('created_at', 'desc')
-        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'is_favorite']);
-    }
-    // $files = UserFile::where('user_id', $request->user()->id)
-    //     ->where('mime_type', $type)
-    //     ->orderBy('created_at', 'desc')
-    //     ->get();
+
+    // Używamy simplePaginate zamiast get
+    $files = $query->simplePaginate($request->input('limit', 20));
+
+    // Transformacja danych zachowując strukturę paginacji
+    $files->getCollection()->transform(function ($file) {
+        return [
+            'id'          => $file->id,
+            'name'        => $file->original_name,
+            'path'        => $file->path,
+            'mime_type'   => $file->mime_type,
+            'size'        => number_format($file->size / 1024 / 1024, 2) . ' MB',
+            'created_at'  => $file->created_at->toDateTimeString(),
+            'is_favorite' => (bool)$file->is_favorite,
+        ];
+    });
 
     return response()->json($files);
 }

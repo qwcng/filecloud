@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Head,router } from "@inertiajs/react";
+import React, { useState, useEffect, useRef,useCallback } from "react";
+import { Head,router,useRemember } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
 import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X,Loader2, FileVideo, Info } from "lucide-react";
 import { motion,AnimatePresence, scale } from "framer-motion";
@@ -8,6 +8,7 @@ import { type BreadcrumbItem } from "@/types";
 import { downloadFile } from "@/routes";
 import { info } from "console";
 import { FileModal } from "@/components/files/Files";
+// import { useRemember } from "@inertiajs/react";
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "panel", href: "/dashboard/" },
@@ -165,9 +166,13 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
           
           {fileAction && (
             <div className="absolute top-12 right-10 bg-neutral-900 border border-white/10 rounded-lg shadow-xl py-1 min-w-[140px] z-[60]">
-              <button onClick={() => window.location.href = `/d/${images[currentIndex].id}`} className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors">
-                <Download className="w-4 h-4" /> Pobierz
-              </button>
+            <a 
+            href={`/d/${images[currentIndex].id}`} 
+            download 
+            className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors"
+          >
+            <Download className="w-4 h-4" /> Pobierz
+          </a>
               <button className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors">
                 <Share2 className="w-4 h-4" /> Udostępnij
               </button>
@@ -259,45 +264,106 @@ export function Gallerye({ images, initialIndex, onClose,sharing = false }: { im
     </div>
   );
 }
+import { Skeleton } from "@/components/ui/skeleton";
 
-export  function GalleryComponent() {
+export function ImageSkeleton() {
+  return (
+    <div className="flex flex-col items-center w-34 [@media(max-width:450px)]:w-24">
+      {/* Kwadratowy box na zdjęcie */}
+      <Skeleton className="w-full aspect-square rounded-2xl" />
+      
+      {/* Pasek na tekst */}
+      <div className="mt-2 px-1 w-full flex flex-col items-center gap-1">
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+    </div>
+  );
+}
+export function GalleryComponent() {
+  const [images, setImages] = useRemember([], "gallery/images");
+  const [page, setPage] = useRemember(1, "gallery/page");
+  const [hasMore, setHasMore] = useRemember(true, "gallery/hasMore");
+
+  // Loading domyślnie na false, żeby nie pokazywać skeletonów przy starcie
+  const [loading, setLoading] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [images, setImages] = useState([]);
-  const openGallery = (index: number) => {
-    setSelectedIndex(index);
-    setShowGallery(true);
-  };
 
-  const closeGallery = () => setShowGallery(false);
-  useEffect(() => {
-    axios.get('/getFileByType/image/').then(response => {
-      console.log(response.data);
-        setImages(response.data);
+  const observer = useRef<IntersectionObserver | null>(null);
+  
+  const lastElementRef = useCallback((node: HTMLDivElement) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
 
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
     });
-  },[]);
+
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
+
+  useEffect(() => {
+    const itemsPerPage = 24;
+    // Sprawdzamy czy faktycznie potrzebujemy dociągnąć dane
+    // Jeśli mamy np. 48 zdjęć i jesteśmy na 2 stronie, to nie fetchujemy
+    const needsMoreData = images.length < page * itemsPerPage;
+
+    if (needsMoreData && hasMore) {
+      setLoading(true);
+      axios.get(`/getFileByType/image?page=${page}&limit=${itemsPerPage}`)
+        .then(response => {
+          const newData = response.data.data;
+          
+          setImages(prev => {
+            if (page === 1) return newData;
+            // Zapobiegamy duplikatom ID (częsty problem przy nawigacji wstecz)
+            const existingIds = new Set(prev.map(img => img.id));
+            const uniqueNew = newData.filter(img => !existingIds.has(img.id));
+            return [...prev, ...uniqueNew];
+          });
+          
+          setHasMore(response.data.next_page_url !== null);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [page]); // Tylko zmiana strony wyzwala ten efekt
+
   return (
-<>
-      <div className="flex flex-wrap gap-4 p-4">
+    <>
+      <div className="flex flex-wrap gap-4 p-4 justify-center md:justify-start">
+        {/* Renderujemy images bezpośrednio - jeśli useRemember zadziałało, 
+            zdjęcia pojawią się natychmiast bez czekania na loading */}
         {images.map((img, index) => (
           <ImageCard
             id={img.id}
-            key={index}
-            src={img.id}
+            key={`${img.id}-${index}`}
             type={img.mime_type}
             alt={img.name}
-            onClick={() => openGallery(index)}
+            onClick={() => {
+                setSelectedIndex(index);
+                setShowGallery(true);
+            }}
           />
         ))}
+
+        {/* Skeletony tylko gdy faktycznie fetchujemy NOWE dane na dole strony */}
+        {loading && Array.from({ length: 8 }).map((_, i) => (
+          <ImageSkeleton key={`skeleton-${i}`} />
+        ))}
+
+        {!loading && hasMore && <div ref={lastElementRef} className="w-full h-10" />}
       </div>
+
       {showGallery && (
         <Gallerye
           images={images}
           initialIndex={selectedIndex}
-          onClose={closeGallery}
+          onClose={() => setShowGallery(false)}
+          sharing={false}
         />
       )}
-   </>
+    </>
   );
 }
