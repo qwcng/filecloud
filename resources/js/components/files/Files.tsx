@@ -103,7 +103,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       // whileHover={{ scale: 1.02, boxShadow: "0 8px 20px rgba(0,0,0,0.08)" }}
-      className="relative w-72 border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
+      className="relative w-60 aspect-video border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
       draggable
       onDragStart={handleDragStart}
       onDragEnd={(e) => {
@@ -134,14 +134,14 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
               src={sharing ? `/share/file/${file.id}/thumbnail` : `/showThumbnail/${file.id}`}
               alt={file.name}
               
-              className="h-24 w-24 object-cover rounded shadow-sm"
+              className="h-23 w-23 object-cover rounded shadow-sm"
             />
           ) : (
             icons[file.type] || icons.other
           )}
        
         
-        <h3 className="text-lg  text-center   font-medium w-[80%] h-6 overflow-hidden whitespace-nowrap text-ellipsis">{file.name}</h3>
+        <h3 className="text-lg mt-2 text-center   font-medium w-[80%] h-6 overflow-hidden whitespace-nowrap text-ellipsis">{file.name}</h3>
         {/* <p className="text-sm text-gray-500">Rozmiar: {(file.size / 1000000).toPrecision(2)} MB</p>
         <p className="text-sm text-gray-500">Data: { new Date(file.created_at).toLocaleDateString()}</p> */}
         

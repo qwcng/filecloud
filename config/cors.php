@@ -27,10 +27,11 @@ return [
     'allowed_methods' => ['*'],
 
     // 'allowed_origins' => ['*'],
-     'allowed_origins' => [
-        'https://www.messenger.com', 
-        'https://www.facebook.com'
-    ],
+    //  'allowed_origins' => [
+    //     'https://www.messenger.com', 
+    //     'https://www.facebook.com'
+    // ],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 

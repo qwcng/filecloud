@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    return Inertia::render('admin/welcome');
 })->name('home');
 
 // Dashboard i pliki tylko dla zalogowanych
@@ -110,3 +110,4 @@ require __DIR__.'/auth.php';
 require __DIR__.'/folders.php';
 require __DIR__.'/share.php';
 require __DIR__.'/favourite.php';
+require __DIR__.'/admin.php';

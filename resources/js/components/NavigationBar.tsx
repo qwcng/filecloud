@@ -39,6 +39,7 @@ import { DialogBuilder } from "./DialogBuilder";
 import { toast } from "sonner";
 import { files } from "jszip";
 import { ref } from "process";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NavigationBarProps {
   urlr: string;
@@ -70,11 +71,13 @@ export function NewFolder({ urlr, refreshData }: { urlr: string; refreshData: ()
         },
       }
     );
+
   };
+  const isMobile = useIsMobile();
 
   return (
     <DialogBuilder
-      dialogTrigger={<Button variant="outline"> <FolderPlus className="w-4 h-4 " /> Nowy Folder</Button>}
+      dialogTrigger={isMobile ? <Button variant="outline" title="Nowy folder"><FolderPlus className="w-4 h-4" /></Button> : <Button variant="outline"><FolderPlus className="w-4 h-4 " /> Nowy Folder</Button>}
       dialogTitle="Stwórz folder"
       dialogDescription="Podaj nazwę nowego folderu."
       onSave={handleCreateFolder}
@@ -206,10 +209,11 @@ export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refresh
   const removeFile = (index: number) => {
     setData("files", data.files.filter((_, i) => i !== index));
   };
+  const isMobile = useIsMobile();
 
   return (
     <DialogBuilder
-      dialogTrigger={<Button variant="outline"><FilePlus className="w-4 h-4" /> Prześlij pliki</Button>}
+      dialogTrigger={ isMobile ? <Button variant="outline" title="Prześlij pliki"><FilePlus className="w-4 h-4" /> </Button> : <Button variant="outline"><FilePlus className="w-4 h-4" /> Prześlij pliki</Button> }
       dialogTitle="Prześlij pliki"
       dialogDescription="Wybierz pliki do przesłania na serwer."
       onSave={handleUpload}
@@ -265,10 +269,10 @@ export function NewFile({ urlr, refreshData }: { urlr: string; refreshData: () =
       }
     });
   };
-
+  const isMobile = useIsMobile();
   return (
     <DialogBuilder 
-      dialogTrigger={<Button variant="outline"> <FilePlus className="w-4 h-4 " /> Nowy Plik</Button>} 
+      dialogTrigger={isMobile ? <Button variant="outline" title="Nowy plik"><FilePlus className="w-4 h-4" /> </Button> : <Button variant="outline"><FilePlus className="w-4 h-4" /> Nowy Plik</Button>} 
       dialogTitle="Nowy Plik" 
       dialogDescription="Podaj nazwę dla nowego elementu."
       onSave={handleSave} // Przekazujemy referencję do funkcji

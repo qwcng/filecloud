@@ -112,7 +112,7 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
       <Link
         href={`/dashboard/${href}`}
         onClick={() => onFolderClick()}
-        className="hover:shadow-lg transition  dark:bg-neutral-800 relative block w-72 border rounded-lg p-4 shadow"
+        className="hover:shadow-lg transition  dark:bg-neutral-800 relative block w-60 aspect-video border rounded-lg p-4 shadow"
       >
         <div className="flex justify-end">
         <EllipsisVertical

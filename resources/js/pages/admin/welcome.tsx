@@ -1,12 +1,15 @@
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Check, CheckCircle, LockKeyhole, Users, Zap, ShieldCheck, BarChart3, ChevronLeft, ChevronRight, Menu, Dot } from 'lucide-react';
+import { Check, CheckCircle, LockKeyhole, Users, Zap, ShieldCheck, BarChart3, ChevronLeft, ChevronRight, Menu, Dot, Cookie } from 'lucide-react';
+import Header from '@/components/Admin/Header';
 import React from 'react';
+import Footer from '@/components/Admin/Footer';
+import CookieBanner from '@/components/Admin/CookieBanner';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
     const [currentSlide, setCurrentSlide] = React.useState(0);
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false); // Stan dla menu mobilnego
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const slides = [1, 2, 3, 4];
 
     // Automatyczne przewijanie
@@ -41,57 +44,7 @@ export default function Welcome() {
             </Head>
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a] font-sans">
                 
-                {/* --- HEADER --- */}
-                <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-[#FDFDFC]/80 backdrop-blur-md dark:border-neutral-800 dark:bg-[#0a0a0a]/80">
-                    <div className="flex h-20 items-center justify-between px-6 lg:px-10 max-w-7xl mx-auto w-full">
-                        <div className="flex items-center gap-2">
-                            <img src="/logo.png" alt="Logo" className="h-9 w-auto" />
-                            <span className="text-xl font-semibold tracking-tight bg-gradient-to-r from-[#2013d8] to-[#09beec] bg-clip-text text-transparent">
-                                Versec Drive
-                            </span>
-                        </div>
-
-                        {/* Mobile Menu Button */}
-                        <button title="Menu" className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                            <Menu className="h-6 w-6" />
-                        </button>
-
-                        {/* Desktop Nav */}
-                        <nav className="hidden md:flex items-center gap-8 text-[15px] font-medium">
-                            <a className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">Pricing</a>
-                            <a className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">Products</a>
-                            <a className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">About Us</a>
-                            {auth.user ? (
-                                <a href='/dashboard' className="rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 px-5 py-2.5 text-white shadow-sm hover:shadow-md hover:scale-[1.02] transition cursor-pointer">
-                                    Dashboard
-                                </a>
-                            ) : (
-                                <>
-                            <a href='/login' className="text-neutral-700 hover:text-black dark:text-neutral-400 dark:hover:text-white transition cursor-pointer">Login</a>
-                            <a href='/register' className="rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 px-5 py-2.5 text-white shadow-sm hover:shadow-md hover:scale-[1.02] transition cursor-pointer">
-                                Get Started
-                            </a>
-                            </>
-                            )}
-                        </nav>
-                    </div>
-
-                    {/* Mobile Menu Dropdown */}
-                    {isMenuOpen && (
-                        <div className="md:hidden border-b border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#0a0a0a] p-6 flex flex-col gap-4">
-                            <a className="font-medium text-lg">Pricing</a>
-                            <a className="font-medium text-lg">Products</a>
-                            <a className="font-medium text-lg">About Us</a>
-                            <hr className="dark:border-neutral-800" />
-                            {auth.user ? (
-                                <a href='/dashboard' className="font-medium text-lg">Dashboard</a>
-                            ) : (
-                                <a href='/login' className="font-medium text-lg">Login</a>
-                            )}
-                            <a href='/register' className="rounded-lg bg-blue-500 py-3 text-center text-white">Get Started</a>
-                        </div>
-                    )}
-                </header>
+                <Header/>
 
                 <main className="w-full">
                     {/* --- HERO SECTION --- */}
@@ -325,21 +278,8 @@ export default function Welcome() {
                         </div>
                     </div>
                 </main>
-
-                <footer className="border-t border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#0a0a0a] py-12">
-                    <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 text-sm text-gray-500 dark:text-gray-400 text-center md:text-left">
-                        <div className="flex items-center gap-2">
-                            <img src="/logo.png" alt="Logo" className="h-6 w-auto opacity-70" />
-                            <span className="font-semibold text-gray-900 dark:text-white">Versec Drive</span>
-                        </div>
-                        <div className="flex flex-wrap justify-center gap-6 md:gap-8">
-                            <a href="#" className="hover:text-blue-500">Privacy Policy</a>
-                            <a href="#" className="hover:text-blue-500">Terms of Service</a>
-                            <a href="#" className="hover:text-blue-500">Cookies</a>
-                        </div>
-                        <p>&copy; 2026 Versec Drive. All rights reserved.</p>
-                    </div>
-                </footer>
+                <CookieBanner />
+                <Footer/>
             </div>
         </>
     );

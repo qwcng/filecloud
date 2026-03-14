@@ -43,18 +43,7 @@
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
                 <title>Versec Drive - Keep your files safe and private</title>
-                <meta name="title" content="Versec Drive - Keep your files safe and private" />
-                    <meta name="description" content="Experience the ultimate cloud storage solution with Versec Drive. Store your files securely, share them effortlessly, and collaborate seamlessly with your team." />
-                    <meta property="og:type" content="website" />
-                    <meta property="og:url" content="https://filecloud.ct8.pl" />
-                    <meta property="og:title" content="Versec Drive - Keep your files safe and private" />
-                    <meta property="og:description" content="Experience the ultimate cloud storage solution with Versec Drive. Store your files securely, share them effortlessly, and collaborate seamlessly with your team." />
-                    <meta property="og:image" content="https://filecloud.ct8.pl/logo.png" />
-                    <meta property="twitter:card" content="summary_large_image" />
-                    <meta property="twitter:url" content="https://filecloud.ct8.pl" />
-                    <meta property="twitter:title" content="Versec Drive - Keep your files safe and private" />
-                    <meta property="twitter:description" content="Experience the ultimate cloud storage solution with Versec Drive. Store your files securely, share them effortlessly, and collaborate seamlessly with your team." />
-                    <meta property="twitter:image" content="https://filecloud.ct8.pl/logo.png" />
+              
 
         <link rel="icon" href="/icon.ico" sizes="any">
         {{-- <link rel="icon" href="/icon.svg" type="image/svg+xml"> --}}

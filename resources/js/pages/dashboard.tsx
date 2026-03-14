@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Head, router, useForm, Link } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
+
 import { type BreadcrumbItem } from "@/types";
 import { dashboard } from "@/routes";
 import axios from "axios";
@@ -41,7 +42,9 @@ import { NewFile, NewFolder, UploadFilesDialog, UploadFolderDialog } from "@/com
 import debounce from 'lodash/debounce';
 import FullScreenDrop from "@/components/custom/FullScreenDrop";
 import { toast } from "sonner";
-
+import { useSwipeable } from "react-swipeable";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 // --- Konfiguracja i18n ---
 if (!i18n.isInitialized) {
   i18n
@@ -70,6 +73,7 @@ export default function Dashboard() {
   const { t } = useTranslation();
 
   // --- Stan ---
+
   const [files, setFiles] = useState<FileData[]>([]);
   const [folders, setFolders] = useState<{ id: number; name: string, files_count: number }[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
@@ -84,6 +88,8 @@ export default function Dashboard() {
   const [filesLoading, setFilesLoading] = useState(true);
   const [sorting, setSorting] = useState(localStorage.getItem("sorting") || 'dateDesc');
   const [searchTerm, setSearchTerm] = useState("");
+ 
+
 
   // --- Handlery akcji ---
 
@@ -318,7 +324,7 @@ const hideFromUi = (fileId: number) => {
     }
   };
   return (
-    <AppLayout breadcrumbs={breadcrumbs}>
+<AppLayout breadcrumbs={breadcrumbs} >
       <Head title="Moje Pliki" >
         <meta name="robots" content="noindex, nofollow"></meta>
         
@@ -355,16 +361,16 @@ const hideFromUi = (fileId: number) => {
       <Toaster position="top-center" richColors duration={2000} />
 
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-        <h3 className="text-lg font-semibold">📂 {t("sidebarmyFiles")} </h3>
+        {/* <h3 className="text-lg font-semibold">📂 {t("sidebarmyFiles")} </h3> */}
         <FullScreenDrop onFilesDropped={handleQuickUpload} />
         {/* Toolbar Akcji */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
-          <div className="flex gap-2">
+         <div className="flex  sm:flex-row gap-2">
             <UploadFilesDialog urlr={urlr} refreshData={refreshData} />
-            <UploadFolderDialog urlr={urlr} refreshData={refreshData} />
+            {!useIsMobile() && <UploadFolderDialog urlr={urlr} refreshData={refreshData} />}
             <NewFolder urlr={urlr} refreshData={refreshData} />
             <NewFile urlr={urlr} refreshData={refreshData} />
-          </div>
+        </div>
 
           <Select defaultValue={sorting} onValueChange={handleSortingChange}>
             <SelectTrigger className="w-[180px]">
@@ -456,5 +462,6 @@ const hideFromUi = (fileId: number) => {
         {selectedFile && <FileModal file={selectedFile} onClose={() => setSelectedFile(null)} />}
       </div>
     </AppLayout>
+    
   );
 }
