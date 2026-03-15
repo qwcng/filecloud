@@ -1,0 +1,183 @@
+{
+  "sharedFiles": {
+    "title": "共有済みファイル",
+    "searchPlaceholder": "ファイルを検索...",
+    "never": "期限なし",
+    "selectAction": "アクションを選択",
+    "actionsLabel": "実行可能なアクション",
+    "linkCopied": "リンクをクリップボードにコピーしました！",
+    "revokeAccess": "確認",
+    "table": {
+      "name": "名前",
+      "size": "サイズ",
+      "sharedAt": "共有日時",
+      "expires": "有効期限",
+      "code": "コード",
+      "downloads": "ダウンロード数",
+      "actions": "操作"
+    },
+    "actions": {
+      "preview": "プレビュー",
+      "share": "再共有",
+      "revoke": "アクセス権を取り消す",
+      "changeCode": "コードを変更",
+      "download": "ダウンロード"
+    },
+    "dialog": {
+      "revokeTitle": "アクセス管理",
+      "revokeDescription": "ファイル「{{name}}」の共有を解除してもよろしいですか？",
+      "downloadDescription": "ファイル「{{name}}」をダウンロードしますか？",
+      "newAccessCode": "新しいアクセスコード",
+      "shareAgain": "ファイル「{{name}}」の共有リンク"
+    }
+  },
+  "sharedFolders": {
+    "title": "共有済みフォルダ",
+    "more": "その他のオプション",
+    "code": "アクセスコード:",
+    "revoke": "共有を解除",
+    "revokedToast": "フォルダの共有が解除されました"
+  },
+  "pagination": {
+    "previous": "前へ",
+    "next": "次へ",
+    "pageOf": "{{total}} ページ中 {{page}} ページ目"
+  },
+  "folder": {
+    "options": "フォルダオプション",
+    "rename": "名前を変更",
+    "renameTitle": "フォルダ名の変更",
+    "renameDescription": "フォルダ名を変更して保存します。",
+    "share": "共有",
+    "shareConfirmTitle": "フォルダ全体を共有しますか？",
+    "shareConfirmDescription": "フォルダ「{{folder}}」を共有してもよろしいですか？",
+    "enterAccessCode": "アクセスコードを入力",
+    "download": "ダウンロード",
+    "delete": "削除",
+    "deleteConfirmTitle": "フォルダを削除してもよろしいですか？",
+    "deleteConfirmDescription": "フォルダ「{{folder}}」を削除してもよろしいですか？この操作は取り消せません。フォルダ内の {{files}} 個のファイルも失われます。",
+    "savedFolders": "保存済みフォルダ"
+  },
+  "files": {
+    "count": "個のファイル",
+    "select": "ファイルを選択",
+    "openEpub": "EPUBリーダーを開く",
+    "noPreview": "この形式はプレビューできません",
+    "restore": "復元",
+    "restoredSuccess": "ファイルを復元しました！",
+    "deletePermanently": "完全に削除",
+    "deletePermanentlyTitle": "ファイルの完全削除",
+    "deletePermanentlyDesc": "「{{name}}」を完全に削除してもよろしいですか？この操作は取り消せません。",
+    "deletedPermanentSuccess": "ファイルを完全に削除しました。",
+    "favoriteFiles": "お気に入りファイル",
+    "type": "タイプ",
+    "size": "サイズ",
+    "createdAt": "作成日",
+    "optionsTitle": "ファイルオプション",
+    "delete": "削除",
+    "deletedSuccess": "ファイルを削除しました。",
+    "confirmPermanentDelete": "「{{name}}」を完全に削除してもよろしいですか？",
+    "addToFavorites": "お気に入りに追加",
+    "removeFromFavorites": "お気に入りから削除",
+    "preview": "プレビュー",
+    "details": "詳細",
+    "download": "ダウンロード",
+    "share": "共有",
+    "rename": "名前を変更",
+    "renameTitle": "ファイル名の変更",
+    "renameDescription": "ファイル名を変更して保存します。",
+    "filenameLabel": "ファイル名",
+    "deleteConfirmTitle": "ファイルを削除してもよろしいですか？",
+    "deleteConfirmDesc": "ファイルを削除してもよろしいですか：",
+    "actionIrreversible": "この操作は取り消せません。"
+  },
+  "form": {
+    "folderName": "フォルダ名",
+    "enterName": "名前を入力...",
+    "selectFolder": "フォルダを選択",
+    "selectFiles": "ファイルを選択",
+    "name": "名前"
+  },
+  "common": {
+    "cancel": "キャンセル",
+    "save": "保存",
+    "saveChanges": "変更を保存",
+    "error": "エラーが発生しました"
+  },
+  "response": {
+    "fileMovedToFolder": "ファイルを {{folder}} に移動しました",
+    "fileMoveError": "ファイルの移動に失敗しました",
+    "folderDownloadStart": "フォルダのダウンロードを開始します",
+    "folderShared": "フォルダを共有しました",
+    "folderDeleted": "フォルダを削除しました",
+    "deleteError": "削除中にエラーが発生しました",
+    "folderCreated": "フォルダを作成しました！",
+    "folderUploaded": "フォルダをアップロードしました！",
+    "filesUploaded": "ファイルをアップロードしました！",
+    "selectFolderFirst": "アップロードするフォルダを選択してください！",
+    "selectFilesFirst": "アップロードするファイルを選択してください！",
+    "trashEmptied": "ゴミ箱を空にしました",
+    "trashDeleteError": "一部のファイルの削除に失敗しました",
+    "DeletingFiles": "ファイルを削除中..."
+  },
+  "sidebarmyFiles": "マイファイル",
+  "sorting": "並べ替え",
+  "sorting.nameAsc": "名前 (昇順)",
+  "sorting.nameDesc": "名前 (降順)",
+  "sorting.sizeAsc": "サイズ (小さい順)",
+  "sorting.sizeDesc": "サイズ (大きい順)",
+  "sorting.dateAsc": "日付 (古い順)",
+  "sorting.dateDesc": "日付 (新しい順)",
+  "cancel": "キャンセル",
+  "delete.selectedFile": "選択したファイルを削除",
+  "navigation": {
+    "newFolder": "新規フォルダ",
+    "uploadFolder": "フォルダをアップロード",
+    "uploadFiles": "ファイルをアップロード",
+    "newFile": "新規ファイル",
+    "emptyTrash": "ゴミ箱を空にする"
+  },
+  "dialog": {
+    "createFolderTitle": "フォルダ作成",
+    "createFolderDescription": "新しいフォルダ名を入力してください。",
+    "uploadFolderDescription": "サーバーにアップロードするフォルダを選択してください。",
+    "uploadFilesTitle": "ファイルアップロード",
+    "uploadFilesDescription": "サーバーにアップロードするファイルを選択してください。",
+    "newFileTitle": "新規ファイル",
+    "newFileDescription": "新しい項目の名前を入力してください。"
+  },
+  "openLink": {
+    "trigger": "共有ファイルを開く",
+    "title": "共有ファイルを開く",
+    "description": "共有リンクを入力するか、QRコードをスキャンしてファイルを開いてください。",
+    "placeholder": "リンクでファイルを開く...",
+    "submit": "ファイルを開く"
+  },
+  "trash": {
+    "title": "ゴミ箱",
+    "header": "削除済みファイル",
+    "empty": "削除されたファイルはありません。"
+  },
+  "gallery": {
+    "title": "マイギャラリー",
+    "download": "ダウンロード",
+    "share": "共有",
+    "noPhotos": "ギャラリーに写真がありません。",
+    "info": "ファイル情報"
+  },
+  "breadcrumbs": {
+    "dashboard": "ダッシュボード"
+  },
+  "music": {
+    "title": "音楽"
+  },
+  "documents": {
+    "title": "ドキュメント"
+  },
+  "other": {
+    "title": "その他"
+  },
+  "storage": {
+    "usage": "ストレージ使用量"
+  }
+}

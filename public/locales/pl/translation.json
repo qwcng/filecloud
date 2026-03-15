@@ -1,13 +1,192 @@
 {
-    "sidebarmyFiles": "Moje pliki",
-    "sorting": "sortowanie",
-    "sorting.nameAsc": "Nazwa (A-Z)",
-    "sorting.nameDesc": "Nazwa (Z-A)",
-    "sorting.sizeAsc": "Rozmiar ronąco",
-    "sorting.sizeDesc": "Rozmiar malejąco",
-    "sorting.dateAsc": "Data rosnąco",
-    "sorting.dateDesc": "Data malejąco"
+  "sharedFiles": {
+    "title": "Udostępnione pliki",
+    "searchPlaceholder": "Szukaj plików...",
+    "never": "Nigdy",
+    "selectAction": "Wybierz akcję",
+    "actionsLabel": "Dostępne akcje",
+    "linkCopied": "Link skopiowany do schowka!",
+    "revokeAccess": "Potwierdź",
+    "table": {
+      "name": "Nazwa",
+      "size": "Rozmiar",
+      "sharedAt": "Udostępniono",
+      "expires": "Wygasa",
+      "code": "Kod",
+      "downloads": "Pobrań",
+      "actions": "Akcje"
+    },
+    "actions": {
+      "preview": "Podgląd",
+      "share": "Udostępnij ponownie",
+      "revoke": "Cofnij dostęp",
+      "changeCode": "Zmień kod",
+      "download": "Pobierz"
+    },
+    "dialog": {
+      "revokeTitle": "Zarządzanie dostępem",
+      "revokeDescription": "Czy na pewno chcesz cofnąć udostępnianie pliku {{name}}?",
+      "downloadDescription": "Czy chcesz pobrać plik {{name}}?",
+      "newAccessCode": "Nowy kod dostępu",
+      "shareAgain": "Link do udostępniania pliku {{name}}"
+    }
+  },
+  
+  "sharedFolders": {
+    "title": "Udostępnione foldery",
+    "more": "Więcej opcji",
+    "code": "Kod dostępu:",
+    "revoke": "Cofnij udostępnianie",
+    "revokedToast": "Udostępnianie folderu zostało cofnięte"
+  },
+  "pagination": {
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "pageOf": "Strona {{page}} z {{total}}"
+  },
+  "folder": {
+    "options": "Opcje folderu",
+    "rename": "Zmień nazwę",
+    "renameTitle": "Zmień nazwę folderu",
+    "renameDescription": "Zmień nazwę folderu i zapisz zmiany.",
+    "share": "Udostępnij",
+    "shareConfirmTitle": "Czy chcesz udostępnić cały folder?",
+    "shareConfirmDescription": "Czy na pewno chcesz udostępnić folder {{folder}}?",
+    "enterAccessCode": "Podaj kod dostępu",
+    "download": "Pobierz",
+    "delete": "Usuń",
+    "deleteConfirmTitle": "Czy na pewno chcesz usunąć folder?",
+    "deleteConfirmDescription": "Czy na pewno chcesz usunąć folder {{folder}}? Operacji tej nie można cofnąć. Stracisz {{files}} plików znajdujących się w tym folderze.",
+    "savedFolders": "Zapisane foldery"
+  },
+  "files": {
+    "count": "plików",
 
+    "select": "Zaznacz pliki",
+    "openEpub": "Otwórz czytnik EPUB",
+    "noPreview": "Podgląd niedostępny dla tego formatu",
+    "restore": "Przywróć",
+    "restoredSuccess": "Plik został przywrócony!",
+    "deletePermanently": "Usuń na stałe",
+    "deletePermanentlyTitle": "Usuń plik na stałe",
+    "deletePermanentlyDesc": "Czy na pewno chcesz trwale usunąć plik \"{{name}}\"? Operacji tej nie można cofnąć.",
+    "deletedPermanentSuccess": "Plik został trwale usunięty.",
 
-    
+    "favoriteFiles": "Ulubione pliki",
+  
+
+    "type": "Typ",
+    "size": "Rozmiar",
+    "createdAt": "Data dodania",
+    "optionsTitle": "Opcje pliku",
+    "delete": "Usuń",
+    "deletedSuccess": "Plik został usunięty.",
+    "confirmPermanentDelete": "Czy na pewno chcesz trwale usunąć plik \"{{name}}\"?",
+    "addToFavorites": "Dodaj do ulubionych",
+    "removeFromFavorites": "Usuń z ulubionych",
+    "preview": "Podgląd",
+    "details": "Szczegóły",
+    "download": "Pobierz",
+    "share": "Udostępnij",
+    "rename": "Zmień nazwę",
+    "renameTitle": "Zmień nazwę pliku",
+    "renameDescription": "Zmień nazwę pliku i zapisz zmiany.",
+    "filenameLabel": "Nazwa pliku",
+    "deleteConfirmTitle": "Czy na pewno chcesz usunąć plik?",
+    "deleteConfirmDesc": "Czy na pewno chcesz usunąć plik",
+    "actionIrreversible": "Operacji tej nie można cofnąć."
+  },
+  "form": {
+    "folderName": "Nazwa folderu",
+    "enterName": "Wpisz nazwę...",
+    "selectFolder": "Wybierz folder",
+    "selectFiles": "Wybierz pliki",
+    "name": "Nazwa"
+  },
+  "common": {
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saveChanges": "Zapisz zmiany",
+    "error": "Wystąpił błąd"
+  
+  },
+  "response": {
+    "fileMovedToFolder": "Plik przeniesiony do {{folder}}",
+    "fileMoveError": "Nie udało się przenieść pliku",
+    "folderDownloadStart": "Rozpoczynanie pobierania folderu",
+    "folderShared": "Folder został udostępniony",
+    "folderDeleted": "Folder został usunięty",
+    "deleteError": "Wystąpił błąd podczas usuwania",
+    "folderCreated": "Folder został utworzony!",
+    "folderUploaded": "Folder został przesłany!",
+    "filesUploaded": "Pliki zostały przesłane!",
+    "selectFolderFirst": "Wybierz folder z plikami do przesłania!",
+    "selectFilesFirst": "Wybierz pliki do przesłania!",
+    "trashEmptied": "Kosz został opróżniony",
+    "trashDeleteError": "Nie udało się usunąć wszystkich plików",
+    "DeletingFiles": "Usuwanie plików..."
+  },
+  "sidebarmyFiles": "Moje pliki",
+  "sorting": "sortowanie",
+  "sorting.nameAsc": "Nazwa (A-Z)",
+  "sorting.nameDesc": "Nazwa (Z-A)",
+  "sorting.sizeAsc": "Rozmiar rosnąco",
+  "sorting.sizeDesc": "Rozmiar malejąco",
+  "sorting.dateAsc": "Data rosnąco",
+  "sorting.dateDesc": "Data malejąco",
+  "cancel": "Anuluj",
+  "delete.selectedFile": "Usuń zaznaczone pliki",
+  "navigation": {
+    "newFolder": "Nowy folder",
+    "uploadFolder": "Prześlij folder",
+    "uploadFiles": "Prześlij pliki",
+    "newFile": "Nowy plik",
+    "emptyTrash": "Opróżnij kosz"
+  },
+  "dialog": {
+    "createFolderTitle": "Stwórz folder",
+    "createFolderDescription": "Podaj nazwę nowego folderu.",
+    "uploadFolderDescription": "Wybierz folder do przesłania na serwer.",
+    "uploadFilesTitle": "Prześlij pliki",
+    "uploadFilesDescription": "Wybierz pliki do przesłania na serwer.",
+    "newFileTitle": "Nowy plik",
+    "newFileDescription": "Podaj nazwę dla nowego elementu."
+  },
+  
+  "openLink": {
+    "trigger": "Otwórz udostępniony plik",
+    "title": "Otwórz udostępniony plik",
+    "description": "Wprowadź link do udostępnionego pliku, który chcesz otworzyć lub zeskanuj kod QR.",
+    "placeholder": "Otwórz plik za pomocą linku...",
+    "submit": "Otwórz plik"
+  },
+  "trash": {
+    "title": "Kosz",
+    "header": "Usunięte Pliki",
+    "empty": "Brak usuniętych plików."
+  },
+  "gallery": {
+    "title": "Moja galeria",
+    "download": "Pobierz",
+    "share": "Udostępnij",
+    "noPhotos": "Brak zdjęć w galerii.",
+    "info": "Informacje o pliku"
+  },
+  "breadcrumbs": {
+    "dashboard": "Panel"
+  },
+
+  "music": {
+    "title": "Muzyka"
+  },
+  "documents": {
+    "title": "Dokumenty"
+  },
+  "other": {
+    "title": "Inne"
+  },
+  "storage": {
+    "usage": "Użycie miejsca"
+  }
+
 }

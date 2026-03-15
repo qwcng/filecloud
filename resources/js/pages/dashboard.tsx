@@ -46,18 +46,7 @@ import { useSwipeable } from "react-swipeable";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 // --- Konfiguracja i18n ---
-if (!i18n.isInitialized) {
-  i18n
-    .use(HttpApi)
-    .use(initReactI18next)
-    .init({
-      supportedLngs: ["en", "pl", "ru", "fr"],
-      fallbackLng: "en",
-      lng: localStorage.getItem("lang") || "pl",
-      backend: { loadPath: "/locales/{{lng}}/translation.json" },
-      interpolation: { escapeValue: false }
-    });
-}
+
 
 type FileData = {
   id: number;
@@ -202,37 +191,31 @@ useEffect(() => {
         setFoldersLoading(true);
 
         try {
-            // 1. Definiujemy zmienne na dane (wartości domyślne)
             let filesRes, foldersRes, pathRes;
             
-            // 2. Obsługa specyficznych przypadków (WIDOKI SPECJALNE)
             if (urlr === "favorite") {
-                // Dla ulubionych pobieramy TYLKO pliki
                 filesRes = await axios.get(`/getFavorites`, { signal: controller.signal });
-                
-                // Resetujemy foldery i ścieżkę, bo w "ulubionych" ich nie ma/są inne
                 setFolders([]);
                 setBreadcrumbs([{ title: "Ulubione", href: "#" }]);
             } 
             else if (urlr === "sharedFile") {
-                // Logika dla udostępnionych (jeśli potrzebujesz czegoś innego)
+
                 setSharedFile(true);
-                // Tutaj dodaj odpowiedni request jeśli trzeba
+
             } 
             else if(urlr==="saved"){
               foldersRes = await axios.get(`/folders/${urlr}`, { signal: controller.signal });
               setFolders(foldersRes.data);
             }
             else {
-                // 3. WIDOK STANDARDOWEGO FOLDERA (PROMISE.ALL)
-                // Tutaj Promise.all ma sens, bo potrzebujemy kompletu danych
+
                 [filesRes, foldersRes, pathRes] = await Promise.all([
                     axios.get(`/files/${urlr}`, { signal: controller.signal }),
                     axios.get(`/folders/${urlr}`, { signal: controller.signal }),
                     axios.get(`/pathTo/${urlr}`, { signal: controller.signal })
                 ]);
 
-                // Ustawiamy foldery i breadcrumbs tylko w tym przypadku
+
                 setFolders(foldersRes.data);
                 const bc: BreadcrumbItem[] = [
                     { title: "panel", href: dashboard().url + "/" },
@@ -244,7 +227,7 @@ useEffect(() => {
                 setBreadcrumbs(bc);
             }
 
-            // 4. Mapowanie i ustawianie plików (wspólne dla większości widoków)
+
             if (filesRes && filesRes.data.files) {
                 const mappedFiles: FileData[] = filesRes.data.files.map((f: any) => ({
                     id: f.id,
@@ -275,7 +258,7 @@ useEffect(() => {
     return () => {
         controller.abort();
     };
-}, [urlr, refreshTrigger]); // Wywalamy pozostałe useEffecty obsługujące te dane
+}, [urlr, refreshTrigger]);
 
 const hideFromUi = (fileId: number) => {
   setFiles(prev => prev.filter(f => f.id !== fileId));
@@ -325,7 +308,7 @@ const hideFromUi = (fileId: number) => {
   };
   return (
 <AppLayout breadcrumbs={breadcrumbs} >
-      <Head title="Moje Pliki" >
+      <Head title={t('head.MyFiles')} >
         <meta name="robots" content="noindex, nofollow"></meta>
         
       </Head>
@@ -374,7 +357,7 @@ const hideFromUi = (fileId: number) => {
 
           <Select defaultValue={sorting} onValueChange={handleSortingChange}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sortuj" />
+              <SelectValue placeholder={t('sorting')} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -395,19 +378,19 @@ const hideFromUi = (fileId: number) => {
           <Input 
             type="text" 
             value={searchTerm}
-            placeholder={t("searchPlaceholder") || 'Szukaj plików...'} 
+            placeholder={t("sharedFiles.searchPlaceholder")} 
             className="max-w-sm" 
             onChange={handleSearchChange}
           />
           <div className="flex items-center gap-2">
             <Button onClick={handleToggleSelecting} variant="outline">
-              {selecting ? 'Anuluj' : 'Zaznacz pliki'}
+              {selecting ? t('cancel') : t('files.select')}
             </Button>
             {selecting && (
               <>
                 <span className="text-sm font-medium">Zaznaczono: {selectedFiles.length}</span>
                 <Button variant="destructive" size="sm" onClick={handleBulkDelete} disabled={selectedFiles.length === 0}>
-                  Usuń zaznaczone
+                 {t('delete.selectedFile')}
                 </Button>
               </>
             )}

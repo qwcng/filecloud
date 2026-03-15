@@ -37,6 +37,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox";
 import { DialogBuilder } from "../DialogBuilder";
 import { ref } from "process";
+import { useTranslation } from "react-i18next";
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "panel", href: dashboard().url },
   { title: "Pliki", href: dashboard().url },
@@ -59,7 +60,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
   const modalRef = useRef<HTMLDivElement>(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState<boolean>(file.favorite);
-
+  const {t}= useTranslation();
   const handleContextClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setPos({ x: e.clientX, y: e.clientY });
@@ -147,200 +148,168 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
         
       </div>
 
-      {optionVisible && (
-        <motion.div
-          ref={modalRef}
-          // initial={{ opacity: 0, scale: 0.95, y: -5 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -5 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          className="fixed z-50 bg-white dark:bg-neutral-900 rounded-xl p-4 shadow-xl w-72"
-          // left upper to cursor
-          style={{ top: pos.y - 100, left: pos.x - 300 }}
-        >
-          <button
-            onClick={() => setOptionVisible(false)}
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+      
+
+{optionVisible && (
+  <motion.div
+    ref={modalRef}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    exit={{ opacity: 0, scale: 0.95, y: -5 }}
+    transition={{ duration: 0.15, ease: "easeOut" }}
+    className="fixed z-50 bg-white dark:bg-neutral-900 rounded-xl p-4 shadow-xl w-72"
+    style={{ top: pos.y - 100, left: pos.x - 300 }}
+  >
+    <button
+      onClick={() => setOptionVisible(false)}
+      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+    >
+      <X className="h-5 w-5" />
+    </button>
+    <h2 className="text-lg font-semibold mb-2">{t("files.optionsTitle")}</h2>
+    
+    {file.deleted ? (
+      <ul className="list-none p-0 m-0">
+        <li className="m-2 cursor-pointer hover:text-blue-600">
+          <span onClick={() => {
+            router.post(`/restoreFile/${file.id}`);
+            refreshData(file.id);
+          }}>
+            <Undo2 className="inline-block mr-2" />
+            {t("files.restore")}
+          </span>
+        </li>
+        <li className="m-2 cursor-pointer text-red-700">
+          <span onClick={async () => {
+            if (confirm(t("files.confirmPermanentDelete", { name: file.name }))) {
+              try {
+                await router.delete(`/pernamentlyDeleteFile/${file.id}`);
+                refreshData(file.id);
+                toast.success(t("files.deletedPermanentSuccess"));
+                setOptionVisible(false);
+              } catch (error) {
+                console.error(error);
+                alert(t("common.error"));
+              }
+            }
+          }}>
+            <Trash2Icon className="inline-block mr-2" /> {t("files.delete")}
+          </span>
+        </li>
+      </ul>
+    ) : (
+      <ul className="list-none p-0 m-0">
+        <li className="m-2 cursor-pointer">
+          <span
+            onClick={toggleFavorite}
+            className={`flex items-center hover:text-blue-600 ${isFavorite ? "text-yellow-500" : ""}`}
           >
-            <X className="h-5 w-5" />
-          </button>
-          <h2 className="text-lg font-semibold mb-2">Opcje pliku</h2>
-          {file.deleted ? (<>
-                            <ul className="list-none p-0 m-0">
-                              <li className="m-2 cursor-pointer hover:text-blue-600">
-                                  <span onClick={() => {
-                                    router.post(`/restoreFile/${file.id}`)
-                                    refreshData(file.id)
-                                    }}><Undo2 className="inline-block mr-2" />Przywróć</span>
-                              </li>
-                              <li className="m-2 cursor-pointer text-red-700">
-                                <span onClick={async () => {
-                                    if (confirm(`Czy na pewno chcesz trwale usunąć plik "${file.name}"?`)) {
-                                      try {
-                                        await router.delete(`/pernamentlyDeleteFile/${file.id}`);
-                                        refreshData(file.id);
-                                        toast.success('Plik został trwale usunięty.');
-                                        // refreshData(file.id);
-                                        setOptionVisible(false);
-                                        // window.location.reload(); // Odświeżenie strony po usunięciu
-                                      } catch (error) {
-                                        console.error('Błąd podczas usuwania pliku:', error);
-                                        alert('Wystąpił błąd podczas usuwania pliku.');
-                                      }
-                                    }
-                                }}><Trash2Icon className="inline-block mr-2" /> Usuń</span>
-                              </li>
-                              </ul>
+            <Star
+              className="inline-block mr-2"
+              fill={isFavorite ? "gold" : "none"}
+              color={isFavorite ? "gold" : "currentColor"}
+            />
+            {isFavorite ? t("files.removeFromFavorites") : t("files.addToFavorites")}
+          </span>
+        </li>
+        <li className="m-2 cursor-pointer hover:text-blue-600">
+          <Link href={`/edit/${file.id}`}>
+            <EyeIcon className="inline-block mr-2" /> {t("files.preview")}
+          </Link>
+        </li>
+        <li className="m-2 cursor-pointer hover:text-blue-600">
+          <span onClick={() => setInfoModalOpen(true)}>
+            <InfoIcon className="inline-block mr-2" /> {t("files.details")}
+          </span>
+        </li>
+        <li className="m-2 cursor-pointer hover:text-blue-600">
+          <a href={`/d/${file.id}`} target="_blank" rel="noopener noreferrer" download className="flex items-center">
+            <DownloadIcon className="inline-block mr-2" /> {t("files.download")}
+          </a>
+        </li>
+        <li className="m-2 cursor-pointer hover:text-blue-600">
+          <span onClick={() => setShareModalOpen(true)}>
+            <ShareIcon className="inline-block mr-2" /> {t("files.share")}
+          </span>
+        </li>
 
-                            </>
-                          ) : (
-            <>
-          
-          <ul className="list-none p-0 m-0">
-            <li className="m-2 cursor-pointer">
-              <span
-                onClick={toggleFavorite}
-                className={`flex items-center hover:text-blue-600 ${
-                  isFavorite ? "text-yellow-500" : ""
-                }`}
-              >
-                <Star
-                  className="inline-block mr-2"
-                  fill={isFavorite ? "gold" : "none"}
-                  color={isFavorite ? "gold" : "currentColor"}
-                />
-                {isFavorite ? "Usuń z ulubionych" : "Dodaj do ulubionych"}
-              </span>
-            </li>
+        {/* Zmiana nazwy */}
+        <Dialog>
+          <DialogTrigger asChild>
             <li className="m-2 cursor-pointer hover:text-blue-600">
-              <Link href={`/edit/${file.id}`}><EyeIcon className="inline-block mr-2" /> Podgląd</Link>
+              <Edit2Icon className="inline-block mr-2" /> {t("files.rename")}
             </li>
-            
-            <li className="m-2 cursor-pointer hover:text-blue-600">
-              <span onClick={() =>{setInfoModalOpen(true)}}><InfoIcon className="inline-block mr-2" /> Szczegóły</span>
-            </li>
-            <li className="m-2 cursor-pointer hover:text-blue-600">
-  <a
-    href={`/d/${file.id}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    download
-    className="flex items-center"
-  ><DownloadIcon className="inline-block mr-2" /> Pobierz</a>
-            </li>
-            
-              {shareModalOpen && (
-                <ShareModal
-                  fileId={file.id}
-                  onClose={() => setShareModalOpen(false)}
-                />
-              )}
-            <li className="m-2 cursor-pointer hover:text-blue-600">  
-              <span onClick={() =>{setShareModalOpen(true)}}><ShareIcon className="inline-block mr-2" /> Udostępnij</span>
-            </li>
-          
-              <Dialog>
-        <DialogTrigger asChild>
-         <li className="m-2 cursor-pointer hover:text-blue-600">
-              <Edit2Icon className="inline-block mr-2" /> Zmień nazwę
-            </li>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Zmień nazwę pliku</DialogTitle>
-            <DialogDescription>
-              Zmień nazwę pliku i zapisz zmiany.
-              
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="filenamee">Nazwa pliku</Label>
-              <Input id="filenamee" name="filenamee" defaultValue={file.name} />
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>{t("files.renameTitle")}</DialogTitle>
+              <DialogDescription>{t("files.renameDescription")}</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4">
+              <div className="grid gap-3">
+                <Label htmlFor="filenamee">{t("files.filenameLabel")}</Label>
+                <Input id="filenamee" name="filenamee" defaultValue={file.name} />
+              </div>
             </div>
-            
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button onClick={(e)=>{
-              e.preventDefault();
-              const filename = (document.querySelector('input[name="filenamee"]') as HTMLInputElement).value;
-              router.post(`/changeFileName/${file.id}`, {
-                filename: filename,
-                
-                
-              },
-            {
-              onSuccess: (file) => {
-                refreshData();
-                
-            ;
-              }
-            });
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">{t("common.cancel")}</Button>
+              </DialogClose>
+              <Button onClick={(e) => {
+                e.preventDefault();
+                const filename = (document.querySelector('input[name="filenamee"]') as HTMLInputElement).value;
+                router.post(`/changeFileName/${file.id}`, { filename }, {
+                  onSuccess: () => refreshData(),
+                });
+              }}>
+                {t("common.saveChanges")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-            }}>Zapisz zmiany</Button>
-          </DialogFooter>
-        </DialogContent>
-    </Dialog>
-            
-            {/* <li className="m-2 cursor-pointer text-red-600" onClick={async () => {
-              if (confirm(`Czy na pewno chcesz usunąć plik "${file.name}"?`)) {
-                try {
-                  await router.delete(`/files/${file.id}`);
-                  alert('Plik został usunięty.');
-                  refreshData();
-                  // window.location.reload(); // Odświeżenie strony po usunięciu
-                } catch (error) {
-                  console.error('Błąd podczas usuwania pliku:', error);
-                  alert('Wystąpił błąd podczas usuwania pliku.');
-                }
-              }
-            }}>
-              <Trash2Icon className="inline-block mr-2" /> Usuń
-            </li> */}
-            <li className="m-2 cursor-pointer text-red-700">
-              <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                      <div className="flex items-center">
-                          <Trash2Icon className="inline-block mr-2" /> Usuń
-                      </div>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                      <AlertDialogHeader>
-                          <AlertDialogTitle>Czy na pewno chcesz usunąć plik?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                              Czy na pewno chcesz usunąć plik <strong>{file.name}</strong>? Operacji tej nie można cofnąć.
-                          </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                          <AlertDialogCancel>Anuluj</AlertDialogCancel>
-                          <AlertDialogAction  onClick={async () => {
-                              try {
-                                  await router.delete(`/files/${file.id}`);
-                                  // alert('Plik został usunięty.');
-                                  refreshData();
-                                  setOptionVisible(false);
-                                  toast.success('Plik został usunięty.');
-                                  // window.location.reload(); // Odświeżenie strony po usunięciu
-                              } catch (error) {
-                                  console.error('Błąd podczas usuwania pliku:', error);
-                                  alert('Wystąpił błąd podczas usuwania pliku.');
-                              }
-                          }} className="bg-red-700 hover:bg-red-600 text-white">Usuń</AlertDialogAction>
-                      </AlertDialogFooter>
-                  </AlertDialogContent>
-              </AlertDialog>
-            </li>
+        {/* Usuwanie do kosza */}
+        <li className="m-2 cursor-pointer text-red-700">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <div className="flex items-center">
+                <Trash2Icon className="inline-block mr-2" /> {t("files.delete")}
+              </div>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("files.deleteConfirmTitle")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("files.deleteConfirmDesc")} <strong>{file.name}</strong>? {t("files.actionIrreversible")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    try {
+                      await router.delete(`/files/${file.id}`);
+                      refreshData();
+                      setOptionVisible(false);
+                      toast.success(t("files.deletedSuccess"));
+                    } catch (error) {
+                      console.error(error);
+                      alert(t("common.error"));
+                    }
+                  }}
+                  className="bg-red-700 hover:bg-red-600 text-white"
+                >
+                  {t("files.delete")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </li>
+      </ul>
+    )}
+  </motion.div>
+)}
           
-          </ul>
-          </>
-          )}
-          
-        </motion.div>
-        
-      )}
+
     </motion.div>
   );
 }
@@ -354,7 +323,10 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
 // import { router } from "@inertiajs/react"; // lub inne narzędzie do routingu
 // import { toast } from "react-hot-toast";
 
-export function FileModal({ file, onClose,sharing = false }: { file: any; onClose: () => void }) {
+ // Zakładam, że tak się nazywa Twój wrapper
+
+export function FileModal({ file, onClose, sharing = false }: { file: any; onClose: () => void; sharing?: boolean }) {
+  const { t } = useTranslation();
   const [showShareModal, setShowShareModal] = useState(false);
 
   // Zamykanie modala klawiszem Escape
@@ -365,16 +337,13 @@ export function FileModal({ file, onClose,sharing = false }: { file: any; onClos
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
-  
 
   return (
     <>
-      {/* Tło (Backdrop) - Kliknięcie tutaj wywołuje onClose */}
       <div 
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
         onClick={onClose}
       >
-        {/* Kontener Modala - e.stopPropagation zapobiega zamykaniu przy kliknięciu wewnątrz */}
         <div 
           className="bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]"
           onClick={(e) => e.stopPropagation()}
@@ -406,12 +375,14 @@ export function FileModal({ file, onClose,sharing = false }: { file: any; onClos
                 </video>
               )}
               {file.type === "epub" && (
-                <Button onClick={() => window.open(`/polygon/${file.id}`, "_blank")}>Otwórz czytnik EPUB</Button>
+                <Button onClick={() => window.open(`/polygon/${file.id}`, "_blank")}>
+                  {t("files.openEpub")}
+                </Button>
               )}
               {file.type === "other" && (
                 <div className="text-center p-8">
                   <FileIcon className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm text-gray-500">Podgląd niedostępny dla tego formatu</p>
+                  <p className="text-sm text-gray-500">{t("files.noPreview")}</p>
                 </div>
               )}
             </div>
@@ -424,31 +395,30 @@ export function FileModal({ file, onClose,sharing = false }: { file: any; onClos
                     onClick={() => {
                       router.post(`/restoreFile/${file.id}`, {}, {
                         onSuccess: () => {
-                          toast.success('Plik został przywrócony!');
+                          toast.success(t("files.restoredSuccess"));
                           onClose();
                         }
                       });
                     }} 
                     className="flex-1 gap-2"
                   >
-                    <ArrowUpLeftSquareIcon className="h-4 w-4" /> Przywróć
+                    <ArrowUpLeftSquareIcon className="h-4 w-4" /> {t("files.restore")}
                   </Button>
 
                   <DialogBuilder 
-                    dialogTrigger={<Button variant="destructive" className="flex-1 gap-2">Usuń na stałe</Button>}
-                    dialogTitle="Usuń plik na stałe"
-                    dialogDescription={`Czy na pewno chcesz trwale usunąć plik "${file.name}"? Operacji tej nie można cofnąć.`}
+                    dialogTrigger={<Button variant="destructive" className="flex-1 gap-2">{t("files.deletePermanently")}</Button>}
+                    dialogTitle={t("files.deletePermanentlyTitle")}
+                    dialogDescription={t("files.deletePermanentlyDesc", { name: file.name })}
                     onSave={async () => {
                       try {
                         await router.delete(`/pernamentlyDeleteFile/${file.id}`);
-                        toast.success('Plik został trwale usunięty.');
+                        toast.success(t("files.deletedPermanentSuccess"));
                         onClose();
                       } catch (error) {
-                        console.error('Błąd podczas usuwania pliku:', error);
-                        alert('Wystąpił błąd podczas usuwania pliku.');
+                        console.error('Error:', error);
                       } 
                     }}
-                    saveButtonText="Usuń"
+                    saveButtonText={t("files.delete")}
                   />
                 </>
               ) : (
@@ -457,14 +427,14 @@ export function FileModal({ file, onClose,sharing = false }: { file: any; onClos
                     onClick={() => setShowShareModal(true)} 
                     className="flex-1 gap-2 bg-indigo-600 hover:bg-indigo-700"
                   >
-                    <Share className="h-4 w-4" /> Udostępnij
+                    <Share className="h-4 w-4" /> {t("files.share")}
                   </Button>
                   <Button 
                     variant="outline" 
                     onClick={() => window.open(`/d/${file.id}`, "_blank")} 
                     className="flex-1 gap-2"
                   >
-                    <Download className="h-4 w-4" /> Pobierz
+                    <Download className="h-4 w-4" /> {t("files.download")}
                   </Button>
                 </>
               )}
@@ -473,15 +443,15 @@ export function FileModal({ file, onClose,sharing = false }: { file: any; onClos
             {/* Details Table */}
             <div className="space-y-3 text-sm border-t dark:border-neutral-800 pt-4">
               <div className="flex justify-between">
-                <span className="text-gray-500">Typ:</span> 
+                <span className="text-gray-500">{t("files.type")}:</span> 
                 <span className="font-medium">{file.type}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Rozmiar:</span> 
+                <span className="text-gray-500">{t("files.size")}:</span> 
                 <span className="font-medium">{(file.size / 1000000).toFixed(2)} MB</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Data dodania:</span> 
+                <span className="text-gray-500">{t("files.createdAt")}:</span> 
                 <span className="font-medium">{file.created_at}</span>
               </div>
             </div>

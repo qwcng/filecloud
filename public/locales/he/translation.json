@@ -1,0 +1,183 @@
+{
+  "sharedFiles": {
+    "title": "קבצים ששותפו",
+    "searchPlaceholder": "חיפוש קבצים...",
+    "never": "לעולם לא",
+    "selectAction": "בחר פעולה",
+    "actionsLabel": "פעולות זמינות",
+    "linkCopied": "הקישור הועתק ללוח!",
+    "revokeAccess": "אישור",
+    "table": {
+      "name": "שם",
+      "size": "גודל",
+      "sharedAt": "שותף בתאריך",
+      "expires": "פג תוקף",
+      "code": "קוד",
+      "downloads": "הורדות",
+      "actions": "פעולות"
+    },
+    "actions": {
+      "preview": "תצוגה מקדימה",
+      "share": "שיתוף מחדש",
+      "revoke": "ביטול גישה",
+      "changeCode": "שינוי קוד",
+      "download": "הורדה"
+    },
+    "dialog": {
+      "revokeTitle": "ניהול גישה",
+      "revokeDescription": "האם אתה בטוח שברצונך לבטל את שיתוף הקובץ {{name}}?",
+      "downloadDescription": "האם ברצונך להוריד את הקובץ {{name}}?",
+      "newAccessCode": "קוד גישה חדש",
+      "shareAgain": "קישור לשיתוף הקובץ {{name}}"
+    }
+  },
+  "sharedFolders": {
+    "title": "תיקיות ששותפו",
+    "more": "אפשרויות נוספות",
+    "code": "קוד גישה:",
+    "revoke": "ביטול שיתוף",
+    "revokedToast": "שיתוף התיקייה בוטל"
+  },
+  "pagination": {
+    "previous": "הקודם",
+    "next": "הבא",
+    "pageOf": "עמוד {{page}} מתוך {{total}}"
+  },
+  "folder": {
+    "options": "אפשרויות תיקייה",
+    "rename": "שנה שם",
+    "renameTitle": "שינוי שם תיקייה",
+    "renameDescription": "שנה את שם התיקייה ושמור את השינויים.",
+    "share": "שתף",
+    "shareConfirmTitle": "האם ברצונך לשתף את התיקייה כולה?",
+    "shareConfirmDescription": "האם אתה בטוח שברצונך לשתף את התיקייה {{folder}}?",
+    "enterAccessCode": "הזן קוד גישה",
+    "download": "הורדה",
+    "delete": "מחק",
+    "deleteConfirmTitle": "האם אתה בטוח שברצונך למחוק את התיקייה?",
+    "deleteConfirmDescription": "האם אתה בטוח שברצונך למחוק את התיקייה {{folder}}? לא ניתן לבטל פעולה זו. תאבד {{files}} קבצים הנמצאים בתיקייה זו.",
+    "savedFolders": "תיקיות שמורות"
+  },
+  "files": {
+    "count": "קבצים",
+    "select": "בחר קבצים",
+    "openEpub": "פתח קורא EPUB",
+    "noPreview": "תצוגה מקדימה אינה זמינה לפורמט זה",
+    "restore": "שחזר",
+    "restoredSuccess": "הקובץ שוחזר בהצלחה!",
+    "deletePermanently": "מחיקה לצמיתות",
+    "deletePermanentlyTitle": "מחיקת קובץ לצמיתות",
+    "deletePermanentlyDesc": "האם אתה בטוח שברצונך למחוק לצמיתות את הקובץ \"{{name}}\"? לא ניתן לבטל פעולה זו.",
+    "deletedPermanentSuccess": "הקובץ נמחק לצמיתות.",
+    "favoriteFiles": "קבצים מועדפים",
+    "type": "סוג",
+    "size": "גודל",
+    "createdAt": "תאריך הוספה",
+    "optionsTitle": "אפשרויות קובץ",
+    "delete": "מחק",
+    "deletedSuccess": "הקובץ נמחק.",
+    "confirmPermanentDelete": "האם אתה בטוח שברצונך למחוק לצמיתות את הקובץ \"{{name}}\"?",
+    "addToFavorites": "הוסף למועדפים",
+    "removeFromFavorites": "הסר מהמועדפים",
+    "preview": "תצוגה מקדימה",
+    "details": "פרטים",
+    "download": "הורדה",
+    "share": "שתף",
+    "rename": "שנה שם",
+    "renameTitle": "שינוי שם קובץ",
+    "renameDescription": "שנה את שם הקובץ ושמור את השינויים.",
+    "filenameLabel": "שם הקובץ",
+    "deleteConfirmTitle": "האם אתה בטוח שברצונך למחוק את הקובץ?",
+    "deleteConfirmDesc": "האם אתה בטוח שברצונך למחוק את הקובץ",
+    "actionIrreversible": "לא ניתן לבטל פעולה זו."
+  },
+  "form": {
+    "folderName": "שם התיקייה",
+    "enterName": "הקלד שם...",
+    "selectFolder": "בחר תיקייה",
+    "selectFiles": "בחר קבצים",
+    "name": "שם"
+  },
+  "common": {
+    "cancel": "ביטול",
+    "save": "שמור",
+    "saveChanges": "שמור שינויים",
+    "error": "אירעה שגיאה"
+  },
+  "response": {
+    "fileMovedToFolder": "הקובץ הועבר ל-{{folder}}",
+    "fileMoveError": "העברת הקובץ נכשלה",
+    "folderDownloadStart": "מתחיל הורדת תיקייה",
+    "folderShared": "התיקייה שותפה",
+    "folderDeleted": "התיקייה נמחקה",
+    "deleteError": "אירעה שגיאה במהלך המחיקה",
+    "folderCreated": "התיקייה נוצרה!",
+    "folderUploaded": "התיקייה הועלתה!",
+    "filesUploaded": "הקבצים הועלו!",
+    "selectFolderFirst": "בחר תיקייה עם קבצים להעלאה!",
+    "selectFilesFirst": "בחר קבצים להעלאה!",
+    "trashEmptied": "הסל רוקן",
+    "trashDeleteError": "נכשלה מחיקת כל הקבצים",
+    "DeletingFiles": "מוחק קבצים..."
+  },
+  "sidebarmyFiles": "הקבצים שלי",
+  "sorting": "מיון",
+  "sorting.nameAsc": "שם (ת-א)",
+  "sorting.nameDesc": "שם (א-ת)",
+  "sorting.sizeAsc": "גודל עולה",
+  "sorting.sizeDesc": "גודl יורד",
+  "sorting.dateAsc": "תאריך עולה",
+  "sorting.dateDesc": "תאריך יורד",
+  "cancel": "ביטול",
+  "delete.selectedFile": "מחק קבצים נבחרים",
+  "navigation": {
+    "newFolder": "תיקייה חדשה",
+    "uploadFolder": "העלה תיקייה",
+    "uploadFiles": "העלה קבצים",
+    "newFile": "קובץ חדש",
+    "emptyTrash": "רוקן סל מחזור"
+  },
+  "dialog": {
+    "createFolderTitle": "צור תיקייה",
+    "createFolderDescription": "הזן שם לתיקייה החדשה.",
+    "uploadFolderDescription": "בחר תיקייה להעלאה לשרת.",
+    "uploadFilesTitle": "העלה קבצים",
+    "uploadFilesDescription": "בחר קבצים להעלאה לשרת.",
+    "newFileTitle": "קובץ חדש",
+    "newFileDescription": "הזן שם לפריט החדש."
+  },
+  "openLink": {
+    "trigger": "פתח קובץ ששותף",
+    "title": "פתח קובץ ששותף",
+    "description": "הזן קישור לקובץ ששותף או סרוק קוד QR.",
+    "placeholder": "פתח קובץ באמצעות קישור...",
+    "submit": "פתח קובץ"
+  },
+  "trash": {
+    "title": "סל מחזור",
+    "header": "קבצים שנמחקו",
+    "empty": "אין קבצים שנמחקו."
+  },
+  "gallery": {
+    "title": "הגלריה שלי",
+    "download": "הורדה",
+    "share": "שתף",
+    "noPhotos": "אין תמונות בגלריה.",
+    "info": "מידע על הקובץ"
+  },
+  "breadcrumbs": {
+    "dashboard": "לוח בקרה"
+  },
+  "music": {
+    "title": "מוזיקה"
+  },
+  "documents": {
+    "title": "מסמכים"
+  },
+  "other": {
+    "title": "אחר"
+  },
+  "storage": {
+    "usage": "שימוש בשטח אחסון"
+  }
+}

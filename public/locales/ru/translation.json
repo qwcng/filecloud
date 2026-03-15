@@ -1,10 +1,183 @@
 {
+  "sharedFiles": {
+    "title": "Общие файлы",
+    "searchPlaceholder": "Поиск файлов...",
+    "never": "Никогда",
+    "selectAction": "Выберите действие",
+    "actionsLabel": "Доступные действия",
+    "linkCopied": "Ссылка скопирована в буфер обмена!",
+    "revokeAccess": "Подтвердить",
+    "table": {
+      "name": "Имя",
+      "size": "Размер",
+      "sharedAt": "Общий доступ с",
+      "expires": "Истекает",
+      "code": "Код",
+      "downloads": "Загрузок",
+      "actions": "Действия"
+    },
+    "actions": {
+      "preview": "Предпросмотр",
+      "share": "Поделиться снова",
+      "revoke": "Отозвать доступ",
+      "changeCode": "Изменить код",
+      "download": "Скачать"
+    },
+    "dialog": {
+      "revokeTitle": "Управление доступом",
+      "revokeDescription": "Вы уверены, что хотите прекратить общий доступ к файлу {{name}}?",
+      "downloadDescription": "Вы хотите скачать файл {{name}}?",
+      "newAccessCode": "Новый код доступа",
+      "shareAgain": "Ссылка для доступа к файлу {{name}}"
+    }
+  },
+  "sharedFolders": {
+    "title": "Общие папки",
+    "more": "Больше опций",
+    "code": "Код доступа:",
+    "revoke": "Прекратить доступ",
+    "revokedToast": "Доступ к папке отозван"
+  },
+  "pagination": {
+    "previous": "Назад",
+    "next": "Вперед",
+    "pageOf": "Страница {{page}} из {{total}}"
+  },
+  "folder": {
+    "options": "Опции папки",
+    "rename": "Переименовать",
+    "renameTitle": "Переименовать папку",
+    "renameDescription": "Измените название папки и сохраните изменения.",
+    "share": "Поделиться",
+    "shareConfirmTitle": "Открыть доступ ко всей папке?",
+    "shareConfirmDescription": "Вы уверены, что хотите открыть общий доступ к папке {{folder}}?",
+    "enterAccessCode": "Введите код доступа",
+    "download": "Скачать",
+    "delete": "Удалить",
+    "deleteConfirmTitle": "Вы уверены, что хотите удалить папку?",
+    "deleteConfirmDescription": "Вы уверены, что хотите удалить папку {{folder}}? Это действие нельзя отменить. Вы потеряете {{files}} файлов, находящихся в этой папке.",
+    "savedFolders": "Сохраненные папки"
+  },
+  "files": {
+    "count": "файлов",
+    "select": "Выбрать файлы",
+    "openEpub": "Открыть читалку EPUB",
+    "noPreview": "Предпросмотр недоступен для этого формата",
+    "restore": "Восстановить",
+    "restoredSuccess": "Файл восстановлен!",
+    "deletePermanently": "Удалить навсегда",
+    "deletePermanentlyTitle": "Удалить файл навсегда",
+    "deletePermanentlyDesc": "Вы уверены, что хотите безвозвратно удалить файл \"{{name}}\"? Это действие нельзя отменить.",
+    "deletedPermanentSuccess": "Файл был безвозвратно удален.",
+    "favoriteFiles": "Избранные файлы",
+    "type": "Тип",
+    "size": "Размер",
+    "createdAt": "Дата добавления",
+    "optionsTitle": "Опции файла",
+    "delete": "Удалить",
+    "deletedSuccess": "Файл удален.",
+    "confirmPermanentDelete": "Вы уверены, что хотите навсегда удалить файл \"{{name}}\"?",
+    "addToFavorites": "Добавить в избранное",
+    "removeFromFavorites": "Удалить из избранного",
+    "preview": "Предпросмотр",
+    "details": "Детали",
+    "download": "Скачать",
+    "share": "Поделиться",
+    "rename": "Переименовать",
+    "renameTitle": "Переименовать файл",
+    "renameDescription": "Измените имя файла и сохраните изменения.",
+    "filenameLabel": "Имя файла",
+    "deleteConfirmTitle": "Вы уверены, что хотите удалить файл?",
+    "deleteConfirmDesc": "Вы уверены, что хотите удалить файл",
+    "actionIrreversible": "Это действие нельзя отменить."
+  },
+  "form": {
+    "folderName": "Имя папки",
+    "enterName": "Введите имя...",
+    "selectFolder": "Выберите папку",
+    "selectFiles": "Выберите файлы",
+    "name": "Имя"
+  },
+  "common": {
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "saveChanges": "Сохранить изменения",
+    "error": "Произошла ошибка"
+  },
+  "response": {
+    "fileMovedToFolder": "Файл перемещен в {{folder}}",
+    "fileMoveError": "Не удалось переместить файл",
+    "folderDownloadStart": "Начало загрузки папки",
+    "folderShared": "Доступ к папке открыт",
+    "folderDeleted": "Папка удалена",
+    "deleteError": "Ошибка при удалении",
+    "folderCreated": "Папка создана!",
+    "folderUploaded": "Папка загружена!",
+    "filesUploaded": "Файлы загружены!",
+    "selectFolderFirst": "Сначала выберите папку для загрузки!",
+    "selectFilesFirst": "Сначала выберите файлы для загрузки!",
+    "trashEmptied": "Корзина очищена",
+    "trashDeleteError": "Не удалось удалить все файлы",
+    "DeletingFiles": "Удаление файлов..."
+  },
   "sidebarmyFiles": "Мои файлы",
   "sorting": "сортировка",
   "sorting.nameAsc": "Имя (А-Я)",
   "sorting.nameDesc": "Имя (Я-А)",
-  "sorting.sizeAsc": "Размер по возрастанию",
-  "sorting.sizeDesc": "Размер по убыванию",
-  "sorting.dateAsc": "Дата по возрастанию",
-  "sorting.dateDesc": "Дата по убыванию"
+  "sorting.sizeAsc": "Размер (по возрастанию)",
+  "sorting.sizeDesc": "Размер (по убыванию)",
+  "sorting.dateAsc": "Дата (старые сначала)",
+  "sorting.dateDesc": "Дата (новые сначала)",
+  "cancel": "Отмена",
+  "delete.selectedFile": "Удалить выбранные файлы",
+  "navigation": {
+    "newFolder": "Новая папка",
+    "uploadFolder": "Загрузить папку",
+    "uploadFiles": "Загрузить файлы",
+    "newFile": "Новый файл",
+    "emptyTrash": "Очистить корзину"
+  },
+  "dialog": {
+    "createFolderTitle": "Создать папку",
+    "createFolderDescription": "Введите имя новой папки.",
+    "uploadFolderDescription": "Выберите папку для загрузки на сервер.",
+    "uploadFilesTitle": "Загрузить файлы",
+    "uploadFilesDescription": "Выберите файлы для загрузки на сервер.",
+    "newFileTitle": "Новый файл",
+    "newFileDescription": "Введите имя для нового элемента."
+  },
+  "openLink": {
+    "trigger": "Открыть общий файл",
+    "title": "Открыть общий файл",
+    "description": "Введите ссылку на общий файл или отсканируйте QR-код.",
+    "placeholder": "Открыть файл по ссылке...",
+    "submit": "Открыть файл"
+  },
+  "trash": {
+    "title": "Корзина",
+    "header": "Удаленные файлы",
+    "empty": "Корзина пуста."
+  },
+  "gallery": {
+    "title": "Моя галерея",
+    "download": "Скачать",
+    "share": "Поделиться",
+    "noPhotos": "В галерее нет фото.",
+    "info": "Информация о файле"
+  },
+  "breadcrumbs": {
+    "dashboard": "Панель управления"
+  },
+  "music": {
+    "title": "Музыка"
+  },
+  "documents": {
+    "title": "Документы"
+  },
+  "other": {
+    "title": "Другое"
+  },
+  "storage": {
+    "usage": "Использование места"
+  }
 }

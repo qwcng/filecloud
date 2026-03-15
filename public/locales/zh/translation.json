@@ -1,0 +1,183 @@
+{
+  "sharedFiles": {
+    "title": "共享文件",
+    "searchPlaceholder": "搜索文件...",
+    "never": "永不",
+    "selectAction": "选择操作",
+    "actionsLabel": "可用操作",
+    "linkCopied": "链接已复制到剪贴板！",
+    "revokeAccess": "确认",
+    "table": {
+      "name": "名称",
+      "size": "大小",
+      "sharedAt": "共享时间",
+      "expires": "过期时间",
+      "code": "提取码",
+      "downloads": "下载次数",
+      "actions": "操作"
+    },
+    "actions": {
+      "preview": "预览",
+      "share": "重新共享",
+      "revoke": "取消访问权限",
+      "changeCode": "修改提取码",
+      "download": "下载"
+    },
+    "dialog": {
+      "revokeTitle": "权限管理",
+      "revokeDescription": "您确定要取消文件 {{name}} 的共享吗？",
+      "downloadDescription": "您想下载文件 {{name}} 吗？",
+      "newAccessCode": "新提取码",
+      "shareAgain": "文件 {{name}} 的共享链接"
+    }
+  },
+  "sharedFolders": {
+    "title": "共享文件夹",
+    "more": "更多选项",
+    "code": "提取码：",
+    "revoke": "取消共享",
+    "revokedToast": "文件夹共享已取消"
+  },
+  "pagination": {
+    "previous": "上一页",
+    "next": "下一页",
+    "pageOf": "第 {{page}} 页，共 {{total}} 页"
+  },
+  "folder": {
+    "options": "文件夹选项",
+    "rename": "重命名",
+    "renameTitle": "重命名文件夹",
+    "renameDescription": "修改文件夹名称并保存更改。",
+    "share": "共享",
+    "shareConfirmTitle": "是否共享整个文件夹？",
+    "shareConfirmDescription": "您确定要共享文件夹 {{folder}} 吗？",
+    "enterAccessCode": "输入提取码",
+    "download": "下载",
+    "delete": "删除",
+    "deleteConfirmTitle": "确定删除文件夹吗？",
+    "deleteConfirmDescription": "确定要删除文件夹 {{folder}} 吗？此操作不可撤销。该文件夹内的 {{files}} 个文件也将丢失。",
+    "savedFolders": "已保存的文件夹"
+  },
+  "files": {
+    "count": "个文件",
+    "select": "选择文件",
+    "openEpub": "打开 EPUB 阅读器",
+    "noPreview": "此格式不支持预览",
+    "restore": "还原",
+    "restoredSuccess": "文件已还原！",
+    "deletePermanently": "永久删除",
+    "deletePermanentlyTitle": "永久删除文件",
+    "deletePermanentlyDesc": "您确定要永久删除 “{{name}}” 吗？此操作不可撤销。",
+    "deletedPermanentSuccess": "文件已永久删除。",
+    "favoriteFiles": "收藏的文件",
+    "type": "类型",
+    "size": "大小",
+    "createdAt": "添加日期",
+    "optionsTitle": "文件选项",
+    "delete": "删除",
+    "deletedSuccess": "文件已删除。",
+    "confirmPermanentDelete": "您确定要永久删除 “{{name}}” 吗？",
+    "addToFavorites": "添加到收藏",
+    "removeFromFavorites": "取消收藏",
+    "preview": "预览",
+    "details": "详情",
+    "download": "下载",
+    "share": "共享",
+    "rename": "重命名",
+    "renameTitle": "重命名文件",
+    "renameDescription": "修改文件名称并保存更改。",
+    "filenameLabel": "文件名",
+    "deleteConfirmTitle": "确定删除文件吗？",
+    "deleteConfirmDesc": "确定要删除文件",
+    "actionIrreversible": "此操作不可撤销。"
+  },
+  "form": {
+    "folderName": "文件夹名称",
+    "enterName": "请输入名称...",
+    "selectFolder": "选择文件夹",
+    "selectFiles": "选择文件",
+    "name": "名称"
+  },
+  "common": {
+    "cancel": "取消",
+    "save": "保存",
+    "saveChanges": "保存更改",
+    "error": "发生错误"
+  },
+  "response": {
+    "fileMovedToFolder": "文件已移动至 {{folder}}",
+    "fileMoveError": "移动文件失败",
+    "folderDownloadStart": "开始下载文件夹",
+    "folderShared": "文件夹已共享",
+    "folderDeleted": "文件夹已删除",
+    "deleteError": "删除时发生错误",
+    "folderCreated": "文件夹创建成功！",
+    "folderUploaded": "文件夹上传成功！",
+    "filesUploaded": "文件上传成功！",
+    "selectFolderFirst": "请先选择要上传的文件夹！",
+    "selectFilesFirst": "请先选择要上传的文件！",
+    "trashEmptied": "回收站已清空",
+    "trashDeleteError": "无法删除所有文件",
+    "DeletingFiles": "正在删除文件..."
+  },
+  "sidebarmyFiles": "我的文件",
+  "sorting": "排序",
+  "sorting.nameAsc": "名称 (A-Z)",
+  "sorting.nameDesc": "名称 (Z-A)",
+  "sorting.sizeAsc": "按大小升序",
+  "sorting.sizeDesc": "按大小降序",
+  "sorting.dateAsc": "按日期升序",
+  "sorting.dateDesc": "按日期降序",
+  "cancel": "取消",
+  "delete.selectedFile": "删除选中的文件",
+  "navigation": {
+    "newFolder": "新建文件夹",
+    "uploadFolder": "上传文件夹",
+    "uploadFiles": "上传文件",
+    "newFile": "新建文件",
+    "emptyTrash": "清空回收站"
+  },
+  "dialog": {
+    "createFolderTitle": "创建文件夹",
+    "createFolderDescription": "请输入新文件夹的名称。",
+    "uploadFolderDescription": "选择要上传到服务器的文件夹。",
+    "uploadFilesTitle": "上传文件",
+    "uploadFilesDescription": "选择要上传到服务器的文件。",
+    "newFileTitle": "新建文件",
+    "newFileDescription": "请输入新项目的名称。"
+  },
+  "openLink": {
+    "trigger": "打开共享文件",
+    "title": "打开共享文件",
+    "description": "请输入共享链接或扫描二维码以打开文件。",
+    "placeholder": "通过链接打开文件...",
+    "submit": "打开文件"
+  },
+  "trash": {
+    "title": "回收站",
+    "header": "已删除的文件",
+    "empty": "回收站为空。"
+  },
+  "gallery": {
+    "title": "我的相册",
+    "download": "下载",
+    "share": "共享",
+    "noPhotos": "相册中没有照片。",
+    "info": "文件信息"
+  },
+  "breadcrumbs": {
+    "dashboard": "仪表板"
+  },
+  "music": {
+    "title": "音乐"
+  },
+  "documents": {
+    "title": "文档"
+  },
+  "other": {
+    "title": "其他"
+  },
+  "storage": {
+    "usage": "存储空间使用情况"
+  }
+}

@@ -1,58 +1,19 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { router, useForm } from "@inertiajs/react";
 import axios from "axios";
-import { 
-  ArrowUpNarrowWide, 
-  ArrowDownNarrowWide, 
-  FolderPlus, 
-  FilePlus, 
-  Search, 
-  Filter,
-  SortAsc,
-  X,
-  Folder,
-  Trash2
-} from "lucide-react";
+import { FolderPlus, FilePlus, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { DialogBuilder } from "./DialogBuilder";
 import { toast } from "sonner";
-import { files } from "jszip";
-import { ref } from "process";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-interface NavigationBarProps {
-  urlr: string;
-  refreshData: () => void;
-  sorting: string;
-  onSortingChange: (val: string) => void;
-  files: any[];
-  setSortedFiles: (files: any[]) => void;
-  mapMimeToType: (mime: string) => any;
-}
+import { useTranslation } from "react-i18next";
 
 export function NewFolder({ urlr, refreshData }: { urlr: string; refreshData: () => void }) {
-  const [folderName, setFolderName] = useState("Nowy folder");
+  const { t } = useTranslation();
+  const [folderName, setFolderName] = useState(t("navigation.newFolder"));
+  const isMobile = useIsMobile();
 
   const handleCreateFolder = () => {
     router.post(
@@ -62,41 +23,43 @@ export function NewFolder({ urlr, refreshData }: { urlr: string; refreshData: ()
         parent: urlr === "dashboard" ? null : urlr,
       },
       {
-        onSuccess: (page) => {
-          toast.success("Folder został utworzony!");
+        onSuccess: () => {
+          toast.success(t("response.folderCreated"));
           refreshData();
-          // Resetujemy nazwę po sukcesie (opcjonalnie)
-          setFolderName("Nowy folder");
-          // refreshData();
+          setFolderName(t("navigation.newFolder"));
         },
       }
     );
-
   };
-  const isMobile = useIsMobile();
 
   return (
     <DialogBuilder
-      dialogTrigger={isMobile ? <Button variant="outline" title="Nowy folder"><FolderPlus className="w-4 h-4" /></Button> : <Button variant="outline"><FolderPlus className="w-4 h-4 " /> Nowy Folder</Button>}
-      dialogTitle="Stwórz folder"
-      dialogDescription="Podaj nazwę nowego folderu."
+      dialogTrigger={
+        isMobile 
+          ? <Button variant="outline" title={t("navigation.newFolder")}><FolderPlus className="w-4 h-4" /></Button> 
+          : <Button variant="outline"><FolderPlus className="w-4 h-4" /> {t("navigation.newFolder")}</Button>
+      }
+      dialogTitle={t("dialog.createFolderTitle")}
+      dialogDescription={t("dialog.createFolderDescription")}
       onSave={handleCreateFolder}
     >
       <div className="grid gap-4 py-4">
         <div className="grid gap-3">
-          <Label htmlFor="folder-name">Nazwa folderu</Label>
+          <Label htmlFor="folder-name">{t("form.folderName")}</Label>
           <Input
             id="folder-name"
             value={folderName}
             onChange={(e) => setFolderName(e.target.value)}
-            placeholder="Wpisz nazwę..."
+            placeholder={t("form.enterName")}
           />
         </div>
       </div>
     </DialogBuilder>
   );
 }
+
 export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refreshData: () => void }) {
+  const { t } = useTranslation();
   const { data, setData, post, progress } = useForm<{ files: File[]; folder: string }>({
     files: [],
     folder: urlr === "dashboard" ? "root" : urlr,
@@ -110,14 +73,13 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
 
   const handleUpload = () => {
     if (data.files.length === 0) {
-      toast.error("Wybierz folder z plikami do przesłania!");
+      toast.error(t("response.selectFolderFirst"));
       return;
     }
-
     post("/uploadFile", {
       forceFormData: true,
       onSuccess: () => {
-        toast.success("Folder został przesłany!");
+        toast.success(t("response.folderUploaded"));
         setData("files", []);
         refreshData();
       },
@@ -130,13 +92,17 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
 
   return (
     <DialogBuilder
-      dialogTrigger={<Button variant="outline"><FolderPlus className="w-4 h-4" /> Prześlij folder</Button>}
-      dialogTitle="Prześlij folder"
-      dialogDescription="Wybierz folder do przesłania na serwer."
+      dialogTrigger={
+        <Button variant="outline">
+          <FolderPlus className="w-4 h-4" /> {t("navigation.uploadFolder")}
+        </Button>
+      }
+      dialogTitle={t("navigation.uploadFolder")}
+      dialogDescription={t("dialog.uploadFolderDescription")}
       onSave={handleUpload}
     >
       <div className="grid gap-4 py-4">
-        <Label htmlFor="folder-upload">Wybierz folder</Label>
+        <Label htmlFor="folder-upload">{t("form.selectFolder")}</Label>
         <input
           id="folder-upload"
           type="file"
@@ -145,28 +111,18 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
           onChange={handleFolderSelect}
           className="cursor-pointer border rounded p-2"
         />
-  {/* <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div> */}
         {data.files.length > 0 && (
           <div className="mt-2 max-h-48 overflow-y-auto space-y-1 border p-2 rounded">
             {data.files.map((file, i) => (
               <div key={i} className="flex justify-between items-center text-sm">
                 <span className="truncate">{file.webkitRelativePath}</span>
-                {/* loading animation */}
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500">
-
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeFile(i)}
-                  className="text-red-500 hover:text-red-700"
-                >
+                <button type="button" onClick={() => removeFile(i)} className="text-red-500 hover:text-red-700">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ))}
           </div>
         )}
-
         {progress && (
           <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
             <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${progress.percentage}%` }} />
@@ -177,8 +133,8 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
   );
 }
 
-
 export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refreshData: () => void }) {
+  const { t } = useTranslation();
   const { data, setData, post, progress } = useForm<{ files: File[]; folder: string }>({
     files: [],
     folder: urlr === "dashboard" ? "root" : urlr,
@@ -192,14 +148,13 @@ export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refresh
 
   const handleUpload = () => {
     if (data.files.length === 0) {
-      toast.error("Wybierz pliki do przesłania!");
+      toast.error(t("response.selectFilesFirst"));
       return;
     }
-
     post("/uploadFile", {
       forceFormData: true,
       onSuccess: () => {
-        toast.success("Pliki zostały przesłane!");
+        toast.success(t("response.filesUploaded"));
         setData("files", []);
         refreshData();
       },
@@ -209,17 +164,22 @@ export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refresh
   const removeFile = (index: number) => {
     setData("files", data.files.filter((_, i) => i !== index));
   };
+
   const isMobile = useIsMobile();
 
   return (
     <DialogBuilder
-      dialogTrigger={ isMobile ? <Button variant="outline" title="Prześlij pliki"><FilePlus className="w-4 h-4" /> </Button> : <Button variant="outline"><FilePlus className="w-4 h-4" /> Prześlij pliki</Button> }
-      dialogTitle="Prześlij pliki"
-      dialogDescription="Wybierz pliki do przesłania na serwer."
+      dialogTrigger={
+        isMobile
+          ? <Button variant="outline" title={t("navigation.uploadFiles")}><FilePlus className="w-4 h-4" /></Button>
+          : <Button variant="outline"><FilePlus className="w-4 h-4" /> {t("navigation.uploadFiles")}</Button>
+      }
+      dialogTitle={t("dialog.uploadFilesTitle")}
+      dialogDescription={t("dialog.uploadFilesDescription")}
       onSave={handleUpload}
     >
       <div className="grid gap-4 py-4">
-        <Label htmlFor="file-upload">Wybierz pliki</Label>
+        <Label htmlFor="file-upload">{t("form.selectFiles")}</Label>
         <input
           id="file-upload"
           type="file"
@@ -227,24 +187,18 @@ export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refresh
           onChange={handleFileSelect}
           className="cursor-pointer border rounded p-2"
         />
-
         {data.files.length > 0 && (
           <div className="mt-2 max-h-48 overflow-y-auto space-y-1 border p-2 rounded">
             {data.files.map((file, i) => (
               <div key={i} className="flex justify-between items-center text-sm">
                 <span className="truncate">{file.name}</span>
-                <button
-                  type="button"
-                  onClick={() => removeFile(i)}
-                  className="text-red-500 hover:text-red-700"
-                >
+                <button type="button" onClick={() => removeFile(i)} className="text-red-500 hover:text-red-700">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ))}
           </div>
         )}
-
         {progress && (
           <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
             <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${progress.percentage}%` }} />
@@ -256,67 +210,60 @@ export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refresh
 }
 
 export function NewFile({ urlr, refreshData }: { urlr: string; refreshData: () => void }) {
-  const [name, setName] = React.useState("Nowy plik");
+  const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  const [name, setName] = useState(t("navigation.newFile"));
 
   const handleSave = () => {
     router.post('/createFile', {
       filename: name,
       parent: urlr === 'dashboard' ? null : urlr,
     }, {
-      onSuccess: () => {
-        refreshData();
-        // Tutaj można dodać zamknięcie dialogu jeśli potrzebne
-      }
+      onSuccess: () => refreshData()
     });
   };
-  const isMobile = useIsMobile();
+
   return (
     <DialogBuilder 
-      dialogTrigger={isMobile ? <Button variant="outline" title="Nowy plik"><FilePlus className="w-4 h-4" /> </Button> : <Button variant="outline"><FilePlus className="w-4 h-4" /> Nowy Plik</Button>} 
-      dialogTitle="Nowy Plik" 
-      dialogDescription="Podaj nazwę dla nowego elementu."
-      onSave={handleSave} // Przekazujemy referencję do funkcji
+      dialogTrigger={
+        isMobile
+          ? <Button variant="outline" title={t("navigation.newFile")}><FilePlus className="w-4 h-4" /></Button>
+          : <Button variant="outline"><FilePlus className="w-4 h-4" />{t('navigation.newFile')}</Button>
+      }
+      dialogTitle={t("dialog.newFileTitle")}
+      dialogDescription={t("dialog.newFileDescription")}
+      onSave={handleSave}
     >
       <div className="grid gap-4">
         <div className="grid gap-3">
-          <Label htmlFor="file-name">Nazwa</Label>
-          <Input 
-            id="file-name" 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-          />
+          <Label htmlFor="file-name">{t("form.name")}</Label>
+          <Input id="file-name" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
       </div>
     </DialogBuilder>
   );
-
-  
-   
 }
+
 export function WipeTrash({ refreshData, files }: { refreshData: (id?: number) => void; files: any[] }) {
-    const handleWipeTrash = async () => {
-        if (files.length === 0) return;
+  const { t } = useTranslation();
 
-        const toastId = toast.loading("Usuwanie plików...");
+  const handleWipeTrash = async () => {
+    if (files.length === 0) return;
+    const toastId = toast.loading(t('response.DeletingFiles'));
+    try {
+      await Promise.all(files.map((file) => axios.delete(`/pernamentlyDeleteFile/${file.id}`)));
+      toast.success(t("response.trashEmptied"), { id: toastId });
+      refreshData();
+    } catch (error) {
+      toast.error(t("response.trashDeleteError"), { id: toastId });
+      console.error(error);
+    }
+  };
 
-        try {
-            // Wykonujemy wszystkie usunięcia równolegle
-            await Promise.all(
-                files.map((file) => axios.delete(`/pernamentlyDeleteFile/${file.id}`))
-            );
-
-            toast.success("Kosz został opróżniony", { id: toastId });
-            refreshData(); // Wywołanie bez ID wyczyści całą tablicę w stanie
-        } catch (error) {
-            toast.error("Nie udało się usunąć wszystkich plików", { id: toastId });
-            console.error(error);
-        }
-    };
-
-    return (
-        <Button variant="destructive" onClick={handleWipeTrash} disabled={files.length === 0}>
-            <Trash2 className="w-4 h-4 mr-2" />
-            Opróżnij kosz ({files.length})
-        </Button>
-    );
+  return (
+    <Button variant="destructive" onClick={handleWipeTrash} disabled={files.length === 0}>
+      <Trash2 className="w-4 h-4 mr-2" />
+      {t("navigation.emptyTrash")} ({files.length})
+    </Button>
+  );
 }

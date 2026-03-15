@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useTranslation } from 'react-i18next';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -24,7 +25,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+
 export default function Appearance() {
+    const { i18n } = useTranslation();
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Appearance settings" />
@@ -35,16 +38,28 @@ export default function Appearance() {
                     <AppearanceTabs />
                     <Select onValueChange={(e)=>{
                         localStorage.setItem("lang",e);
-                    }} >
+                        i18n.changeLanguage(e);
+                        
+                    }} 
+                    defaultValue={localStorage.getItem("lang")}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select a language" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                        <SelectLabel>Fruits</SelectLabel>
-                        <SelectItem value="en">Angielski</SelectItem>
-                        <SelectItem value="pl">Polski</SelectItem>
-                        <SelectItem value="ru">Rosyjski</SelectItem>
+                        <SelectLabel>Language</SelectLabel>
+                        <SelectItem value="en">🇺🇸 English</SelectItem>
+                        <SelectItem value="pl">🇵🇱 Polski</SelectItem>
+                        <SelectItem value="ru">🇷🇺 Русский</SelectItem>
+                        <SelectItem value="fr">🇫🇷 Français</SelectItem>
+                        <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                        <SelectItem value="ar">🇸🇦 العربية</SelectItem>
+                        <SelectItem value="ja">🇯🇵 日本語</SelectItem>
+                        <SelectItem value="es">🇪🇸 Español</SelectItem>
+                        <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
+                        <SelectItem value="it">🇮🇹 Italiano</SelectItem>
+                        <SelectItem value="he">🇮🇱 עברית</SelectItem>
+
                       
                         </SelectGroup>
                     </SelectContent>
