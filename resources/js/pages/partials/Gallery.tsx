@@ -52,6 +52,7 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
   const [fileAction, setFileAction] = useState(false);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [scale, setScale] = useState(1);
+  const initialDistance = useRef<number | null>(null);
   const [info, setInfo] = useState(false);
 
   const scrollToActive = (index: number, behavior: "smooth" | "auto" = "smooth") => {
@@ -149,6 +150,13 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
             poster={`/showThumbnail/${images[currentIndex].id}`}
             controls
             autoPlay
+            loop
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -40) nextImage();
+              if (info.offset.x > 40) prevImage();
+            }}
           />
         ) : (
           <motion.img
@@ -158,8 +166,30 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
             drag
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             style={{ scale }}
-            onPinch={(_, info) => {
-              setScale((prev) => Math.min(3, Math.max(1, prev * info.scale)));
+            onTouchStart={(e) => {
+              if (e.touches.length === 2) {
+                const dist = Math.hypot(
+                  e.touches[0].clientX - e.touches[1].clientX,
+                  e.touches[0].clientY - e.touches[1].clientY
+                );
+                initialDistance.current = dist;
+              }
+            }}
+            onTouchMove={(e) => {
+              if (e.touches.length === 2 && initialDistance.current !== null) {
+                const dist = Math.hypot(
+                  e.touches[0].clientX - e.touches[1].clientX,
+                  e.touches[0].clientY - e.touches[1].clientY
+                );
+                const zoomFactor = dist / initialDistance.current;
+                setScale((prev) => Math.min(3, Math.max(1, prev * zoomFactor)));
+                initialDistance.current = dist;
+              }
+            }}
+            onTouchEnd={(e) => {
+              if (e.touches.length < 2) {
+                initialDistance.current = null;
+              }
             }}
             onDoubleClick={() => setScale(scale === 1 ? 2 : 1)}
             onDragEnd={(_, info) => {
