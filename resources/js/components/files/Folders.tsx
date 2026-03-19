@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Head, router, useForm, Link } from "@inertiajs/react";
-import { Download, Edit2Icon, EllipsisVertical, Share, Trash2Icon, X } from "lucide-react";
+import { Download, Edit2Icon, EllipsisVertical, EyeClosed, Share, Trash2Icon, X } from "lucide-react";
 import { motion } from "motion/react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -83,6 +83,10 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
     window.location.href = `downloadFolder/${folderId}`;
     toast.success(t("response.folderDownloadStart"));
   };
+  const toggleHide = ()=>{
+    router.post(`/toggleHideFolder/${folderId}`);
+    toast.success('Success');
+  }
 
   return (
     <motion.div
@@ -96,7 +100,7 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
       <Link
         href={`/dashboard/${href}`}
         onClick={() => onFolderClick()}
-        className="hover:shadow-lg transition dark:bg-neutral-800 relative block w-60 aspect-video border rounded-lg p-4 shadow"
+        className="hover:shadow-lg transition dark:bg-neutral-800 relative block w-68 sm:w-60 aspect-video border rounded-lg p-4 shadow"
       >
         <div className="flex justify-end">
           <EllipsisVertical
@@ -123,8 +127,7 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
           initial={{ opacity: 0, scale: 0.95, y: -5 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.15, ease: "easeOut" }}
-          className="absolute z-50 bg-white dark:bg-neutral-900 rounded-xl p-4 shadow-xl w-48"
-          style={{ top: pos.y, left: pos.x - 200 }}
+          className="absolute z-50 bg-white dark:bg-neutral-900 rounded-xl p-4 shadow-xl w-48 top-10 right-4"
         >
           <button onClick={() => setOptionVisible(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
             <X className="h-5 w-5" />
@@ -185,6 +188,10 @@ export function FolderCard({ folderName, href, onFolderClick, folderId, filesCou
             <li className="flex items-center cursor-pointer hover:text-blue-500" onClick={handleDownloadFolder}>
               <Download className="h-4 w-4 mr-2" /> {t("folder.download")}
             </li>
+            <li className="flex items-center cursor-pointer hover:text-blue-400">
+
+                    <button onClick={toggleHide}><EyeClosed className="h-4 w-4 mr-2" /> <span>Hide</span> </button>
+              </li>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>

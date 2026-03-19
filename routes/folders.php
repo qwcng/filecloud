@@ -10,3 +10,4 @@ Route::get('/folders/{parent?}',  [FolderController::class, 'listFolders'])->nam
 Route::delete('/folders/{parent?}', [FolderController::class,'deleteFolder'])->name('deleteFolder');
 
 Route::post('/changeFolderName/{folderId}', [FolderController::class, 'changeFolderName'])->name('changeFolderName');
+Route::post('/toggleHideFolder/{folderId}', [FolderController::class, 'toggleHideFolder'])->name('toggleHideFolder');

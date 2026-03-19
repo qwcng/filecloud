@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 
     class FileController extends Controller
     {
-        // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+      
         
         public function index(Request $request)
         {
@@ -62,8 +62,13 @@ use Illuminate\Support\Facades\Log;
             // Jeśli root (null), pokazujemy tylko MOJE pliki
             return $query->where('user_id', $request->user()->id);
         })
+        
+        ->with('folder')
         ->orderBy('created_at', 'desc')
-        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at']);
+        ->get(['id', 'original_name', 'path', 'mime_type', 'size', 'created_at', 'folder_id'])
+        ->filter(function (UserFile $file) {
+            return !$file->isHidden();
+        })->values()->makeHidden('folder');
 
     return response()->json([
         'files' => $files
@@ -220,6 +225,64 @@ foreach ($request->file('files') as $file) {
             $file->save();
 
             // return response()->json(['message' => 'Plik przeniesiony']);
+        }
+
+        public function filesByType(Request $request, $type)
+        {
+            $validTypes = ['image', 'audio', 'video', 'document', 'text', 'other'];
+            if (!in_array($type, $validTypes)) {
+                abort(400, 'Invalid file type');
+            }
+
+            $allFolders = \App\Models\Folder::where('user_id', $request->user()->id)->get(['id', 'parent_id', 'hidden']);
+            $foldersById = $allFolders->keyBy('id');
+            $hiddenFolderIds = [];
+
+            foreach ($foldersById as $id => $folder) {
+                $curr = $folder;
+                while ($curr) {
+                    if ($curr->hidden) {
+                        $hiddenFolderIds[] = $id;
+                        break;
+                    }
+                    $curr = $curr->parent_id ? $foldersById->get($curr->parent_id) : null;
+                }
+            }
+
+            $query = UserFile::where('user_id', $request->user()->id)
+                ->when(count($hiddenFolderIds) > 0, function($q) use ($hiddenFolderIds) {
+                    $q->where(function($sub) use ($hiddenFolderIds) {
+                        $sub->whereNull('folder_id')
+                            ->orWhereNotIn('folder_id', $hiddenFolderIds);
+                    });
+                })
+                ->orderBy('created_at', 'desc');
+
+            if ($type === 'image') {
+                $mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'video/mp4', 'video/quicktime'];
+                $query->whereIn('mime_type', $mimes);
+            } elseif ($type === 'document') {
+                $mimes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];
+                $query->whereIn('mime_type', $mimes);
+            }
+
+            // Używamy simplePaginate zamiast get
+            $files = $query->simplePaginate($request->input('limit', 20));
+
+            // Transformacja danych zachowując strukturę paginacji
+            $files->getCollection()->transform(function ($file) {
+                return [
+                    'id'          => $file->id,
+                    'name'        => $file->original_name,
+                    'path'        => $file->path,
+                    'mime_type'   => $file->mime_type,
+                    'size'        => number_format($file->size / 1024 / 1024, 2) . ' MB',
+                    'created_at'  => $file->created_at->toDateTimeString(),
+                    'is_favorite' => (bool)$file->is_favorite,
+                ];
+            });
+
+            return response()->json($files);
         }
         public function files(Request $request)
         {
@@ -409,43 +472,6 @@ public function saveEditedFile(Request $request, $fileId)
     $file->save();
 
     // return response()->json(['message' => 'File updated successfully']);
-}
-
-public function filesByType(Request $request, $type)
-{
-    $validTypes = ['image', 'audio', 'video', 'document', 'text', 'other'];
-    if (!in_array($type, $validTypes)) {
-        abort(400, 'Invalid file type');
-    }
-
-    $query = UserFile::where('user_id', $request->user()->id)
-        ->orderBy('created_at', 'desc');
-
-    if ($type === 'image') {
-        $mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'video/mp4', 'video/quicktime'];
-        $query->whereIn('mime_type', $mimes);
-    } elseif ($type === 'document') {
-        $mimes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'];
-        $query->whereIn('mime_type', $mimes);
-    }
-
-    // Używamy simplePaginate zamiast get
-    $files = $query->simplePaginate($request->input('limit', 20));
-
-    // Transformacja danych zachowując strukturę paginacji
-    $files->getCollection()->transform(function ($file) {
-        return [
-            'id'          => $file->id,
-            'name'        => $file->original_name,
-            'path'        => $file->path,
-            'mime_type'   => $file->mime_type,
-            'size'        => number_format($file->size / 1024 / 1024, 2) . ' MB',
-            'created_at'  => $file->created_at->toDateTimeString(),
-            'is_favorite' => (bool)$file->is_favorite,
-        ];
-    });
-
-    return response()->json($files);
 }
 
     public function createFile(Request $request)

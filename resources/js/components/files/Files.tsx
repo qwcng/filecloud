@@ -94,7 +94,8 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
       // rollback jeśli backend się wywali
       setIsFavorite(prev => !prev);
     },
-  });}
+  });
+}
   useEffect(() => {
   setIsFavorite(file.favorite);
 }, [file.favorite]);
@@ -103,8 +104,8 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      // whileHover={{ scale: 1.02, boxShadow: "0 8px 20px rgba(0,0,0,0.08)" }}
-      className="relative w-60 aspect-video border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
+      // whileHover={{ scale: 1.02, boxShadow: "0 8px 20px rgba(0,0,0,0.08)" }
+      className="relative w-68 sm:w-60 aspect-video border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
       draggable
       onDragStart={handleDragStart}
       onDragEnd={(e) => {

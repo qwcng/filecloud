@@ -22,7 +22,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import {
   Select,
   SelectContent,
@@ -60,11 +71,13 @@ type FileData = {
 
 export default function Dashboard() {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   // --- Stan ---
 
   const [files, setFiles] = useState<FileData[]>([]);
   const [folders, setFolders] = useState<{ id: number; name: string, files_count: number }[]>([]);
+  const [pathFolders, setPathFolders] = useState<{ id: number; name: string }[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
   const [urlr, setUrlr] = useState(window.location.pathname.split("/").pop() || '');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -89,6 +102,14 @@ export default function Dashboard() {
   const handleToggleSelecting = () => {
     setSelecting(!selecting);
     if (selecting) setSelectedFiles([]);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedFiles.length === files.length && files.length > 0) {
+      setSelectedFiles([]);
+    } else {
+      setSelectedFiles([...files]);
+    }
   };
 
   const handleSortingChange = (value: string) => {
@@ -127,6 +148,21 @@ export default function Dashboard() {
         console.error('Błąd usuwania:', error);
         alert('Wystąpił błąd podczas usuwania niektórych plików.');
       }
+    }
+  };
+
+  const handleBulkMove = async (targetFolderId: number | null) => {
+    if (selectedFiles.length === 0) return;
+    const toastId = toast.loading('Moving files...');
+    try {
+      await Promise.all(selectedFiles.map(file => axios.patch(`/files/${file.id}/move`, { folder_id: targetFolderId })));
+      setSelecting(false);
+      setSelectedFiles([]);
+      refreshData();
+      toast.success(`Moved successfully.`, { id: toastId });
+    } catch (error) {
+      console.error('Error moving files:', error);
+      toast.error('Error moving files.', { id: toastId });
     }
   };
 
@@ -193,6 +229,8 @@ useEffect(() => {
         try {
             let filesRes, foldersRes, pathRes;
             
+            setPathFolders([]); // zresetuj ścieżkę przy każdym pobieraniu
+            
             if (urlr === "favorite") {
                 filesRes = await axios.get(`/getFavorites`, { signal: controller.signal });
                 setFolders([]);
@@ -207,6 +245,12 @@ useEffect(() => {
               foldersRes = await axios.get(`/folders/${urlr}`, { signal: controller.signal });
               setFolders(foldersRes.data);
             }
+             else if(urlr==="hidden"){
+              setBreadcrumbs([{ title: "Hidden Folders", href: "#" }]);
+              foldersRes = await axios.get(`/folders/${urlr}`, { signal: controller.signal });
+              
+              setFolders(foldersRes.data);
+            }
             else {
 
                 [filesRes, foldersRes, pathRes] = await Promise.all([
@@ -217,6 +261,8 @@ useEffect(() => {
 
 
                 setFolders(foldersRes.data);
+                setPathFolders(pathRes.data);
+
                 const bc: BreadcrumbItem[] = [
                     { title: "panel", href: dashboard().url + "/" },
                     ...pathRes.data.map((f: any) => ({ 
@@ -283,7 +329,7 @@ const hideFromUi = (fileId: number) => {
   // --- Ścieżka dla Shared Dialog ---
   const cleanedSharePath = useMemo(() => shareLink.replace(window.location.origin + '/', ''), [shareLink]);
 
-  const handleQuickUpload = async (fileList: FileList) => {
+  const handleQuickUpload = async (fileList: FileList | File[]) => {
     const formData = new FormData();
     // Dodajemy wszystkie pliki do FormData
     Array.from(fileList).forEach((file) => {
@@ -306,6 +352,38 @@ const hideFromUi = (fileId: number) => {
       console.error(error);
     }
   };
+
+  const moveSelectComponent = (
+    <Select onValueChange={(val) => handleBulkMove(val === "root" ? null : parseInt(val))}>
+      <SelectTrigger>
+        <SelectValue placeholder="Wybierz docelowy folder" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value="root">📁 Katalog główny</SelectItem>
+
+          {pathFolders.length > 0 && (
+            <>
+              <SelectLabel>Ścieżka wstecz</SelectLabel>
+              {pathFolders.slice(0, -1).map(f => (
+                <SelectItem key={`path-${f.id}`} value={f.id.toString()}>📁 {f.name}</SelectItem>
+              ))}
+            </>
+          )}
+
+          {folders.length > 0 && (
+            <>
+              <SelectLabel>Podfoldery</SelectLabel>
+              {folders.map(f => (
+                <SelectItem key={`sub-${f.id}`} value={f.id.toString()}>📁 {f.name}</SelectItem>
+              ))}
+            </>
+          )}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+
   return (
 <AppLayout breadcrumbs={breadcrumbs} >
       <Head title={t('head.MyFiles')} >
@@ -348,7 +426,7 @@ const hideFromUi = (fileId: number) => {
         <FullScreenDrop onFilesDropped={handleQuickUpload} />
         {/* Toolbar Akcji */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
-         <div className="flex  sm:flex-row gap-2">
+         <div className="flex flex-wrap gap-2">
             <UploadFilesDialog urlr={urlr} refreshData={refreshData} />
             {!useIsMobile() && <UploadFolderDialog urlr={urlr} refreshData={refreshData} />}
             <NewFolder urlr={urlr} refreshData={refreshData} />
@@ -356,7 +434,7 @@ const hideFromUi = (fileId: number) => {
         </div>
 
           <Select defaultValue={sorting} onValueChange={handleSortingChange}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full lg:w-[180px]">
               <SelectValue placeholder={t('sorting')} />
             </SelectTrigger>
             <SelectContent>
@@ -374,24 +452,67 @@ const hideFromUi = (fileId: number) => {
         </div>
 
         {/* Wyszukiwarka i Tryb Wyboru */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <Input 
             type="text" 
             value={searchTerm}
             placeholder={t("sharedFiles.searchPlaceholder")} 
-            className="max-w-sm" 
+            className="w-full max-w-sm" 
             onChange={handleSearchChange}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button onClick={handleToggleSelecting} variant="outline">
               {selecting ? t('cancel') : t('files.select')}
             </Button>
             {selecting && (
               <>
-                <span className="text-sm font-medium">Zaznaczono: {selectedFiles.length}</span>
+                <Button onClick={handleSelectAll} variant="outline" size="sm">
+                  {selectedFiles.length === files.length && files.length > 0 ? t('deselectAll', 'Deselect all') : t('selectAll', 'Select all')}
+                </Button>
+                <span className="text-sm font-medium">Selected: {selectedFiles.length}</span>
                 <Button variant="destructive" size="sm" onClick={handleBulkDelete} disabled={selectedFiles.length === 0}>
                  {t('delete.selectedFile')}
                 </Button>
+                {isMobile ? (
+                  <Drawer>
+                    <DrawerTrigger asChild>
+                      <Button variant="secondary" size="sm" disabled={selectedFiles.length === 0}>
+                        {t('folder.move', 'Przenieś zaznaczone')}
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                      <div className="mx-auto w-full max-w-sm">
+                        <DrawerHeader>
+                          <DrawerTitle>Przenieś pliki</DrawerTitle>
+                          <DrawerDescription>Wybierz nowy folder dla zaznaczonych plików.</DrawerDescription>
+                        </DrawerHeader>
+                        <div className="p-4 pb-0">
+                          {moveSelectComponent}
+                        </div>
+                        <DrawerFooter>
+                          <DrawerClose asChild>
+                            <Button variant="outline">Anuluj</Button>
+                          </DrawerClose>
+                        </DrawerFooter>
+                      </div>
+                    </DrawerContent>
+                  </Drawer>
+                ) : (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="secondary" size="sm" disabled={selectedFiles.length === 0}>
+                        {t('folder.move', 'Przenieś zaznaczone')}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader>
+                        <DialogTitle>Przenieś pliki</DialogTitle>
+                        <DialogDescription>Wybierz nowy folder dla zaznaczonych plików.</DialogDescription>
+                      </DialogHeader>
+                      {moveSelectComponent}
+                    </DialogContent>
+                  </Dialog>
+                )}
               </>
             )}
           </div>

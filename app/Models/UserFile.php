@@ -57,4 +57,8 @@ class UserFile extends Model
     {
         return $this->hasMany(FileDownload::class, 'file_id');
     }
+    public function isHidden(): bool
+    {
+        return $this->folder ? $this->folder->isHidden() : false;
+    }
 }

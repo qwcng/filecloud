@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Folder extends Model
 {
-    protected $fillable = ['name', 'user_id', 'parent_id'];
+    protected $fillable = ['name', 'user_id', 'parent_id','hidden'];
 
     public function parent(): BelongsTo
     {
@@ -56,4 +56,18 @@ class Folder extends Model
 
     return false;
 }
+
+    public function isHidden(): bool
+    {
+        if ($this->hidden) {
+            return true;
+        }
+
+        if ($this->parent_id) {
+            $parent = $this->parent ?: $this->belongsTo(Folder::class, 'parent_id')->first();
+            return $parent ? $parent->isHidden() : false;
+        }
+
+        return false;
+    }
 }

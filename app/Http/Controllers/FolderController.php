@@ -59,6 +59,25 @@ class FolderController extends Controller
         return response()->json($savedFolders);
     }
 
+    // Dodano obsługę zakładki "Ukryte" (Hidden folders)
+    if ($parent === 'hidden') {
+        $hiddenFolders = Folder::where('user_id', $user->id)
+            ->where('hidden', true)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($folder) {
+                return [
+                    'id' => $folder->id,
+                    'name' => $folder->name,
+                    'created_at' => $folder->created_at,
+                    'files_count' => $folder->recursiveFilesCount(),
+                    'is_hidden' => true
+                ];
+            });
+
+        return response()->json($hiddenFolders);
+    }
+
     // 2. Normalizacja parent_id
     if ($parent === 'dashboard' || $parent === null) {
         $parentId = null;
@@ -77,8 +96,8 @@ class FolderController extends Controller
         }
     }
 
-    // 4. Pobieranie folderów
-    $query = Folder::where('parent_id', $parentId);
+    // 4. Pobieranie folderów (ukrywamy foldery oznaczone jako 'hidden')
+    $query = Folder::where('parent_id', $parentId)->where('hidden', false);
 
     if ($parentId === null) {
         // W głównym widoku pokazujemy tylko MOJE foldery
@@ -237,5 +256,23 @@ public function changeFolderName(Request $request, $folderId){
         foreach ($folder->children as $child) {
             $this->addFolderToZip($child, $zip, $currentPath);
         }
+    }
+    public function toggleHideFolder(Folder $folder, $folderId){
+       
+        
+             $folder = Folder::findOrFail($folderId);
+             if(auth()->id() == $folder->user_id){
+             if($folder->hidden == false){
+                $folder->hidden = true;
+                $folder->save();
+                return response()->json(true);
+             }
+             else{
+                 $folder->hidden = false;
+                 $folder->save();
+                 return response()->json(false);
+             }
+             
+        };
     }
 }
