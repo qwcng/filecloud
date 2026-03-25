@@ -44,7 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export function FileCard({ file, onClick, refreshData, sharing=false }: { file: FileData; onClick: () => void; refreshData: (id: number) => void; sharing:boolean }) {
-  const icons: Record<FileData["type"], JSX.Element> = {
+  const icons: Record<FileData["mime_type"], JSX.Element> = {
     image: <FileImage className="mx-auto mb-2 h-20 w-20 text-blue-500" />,
     pdf: <FileText className="mx-auto mb-2 h-20 w-20 text-red-500" />,
     excel: <FileSpreadsheet className="mx-auto mb-2 h-20 w-20 text-green-500" />,
@@ -60,6 +60,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
   const modalRef = useRef<HTMLDivElement>(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState<boolean>(file.favorite);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
   const {t}= useTranslation();
   const handleContextClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -94,8 +95,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
       // rollback jeśli backend się wywali
       setIsFavorite(prev => !prev);
     },
-  });
-}
+  });}
   useEffect(() => {
   setIsFavorite(file.favorite);
 }, [file.favorite]);
@@ -105,7 +105,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       // whileHover={{ scale: 1.02, boxShadow: "0 8px 20px rgba(0,0,0,0.08)" }
-      className="relative w-68 sm:w-60 aspect-video border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
+      className="relative w-72 sm:w-60 aspect-video border rounded-lg p-4 shadow transition bg-white dark:bg-neutral-800"
       draggable
       onDragStart={handleDragStart}
       onDragEnd={(e) => {
@@ -131,7 +131,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
         onClick={onClick}
         className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer flex flex-col items-center"
       >
-       {file.type === "image" || file.type === "video" ? (
+       {file.mime_type === "image" || file.mime_type === "video" ? (
             <img
               src={sharing ? `/share/file/${file.id}/thumbnail` : `/showThumbnail/${file.id}`}
               alt={file.name}
@@ -139,7 +139,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
               className="h-23 w-23 object-cover rounded shadow-sm"
             />
           ) : (
-            icons[file.type] || icons.other
+            icons[file.mime_type] || icons.other
           )}
        
         
@@ -307,8 +307,14 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
         </li>
       </ul>
     )}
+     
   </motion.div>
+ 
 )}
+ 
+ {infoModalOpen && (
+             <FileModal file={file} onClose={() => setInfoModalOpen(false)} />
+            )}
           
 
     </motion.div>
@@ -363,29 +369,26 @@ export function FileModal({ file, onClose, sharing = false }: { file: any; onClo
           <div className="overflow-y-auto p-6">
             {/* Preview Section */}
             <div className="mb-6 bg-gray-100 dark:bg-black rounded-lg flex items-center justify-center min-h-[200px]">
-              {file.type === "mp3" && <MusicPlayer src={`/showFile/${file.id}`} title={file.name} />}
-              {file.type === "image" && (
-                <img src={`/showFile/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />
+              {file.mime_type === "mp3" && <MusicPlayer src={`/showFile/${file.id}`} title={file.name} />}
+              {file.mime_type === "image" && (
+                <img src={`/showThumbnail/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />
               )}
-              {file.type === "video" && (
-                <video controls className="w-full max-h-80">
-                  <source 
-                    src={sharing ? `/share/file/${file.id}` : `/showFile/${file.id}`} 
-                    type={file.mime_type} 
-                  />
-                </video>
+              {file.mime_type === "video" && (
+                <img src={`/showThumbnail/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />
+                
               )}
-              {file.type === "epub" && (
+              {file.mime_type === "epub" && (
                 <Button onClick={() => window.open(`/polygon/${file.id}`, "_blank")}>
                   {t("files.openEpub")}
                 </Button>
               )}
-              {file.type === "other" && (
+              {file.mime_type === "other" && (
                 <div className="text-center p-8">
                   <FileIcon className="h-12 w-12 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-500">{t("files.noPreview")}</p>
                 </div>
               )}
+            
             </div>
 
             {/* Actions */}
@@ -445,7 +448,7 @@ export function FileModal({ file, onClose, sharing = false }: { file: any; onClo
             <div className="space-y-3 text-sm border-t dark:border-neutral-800 pt-4">
               <div className="flex justify-between">
                 <span className="text-gray-500">{t("files.type")}:</span> 
-                <span className="font-medium">{file.type}</span>
+                <span className="font-medium">{file.mime_type}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">{t("files.size")}:</span> 
@@ -500,9 +503,11 @@ export function ShareModal({ fileId, onClose }: { fileId: number; onClose: () =>
         <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-xl w-full max-w-md relative">
           <button
             onClick={onClose}
+            key={fileId}
             className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
           >
             <X className="h-5 w-5" />
+            
           </button>
           <h2 className="text-xl font-semibold mb-4">Udostępnij plik</h2>
 
@@ -790,7 +795,7 @@ export function UploadFileCard({folderName, refreshData}: {folderName: string; r
     );
 }
 export function DeletedFileCard({ file, onClick, refreshData }: { file: FileData; onClick: () => void; refreshData: () => void }) {
-  const icons: Record<FileData["type"], JSX.Element> = {
+  const icons: Record<FileData["mime_type"], JSX.Element> = {
     image: <FileImage className="mx-auto mb-2 h-16 w-16 text-blue-500" />,
     pdf: <FileText className="mx-auto mb-2 h-16 w-16 text-red-500" />,
     excel: <FileSpreadsheet className="mx-auto mb-2 h-16 w-16 text-green-500" />,
@@ -854,7 +859,7 @@ export function DeletedFileCard({ file, onClick, refreshData }: { file: FileData
         onClick={onClick}
         className="text-center w-full overflow-ellipsis overflow-hidden cursor-pointer"
       >
-        {icons[file.type]}
+        {icons[file.mime_type]}
         <h3 className="text-lg font-medium text-ellipsis">{file.name}</h3>
         <p className="text-sm text-gray-500">Rozmiar: {(file.size / 1000000).toPrecision(2)} MB</p>
         <p className="text-sm text-gray-500">Data: {file.created_at}</p>

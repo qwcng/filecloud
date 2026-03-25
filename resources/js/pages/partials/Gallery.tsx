@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Head, router, useRemember } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
-import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X, Loader2, FileVideo, Info } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X, Loader2, FileVideo, Info, Play, Pause, Maximize, Minimize } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { type BreadcrumbItem } from "@/types";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FileModal, ShareModal } from "@/components/files/Files";
 
 export function ImageCard({
   id,
@@ -54,6 +55,44 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
   const [scale, setScale] = useState(1);
   const initialDistance = useRef<number | null>(null);
   const [info, setInfo] = useState(false);
+  
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [share,setShare]= useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") setCurrentIndex((p) => (p === images.length - 1 ? 0 : p + 1));
+      if (e.key === "ArrowLeft") setCurrentIndex((p) => (p === 0 ? images.length - 1 : p - 1));
+      if (e.key === "Escape") onClose();
+      if (e.key === " ") {
+        e.preventDefault();
+        setIsPlaying((p) => !p);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [images.length, onClose]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setCurrentIndex((p) => (p === images.length - 1 ? 0 : p + 1));
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, images.length]);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen().catch(() => {});
+      setIsFullscreen(false);
+    }
+  };
 
   const scrollToActive = (index: number, behavior: "smooth" | "auto" = "smooth") => {
     const activeThumb = thumbnailRefs.current[index];
@@ -127,8 +166,22 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
               </button>
             </div>
           )}
+          <button onClick={() => setIsPlaying(!isPlaying)} className={`p-2 transition-colors ${isPlaying ? 'text-blue-400' : 'text-white/70 hover:text-white'}`}>
+            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+          </button>
+          <button onClick={toggleFullscreen} className="hidden md:block p-2 text-white/70 hover:text-white transition-colors">
+            {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+          </button>
+          <button onClick={() => setShare(true)} className="p-2 text-white/70 hover:text-white transition-colors">
+            <Share2 className="w-5 h-5" />
+            
+          
+            
+          </button>
+          
           <button onClick={() => setInfo(!info)} className="p-2 text-white/70 hover:text-white transition-colors">
             <Info className="w-5 h-5" />
+            
           </button>
 
           <button onClick={onClose} className="p-2 text-white/70 hover:text-white transition-all">
@@ -136,6 +189,9 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
           </button>
         </div>
       </div>
+      {info && (
+             <FileModal file={images[currentIndex]} onClose={() => setInfo(false)} />
+            )}
 
       <div className="relative flex-1 flex items-center justify-center touch-none overflow-hidden">
         <button onClick={prevImage} className="hidden md:flex absolute left-4 z-30 p-4 text-white/20 hover:text-white transition-colors"><ArrowLeft className="w-8 h-8" /></button>

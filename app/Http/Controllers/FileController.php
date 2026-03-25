@@ -352,10 +352,10 @@ foreach ($request->file('files') as $file) {
 
     
         return response($decrypted)
-        ->header('Content-Type', 'application/octet-stream')
-        // ->header('Content-Type', 'image/jpeg')
-        ->header('Content-Disposition', 'inline')
-       ->header('Cache-Control', 'max-age=31536000, public');
+        ->header('Content-Type', $file->mime_type) // Używamy mime_type z bazy
+        ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '.pdf"')
+        ->header('Content-Length', strlen($decrypted))
+        ->header('Cache-Control', 'private, max-age=3600');
         // ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"');
 }
     public function showThumbnail(UserFile $file)

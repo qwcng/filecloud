@@ -56,13 +56,14 @@ import { toast } from "sonner";
 import { useSwipeable } from "react-swipeable";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { Gallerye } from "./partials/Gallery";
 // --- Konfiguracja i18n ---
 
 
 type FileData = {
   id: number;
   name: string;
-  type: "image" | "pdf" | "excel" | "ppt" | "zip" | "mp3" | "video" | "epub" | "other";
+  mime_type: "image" | "pdf" | "excel" | "ppt" | "zip" | "mp3" | "video" | "epub" | "other" | "text";
   size: string;
   created_at: string;
   url: string;
@@ -90,6 +91,8 @@ export default function Dashboard() {
   const [filesLoading, setFilesLoading] = useState(true);
   const [sorting, setSorting] = useState(localStorage.getItem("sorting") || 'dateDesc');
   const [searchTerm, setSearchTerm] = useState("");
+  const[gallery,setGallery]= useState([]);
+  const[galleryVisible,setGalleryVisible]= useState(false);
  
 
 
@@ -167,7 +170,16 @@ export default function Dashboard() {
   };
 
   const handleFileClick = (file: FileData) => {
-    setSelectedFile(file);
+    // setSelectedFile(file);
+    if(file.mime_type === "image" || file.mime_type==="video"){
+    setGalleryVisible(true)
+    }
+    else if(file.mime_type === "text"){
+      router.visit('/edit/' +file.id)
+    }
+    else{
+      setSelectedFile(file)
+    }
   };
 
   const handleShareLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,13 +191,14 @@ export default function Dashboard() {
   };
 
   // --- Pomocnicze funkcje mapowania ---
-  const mapMimeToType = (mime: string): FileData["type"] => {
+  const mapMimeToType = (mime: string): FileData["mime_type"] => {
     if (mime.startsWith("image/")) return "image";
     if (mime.startsWith("audio/")) return "mp3";
     if (mime.startsWith("video/")) return "video";
     if (mime === "application/pdf") return "pdf";
     if (mime.includes("excel") || mime.includes("spreadsheet")) return "excel";
     if (mime.includes("presentation")) return "ppt";
+    if (mime === "text/plain") return "text";
     if (mime === "application/epub+zip") return "epub";
     return "other";
   };
@@ -198,7 +211,7 @@ export default function Dashboard() {
           const mapped = response.data.map((f: any) => ({
             id: f.id,
             name: f.original_name,
-            type: mapMimeToType(f.mime_type),
+            mime_type: mapMimeToType(f.mime_type),
             size: f.size,
             created_at: f.created_at,
             url: f.url,
@@ -278,13 +291,20 @@ useEffect(() => {
                 const mappedFiles: FileData[] = filesRes.data.files.map((f: any) => ({
                     id: f.id,
                     name: f.original_name,
-                    type: mapMimeToType(f.mime_type),
+                    mime_type: mapMimeToType(f.mime_type),
                     size: f.size,
                     created_at: f.created_at,
                     url: f.url,
                     favorite: f.is_favorite
                 }));
                 setFiles(mappedFiles);
+                const multimedia = mappedFiles.filter(file => file.mime_type === 'image' || file.mime_type === 'video');
+                setGallery(multimedia);
+                setTimeout(()=>{
+                  console.log(multimedia)
+
+                },3000);
+                // console.log(files.filter(file => file.type === 'image' || file.type === 'video'))
             }
 
         } catch (err) {
@@ -309,6 +329,8 @@ useEffect(() => {
 const hideFromUi = (fileId: number) => {
   setFiles(prev => prev.filter(f => f.id !== fileId));
 } 
+
+
   // --- Sortowanie (Memoized) ---
   const sortedFiles = useMemo(() => {
     const sorted = [...files];
@@ -419,6 +441,15 @@ const hideFromUi = (fileId: number) => {
         </Dialog>
       )}
 
+      {galleryVisible &&(
+          <Gallerye 
+          images={gallery} 
+          initialIndex={0} 
+          onClose={()=>{setGalleryVisible(!galleryVisible)}} 
+           
+                              />
+      )}
+    
       <Toaster position="top-center" richColors duration={2000} />
 
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
