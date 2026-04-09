@@ -1,183 +1,197 @@
 {
-  "sharedFiles": {
-    "title": "Shared Files",
-    "searchPlaceholder": "Search files...",
-    "never": "Never",
-    "selectAction": "Select action",
-    "actionsLabel": "Available actions",
-    "linkCopied": "Link copied to clipboard!",
-    "revokeAccess": "Confirm",
-    "table": {
-      "name": "Name",
-      "size": "Size",
-      "sharedAt": "Shared at",
-      "expires": "Expires",
-      "code": "Code",
-      "downloads": "Downloads",
-      "actions": "Actions"
+    "sharedFiles": {
+        "title": "Shared Files",
+        "searchPlaceholder": "Search files...",
+        "never": "Never",
+        "selectAction": "Select action",
+        "actionsLabel": "Available actions",
+        "linkCopied": "Link copied to clipboard!",
+        "revokeAccess": "Confirm",
+        "table": {
+            "name": "Name",
+            "size": "Size",
+            "sharedAt": "Shared at",
+            "expires": "Expires",
+            "code": "Code",
+            "downloads": "Downloads",
+            "actions": "Actions"
+        },
+        "actions": {
+            "preview": "Preview",
+            "share": "Share again",
+            "revoke": "Revoke access",
+            "changeCode": "Change code",
+            "download": "Download"
+        },
+        "dialog": {
+            "revokeTitle": "Access Management",
+            "revokeDescription": "Are you sure you want to revoke access to file {{name}}?",
+            "downloadDescription": "Do you want to download file {{name}}?",
+            "newAccessCode": "New access code",
+            "shareAgain": "Link to share file {{name}}"
+        }
     },
-    "actions": {
-      "preview": "Preview",
-      "share": "Share again",
-      "revoke": "Revoke access",
-      "changeCode": "Change code",
-      "download": "Download"
+    "sharedFolders": {
+        "title": "Shared Folders",
+        "more": "More options",
+        "code": "Access code:",
+        "revoke": "Revoke sharing",
+        "revokedToast": "Folder sharing has been revoked"
+    },
+    "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "pageOf": "Page {{page}} of {{total}}"
+    },
+    "folder": {
+        "options": "Folder options",
+        "rename": "Rename",
+        "renameTitle": "Rename folder",
+        "renameDescription": "Change folder name and save changes.",
+        "share": "Share",
+        "shareConfirmTitle": "Do you want to share the entire folder?",
+        "shareConfirmDescription": "Are you sure you want to share folder {{folder}}?",
+        "enterAccessCode": "Enter access code",
+        "download": "Download",
+        "delete": "Delete",
+        "deleteConfirmTitle": "Are you sure you want to delete this folder?",
+        "deleteConfirmDescription": "Are you sure you want to delete folder {{folder}}? This action cannot be undone. You will lose {{files}} files located in this folder.",
+        "savedFolders": "Saved folders"
+    },
+    "files": {
+        "count": "files",
+        "select": "Select files",
+        "openEpub": "Open EPUB reader",
+        "noPreview": "Preview unavailable for this format",
+        "restore": "Restore",
+        "restoredSuccess": "File has been restored!",
+        "deletePermanently": "Delete permanently",
+        "deletePermanentlyTitle": "Delete file permanently",
+        "deletePermanentlyDesc": "Are you sure you want to permanently delete \"{{name}}\"? This action cannot be undone.",
+        "deletedPermanentSuccess": "File has been permanently deleted.",
+        "favoriteFiles": "Favorite files",
+        "type": "Type",
+        "size": "Size",
+        "createdAt": "Date added",
+        "optionsTitle": "File options",
+        "delete": "Delete",
+        "deletedSuccess": "File has been deleted.",
+        "confirmPermanentDelete": "Are you sure you want to permanently delete \"{{name}}\"?",
+        "addToFavorites": "Add to favorites",
+        "removeFromFavorites": "Remove from favorites",
+        "preview": "Preview",
+        "details": "Details",
+        "download": "Download",
+        "share": "Share",
+        "rename": "Rename",
+        "renameTitle": "Rename file",
+        "renameDescription": "Change file name and save changes.",
+        "filenameLabel": "File name",
+        "deleteConfirmTitle": "Are you sure you want to delete this file?",
+        "deleteConfirmDesc": "Are you sure you want to delete the file",
+        "actionIrreversible": "This action cannot be undone."
+    },
+    "form": {
+        "folderName": "Folder name",
+        "enterName": "Type name...",
+        "selectFolder": "Select folder",
+        "selectFiles": "Select files",
+        "name": "Name"
+    },
+    "common": {
+        "cancel": "Cancel",
+        "save": "Save",
+        "saveChanges": "Save changes",
+        "error": "An error occurred"
+    },
+    "response": {
+        "fileMovedToFolder": "File moved to {{folder}}",
+        "fileMoveError": "Failed to move file",
+        "folderDownloadStart": "Starting folder download",
+        "folderShared": "Folder has been shared",
+        "folderDeleted": "Folder has been deleted",
+        "deleteError": "An error occurred during deletion",
+        "folderCreated": "Folder has been created!",
+        "folderUploaded": "Folder has been uploaded!",
+        "filesUploaded": "Files have been uploaded!",
+        "selectFolderFirst": "Select a folder with files to upload!",
+        "selectFilesFirst": "Select files to upload!",
+        "trashEmptied": "Trash has been emptied",
+        "trashDeleteError": "Failed to delete all files",
+        "DeletingFiles": "Deleting files..."
+    },
+    "sidebarmyFiles": "My Files",
+    "sorting": "Sorting",
+    "sorting.nameAsc": "Name (A-Z)",
+    "sorting.nameDesc": "Name (Z-A)",
+    "sorting.sizeAsc": "Size (Ascending)",
+    "sorting.sizeDesc": "Size (Descending)",
+    "sorting.dateAsc": "Date (Oldest)",
+    "sorting.dateDesc": "Date (Newest)",
+    "cancel": "Cancel",
+    "delete.selectedFile": "Delete selected files",
+    "navigation": {
+        "newFolder": "New folder",
+        "uploadFolder": "Upload folder",
+        "uploadFiles": "Upload files",
+        "newFile": "New file",
+        "emptyTrash": "Empty trash"
     },
     "dialog": {
-      "revokeTitle": "Access Management",
-      "revokeDescription": "Are you sure you want to revoke access to file {{name}}?",
-      "downloadDescription": "Do you want to download file {{name}}?",
-      "newAccessCode": "New access code",
-      "shareAgain": "Link to share file {{name}}"
+        "createFolderTitle": "Create folder",
+        "createFolderDescription": "Enter a name for the new folder.",
+        "uploadFolderDescription": "Select a folder to upload to the server.",
+        "uploadFilesTitle": "Upload files",
+        "uploadFilesDescription": "Select files to upload to the server.",
+        "newFileTitle": "New file",
+        "newFileDescription": "Enter a name for the new item."
+    },
+    "openLink": {
+        "trigger": "Open shared file",
+        "title": "Open shared file",
+        "description": "Enter the link to the shared file you want to open or scan the QR code.",
+        "placeholder": "Open file via link...",
+        "submit": "Open file"
+    },
+    "trash": {
+        "title": "Trash",
+        "header": "Deleted Files",
+        "empty": "No deleted files."
+    },
+    "gallery": {
+        "title": "My Gallery",
+        "download": "Download",
+        "share": "Share",
+        "noPhotos": "No photos in gallery.",
+        "info": "File information"
+    },
+    "breadcrumbs": {
+        "dashboard": "Dashboard"
+    },
+    "music": {
+        "title": "Music"
+    },
+    "documents": {
+        "title": "Documents"
+    },
+    "other": {
+        "title": "Other"
+    },
+    "storage": {
+        "usage": "Storage usage"
+    },
+    "storage_dashboard": {
+        "title": "Your Drive",
+        "usedOf": "{{used}} GB used of {{total}} GB",
+        "freePercent": "{{percent}}% free",
+        "type": {
+            "image": "Images",
+            "video": "Videos",
+            "audio": "Audio",
+            "document": "Documents",
+            "text": "Text Files",
+            "other": "Other",
+            "free": "Free Space"
+        }
     }
-  },
-  "sharedFolders": {
-    "title": "Shared Folders",
-    "more": "More options",
-    "code": "Access code:",
-    "revoke": "Revoke sharing",
-    "revokedToast": "Folder sharing has been revoked"
-  },
-  "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "pageOf": "Page {{page}} of {{total}}"
-  },
-  "folder": {
-    "options": "Folder options",
-    "rename": "Rename",
-    "renameTitle": "Rename folder",
-    "renameDescription": "Change folder name and save changes.",
-    "share": "Share",
-    "shareConfirmTitle": "Do you want to share the entire folder?",
-    "shareConfirmDescription": "Are you sure you want to share folder {{folder}}?",
-    "enterAccessCode": "Enter access code",
-    "download": "Download",
-    "delete": "Delete",
-    "deleteConfirmTitle": "Are you sure you want to delete this folder?",
-    "deleteConfirmDescription": "Are you sure you want to delete folder {{folder}}? This action cannot be undone. You will lose {{files}} files located in this folder.",
-    "savedFolders": "Saved folders"
-  },
-  "files": {
-    "count": "files",
-    "select": "Select files",
-    "openEpub": "Open EPUB reader",
-    "noPreview": "Preview unavailable for this format",
-    "restore": "Restore",
-    "restoredSuccess": "File has been restored!",
-    "deletePermanently": "Delete permanently",
-    "deletePermanentlyTitle": "Delete file permanently",
-    "deletePermanentlyDesc": "Are you sure you want to permanently delete \"{{name}}\"? This action cannot be undone.",
-    "deletedPermanentSuccess": "File has been permanently deleted.",
-    "favoriteFiles": "Favorite files",
-    "type": "Type",
-    "size": "Size",
-    "createdAt": "Date added",
-    "optionsTitle": "File options",
-    "delete": "Delete",
-    "deletedSuccess": "File has been deleted.",
-    "confirmPermanentDelete": "Are you sure you want to permanently delete \"{{name}}\"?",
-    "addToFavorites": "Add to favorites",
-    "removeFromFavorites": "Remove from favorites",
-    "preview": "Preview",
-    "details": "Details",
-    "download": "Download",
-    "share": "Share",
-    "rename": "Rename",
-    "renameTitle": "Rename file",
-    "renameDescription": "Change file name and save changes.",
-    "filenameLabel": "File name",
-    "deleteConfirmTitle": "Are you sure you want to delete this file?",
-    "deleteConfirmDesc": "Are you sure you want to delete the file",
-    "actionIrreversible": "This action cannot be undone."
-  },
-  "form": {
-    "folderName": "Folder name",
-    "enterName": "Type name...",
-    "selectFolder": "Select folder",
-    "selectFiles": "Select files",
-    "name": "Name"
-  },
-  "common": {
-    "cancel": "Cancel",
-    "save": "Save",
-    "saveChanges": "Save changes",
-    "error": "An error occurred"
-  },
-  "response": {
-    "fileMovedToFolder": "File moved to {{folder}}",
-    "fileMoveError": "Failed to move file",
-    "folderDownloadStart": "Starting folder download",
-    "folderShared": "Folder has been shared",
-    "folderDeleted": "Folder has been deleted",
-    "deleteError": "An error occurred during deletion",
-    "folderCreated": "Folder has been created!",
-    "folderUploaded": "Folder has been uploaded!",
-    "filesUploaded": "Files have been uploaded!",
-    "selectFolderFirst": "Select a folder with files to upload!",
-    "selectFilesFirst": "Select files to upload!",
-    "trashEmptied": "Trash has been emptied",
-    "trashDeleteError": "Failed to delete all files",
-    "DeletingFiles": "Deleting files..."
-  },
-  "sidebarmyFiles": "My Files",
-  "sorting": "Sorting",
-  "sorting.nameAsc": "Name (A-Z)",
-  "sorting.nameDesc": "Name (Z-A)",
-  "sorting.sizeAsc": "Size (Ascending)",
-  "sorting.sizeDesc": "Size (Descending)",
-  "sorting.dateAsc": "Date (Oldest)",
-  "sorting.dateDesc": "Date (Newest)",
-  "cancel": "Cancel",
-  "delete.selectedFile": "Delete selected files",
-  "navigation": {
-    "newFolder": "New folder",
-    "uploadFolder": "Upload folder",
-    "uploadFiles": "Upload files",
-    "newFile": "New file",
-    "emptyTrash": "Empty trash"
-  },
-  "dialog": {
-    "createFolderTitle": "Create folder",
-    "createFolderDescription": "Enter a name for the new folder.",
-    "uploadFolderDescription": "Select a folder to upload to the server.",
-    "uploadFilesTitle": "Upload files",
-    "uploadFilesDescription": "Select files to upload to the server.",
-    "newFileTitle": "New file",
-    "newFileDescription": "Enter a name for the new item."
-  },
-  "openLink": {
-    "trigger": "Open shared file",
-    "title": "Open shared file",
-    "description": "Enter the link to the shared file you want to open or scan the QR code.",
-    "placeholder": "Open file via link...",
-    "submit": "Open file"
-  },
-  "trash": {
-    "title": "Trash",
-    "header": "Deleted Files",
-    "empty": "No deleted files."
-  },
-  "gallery": {
-    "title": "My Gallery",
-    "download": "Download",
-    "share": "Share",
-    "noPhotos": "No photos in gallery.",
-    "info": "File information"
-  },
-  "breadcrumbs": {
-    "dashboard": "Dashboard"
-  },
-  "music": {
-    "title": "Music"
-  },
-  "documents": {
-    "title": "Documents"
-  },
-  "other": {
-    "title": "Other"
-  },
-  "storage": {
-    "usage": "Storage usage"
-  }
 }

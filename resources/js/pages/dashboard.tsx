@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Head, router, useForm, Link } from "@inertiajs/react";
+import { Head, router, useForm, Link, usePage } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
 
 import { type BreadcrumbItem } from "@/types";
@@ -14,6 +14,7 @@ import { FileCard, FileModal, UploadFolderCard } from "@/components/files/Files"
 import { FolderCard } from "@/components/files/Folders";
 import { Toaster } from "@/components/ui/sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import StorageUsageBar from "@/components/custom/StorageUsageBar";
 import {
   Dialog,
   DialogClose,
@@ -67,6 +68,7 @@ type FileData = {
   size: string;
   created_at: string;
   url: string;
+  type?: string;
   favorite?: boolean;
 };
 
@@ -80,7 +82,11 @@ export default function Dashboard() {
   const [folders, setFolders] = useState<{ id: number; name: string, files_count: number }[]>([]);
   const [pathFolders, setPathFolders] = useState<{ id: number; name: string }[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
-  const [urlr, setUrlr] = useState(window.location.pathname.split("/").pop() || '');
+  const { url } = usePage();
+  const urlr = useMemo(() => {
+    const segment = url.split("/").pop() || "";
+    return segment === "dashboard" ? "" : segment;
+  }, [url]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [selecting, setSelecting] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileData[]>([]);
@@ -91,8 +97,29 @@ export default function Dashboard() {
   const [filesLoading, setFilesLoading] = useState(true);
   const [sorting, setSorting] = useState(localStorage.getItem("sorting") || 'dateDesc');
   const [searchTerm, setSearchTerm] = useState("");
-  const[gallery,setGallery]= useState([]);
-  const[galleryVisible,setGalleryVisible]= useState(false);
+  const [galleryVisible, setGalleryVisible] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+
+  // --- Memos ---
+  const sortedFiles = useMemo(() => {
+    const sorted = [...files];
+    sorted.sort((a, b) => {
+      switch (sorting) {
+        case "nameAsc": return a.name.localeCompare(b.name);
+        case "nameDesc": return b.name.localeCompare(a.name);
+        case "sizeAsc": return parseInt(a.size) - parseInt(b.size);
+        case "sizeDesc": return parseInt(b.size) - parseInt(a.size);
+        case "dateAsc": return a.created_at.localeCompare(b.created_at);
+        case "dateDesc": return b.created_at.localeCompare(a.created_at);
+        default: return 0;
+      }
+    });
+    return sorted;
+  }, [files, sorting]);
+
+  const gallery = useMemo(() => {
+    return sortedFiles.filter(file => file.mime_type === 'image' || file.mime_type === 'video');
+  }, [sortedFiles]);
  
 
 
@@ -172,10 +199,15 @@ export default function Dashboard() {
   const handleFileClick = (file: FileData) => {
     // setSelectedFile(file);
     if(file.mime_type === "image" || file.mime_type==="video"){
-    setGalleryVisible(true)
+      const index = gallery.findIndex(f => f.id === file.id);
+      setGalleryIndex(index !== -1 ? index : 0);
+      setGalleryVisible(true)
     }
     else if(file.mime_type === "text"){
       router.visit('/edit/' +file.id)
+    }
+    else if(file.mime_type === "pdf"){
+      router.visit('/view/' + file.id + '/pdf')
     }
     else{
       setSelectedFile(file)
@@ -227,10 +259,6 @@ export default function Dashboard() {
 
   // --- Efekty (Fetching danych) ---
 
-  useEffect(() => {
-    const segment = window.location.pathname.split("/").pop() || '';
-    setUrlr(segment === 'dashboard' ? '' : segment);
-  }, [refreshTrigger]);
 
 useEffect(() => {
     const controller = new AbortController();
@@ -261,8 +289,40 @@ useEffect(() => {
              else if(urlr==="hidden"){
               setBreadcrumbs([{ title: "Hidden Folders", href: "#" }]);
               foldersRes = await axios.get(`/folders/${urlr}`, { signal: controller.signal });
-              
               setFolders(foldersRes.data);
+            }
+            else if(urlr === "dropzone") {
+              setBreadcrumbs([{ title: "Miejsca publiczne (DropZones)", href: "#" }]);
+              foldersRes = await axios.get(`/dropzones`, { signal: controller.signal });
+              
+              // Mapped for FolderCard
+              const mappedZeros = foldersRes.data.map((dz: any) => ({
+                id: dz.id,
+                name: dz.name + " 🌐", // Add globe icon to visually distinguish
+                files_count: dz.files_count || 0,
+                isDropZone: true,
+                token: dz.token
+              }));
+              setFolders(mappedZeros);
+              setFiles([]);
+            }
+            else if (urlr.startsWith("dz_")) {
+              const dzId = urlr.replace("dz_", "");
+              filesRes = await axios.get(`/dropzones/${dzId}/files`, { signal: controller.signal });
+              setBreadcrumbs([
+                { title: "Miejsca publiczne", href: "/dashboard/dropzone" },
+                { title: filesRes.data.folder.name, href: "#" }
+              ]);
+              setFolders([]);
+              setFiles(filesRes.data.files.map((f: any) => ({
+                id: f.id,
+                name: f.original_name,
+                mime_type: mapMimeToType(f.mime_type),
+                size: f.size,
+                created_at: f.created_at,
+                url: f.url,
+                is_drop_file: true,
+              })));
             }
             else {
 
@@ -298,12 +358,6 @@ useEffect(() => {
                     favorite: f.is_favorite
                 }));
                 setFiles(mappedFiles);
-                const multimedia = mappedFiles.filter(file => file.mime_type === 'image' || file.mime_type === 'video');
-                setGallery(multimedia);
-                setTimeout(()=>{
-                  console.log(multimedia)
-
-                },3000);
                 // console.log(files.filter(file => file.type === 'image' || file.type === 'video'))
             }
 
@@ -332,21 +386,6 @@ const hideFromUi = (fileId: number) => {
 
 
   // --- Sortowanie (Memoized) ---
-  const sortedFiles = useMemo(() => {
-    const sorted = [...files];
-    sorted.sort((a, b) => {
-      switch (sorting) {
-        case "nameAsc": return a.name.localeCompare(b.name);
-        case "nameDesc": return b.name.localeCompare(a.name);
-        case "sizeAsc": return parseInt(a.size) - parseInt(b.size);
-        case "sizeDesc": return parseInt(b.size) - parseInt(a.size);
-        case "dateAsc": return a.created_at.localeCompare(b.created_at);
-        case "dateDesc": return b.created_at.localeCompare(a.created_at);
-        default: return 0;
-      }
-    });
-    return sorted;
-  }, [files, sorting]);
 
   // --- Ścieżka dla Shared Dialog ---
   const cleanedSharePath = useMemo(() => shareLink.replace(window.location.origin + '/', ''), [shareLink]);
@@ -359,13 +398,14 @@ const hideFromUi = (fileId: number) => {
     });
     
     // Jeśli urlr to ID folderu, dodaj go
-    if (urlr) formData.append("folder_id", urlr);
+    if (urlr) formData.append("folder", urlr);
 
     const id = toast.loading("Przesyłanie plików...");
 
     try {
       await axios.post("/uploadFile", formData, {
         headers: { "Content-Type": "multipart/form-data" }
+        
       });
       toast.success("Pliki przesłane pomyślnie!", { id });
       refreshData(); // Twoja funkcja odświeżająca cache i dane
@@ -444,19 +484,20 @@ const hideFromUi = (fileId: number) => {
       {galleryVisible &&(
           <Gallerye 
           images={gallery} 
-          initialIndex={0} 
+          initialIndex={galleryIndex} 
           onClose={()=>{setGalleryVisible(!galleryVisible)}} 
-           
-                              />
+          sharing={false} 
+          />
       )}
     
       <Toaster position="top-center" richColors duration={2000} />
 
-      <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <div className=" flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        {urlr === "" && <StorageUsageBar />}
         {/* <h3 className="text-lg font-semibold">📂 {t("sidebarmyFiles")} </h3> */}
-        <FullScreenDrop onFilesDropped={handleQuickUpload} />
+        <FullScreenDrop onFilesDropped={handleQuickUpload} urlr={urlr} />
         {/* Toolbar Akcji */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
+        <div className="sticky top-0 z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
          <div className="flex flex-wrap gap-2">
             <UploadFilesDialog urlr={urlr} refreshData={refreshData} />
             {!useIsMobile() && <UploadFolderDialog urlr={urlr} refreshData={refreshData} />}
@@ -555,16 +596,34 @@ const hideFromUi = (fileId: number) => {
           {foldersLoading ? (
             Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-24 w-72 rounded-lg" />)
           ) : (
-            folders.map((folder) => (
-              <FolderCard
-                key={folder.id}
-                href={folder.id.toString()}
-                onFolderClick={refreshData}
-                onMove={hideFromUi}
-                folderName={folder.name}
-                folderId={folder.id}
-                filesCount={folder.files_count}
-              />
+            folders.map((folder: any) => (
+              <div key={folder.id} className="relative group">
+                <FolderCard
+                  href={folder.isDropZone ? `dz_${folder.id}` : folder.id.toString()}
+                  onFolderClick={refreshData}
+                  onMove={() => hideFromUi(folder.id)}
+                  folderName={folder.name}
+                  folderId={folder.id}
+                  filesCount={folder.files_count}
+                />
+                
+                {/* Osobny Przycisk do kopiowania linku zamiast blokowania folderu */}
+                {folder.isDropZone && (
+                   <button 
+                     onClick={(e) => {
+                       e.preventDefault();
+                       e.stopPropagation();
+                       const link = `${window.location.origin}/drop/${folder.token}`;
+                       navigator.clipboard.writeText(link);
+                       toast.success("Skopiowano publiczny link do schowka!");
+                     }}
+                     className="absolute top-3 right-3 p-1.5 bg-blue-100/80 text-blue-600 rounded-full hover:bg-blue-200 z-20 transition"
+                     title="Kopiuj publiczny link zrzutu"
+                   >
+                     📋
+                   </button>
+                )}
+              </div>
             ))
           )}
         </div>

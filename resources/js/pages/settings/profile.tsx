@@ -1,4 +1,4 @@
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import settings from '@/routes/settings';
 import { send } from '@/routes/verification';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
@@ -12,12 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { edit } from '@/routes/profile';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Profile settings',
-        href: edit().url,
+        href: settings.profile.edit().url,
     },
 ];
 
@@ -33,7 +32,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                     <HeadingSmall title="Profile information" description="Update your name and email address" />
 
                     <Form
-                        {...ProfileController.update.form()}
+                        {...settings.profile.update.form()}
                         options={{
                             preserveScroll: true,
                         }}

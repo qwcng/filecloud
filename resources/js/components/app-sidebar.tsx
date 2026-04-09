@@ -90,10 +90,18 @@ const footerNavItems: NavItem[] = [
 export function AppSidebar() {
     const { t } = useTranslation();
     const { state } = useSidebar();
-    const [capacity, setCapacity] = useState({ used: 0, total: 100 });
+    const [capacity, setCapacity] = useState(() => {
+        const cached = localStorage.getItem('storage_capacity');
+        return cached ? JSON.parse(cached) : { used: 0, total: 100 };
+    });
 
     useEffect(() => {
-        fetchStorageCapacity();
+        const cachedAt = localStorage.getItem('storage_capacity_timestamp');
+        const now = Date.now();
+        // Only fetch if > 30 seconds since last fetch
+        if (!cachedAt || now - parseInt(cachedAt) > 30000) {
+            fetchStorageCapacity();
+        }
     }, []);
 
     const fetchStorageCapacity = () => {
@@ -101,6 +109,7 @@ export function AppSidebar() {
             .then(response => {
                 setCapacity(response.data);
                 localStorage.setItem('storage_capacity', JSON.stringify(response.data));
+                localStorage.setItem('storage_capacity_timestamp', Date.now().toString());
             });
     };
 

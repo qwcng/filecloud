@@ -1,183 +1,197 @@
 {
-  "sharedFiles": {
-    "title": "Fichiers partagés",
-    "searchPlaceholder": "Rechercher des fichiers...",
-    "never": "Jamais",
-    "selectAction": "Choisir une action",
-    "actionsLabel": "Actions disponibles",
-    "linkCopied": "Lien copié dans le presse-papiers !",
-    "revokeAccess": "Confirmer",
-    "table": {
-      "name": "Nom",
-      "size": "Taille",
-      "sharedAt": "Partagé le",
-      "expires": "Expire le",
-      "code": "Code",
-      "downloads": "Téléchargements",
-      "actions": "Actions"
+    "sharedFiles": {
+        "title": "Fichiers partagés",
+        "searchPlaceholder": "Rechercher des fichiers...",
+        "never": "Jamais",
+        "selectAction": "Choisir une action",
+        "actionsLabel": "Actions disponibles",
+        "linkCopied": "Lien copié dans le presse-papiers !",
+        "revokeAccess": "Confirmer",
+        "table": {
+            "name": "Nom",
+            "size": "Taille",
+            "sharedAt": "Partagé le",
+            "expires": "Expire le",
+            "code": "Code",
+            "downloads": "Téléchargements",
+            "actions": "Actions"
+        },
+        "actions": {
+            "preview": "Aperçu",
+            "share": "Repartager",
+            "revoke": "Révoquer l'accès",
+            "changeCode": "Modifier le code",
+            "download": "Télécharger"
+        },
+        "dialog": {
+            "revokeTitle": "Gestion des accès",
+            "revokeDescription": "Voulez-vous vraiment révoquer l'accès au fichier {{name}} ?",
+            "downloadDescription": "Voulez-vous télécharger le fichier {{name}} ?",
+            "newAccessCode": "Nouveau code d'accès",
+            "shareAgain": "Lien de partage pour le fichier {{name}}"
+        }
     },
-    "actions": {
-      "preview": "Aperçu",
-      "share": "Repartager",
-      "revoke": "Révoquer l'accès",
-      "changeCode": "Modifier le code",
-      "download": "Télécharger"
+    "sharedFolders": {
+        "title": "Dossiers partagés",
+        "more": "Plus d'options",
+        "code": "Code d'accès :",
+        "revoke": "Arrêter le partage",
+        "revokedToast": "Le partage du dossier a été révoqué"
+    },
+    "pagination": {
+        "previous": "Précédent",
+        "next": "Suivant",
+        "pageOf": "Page {{page}} sur {{total}}"
+    },
+    "folder": {
+        "options": "Options du dossier",
+        "rename": "Renommer",
+        "renameTitle": "Renommer le dossier",
+        "renameDescription": "Modifiez le nom du dossier et enregistrez les modifications.",
+        "share": "Partager",
+        "shareConfirmTitle": "Voulez-vous partager tout le dossier ?",
+        "shareConfirmDescription": "Voulez-vous vraiment partager le dossier {{folder}} ?",
+        "enterAccessCode": "Entrez le code d'accès",
+        "download": "Télécharger",
+        "delete": "Supprimer",
+        "deleteConfirmTitle": "Voulez-vous vraiment supprimer ce dossier ?",
+        "deleteConfirmDescription": "Voulez-vous vraiment supprimer le dossier {{folder}} ? Cette opération est irréversible. Vous perdrez les {{files}} fichiers contenus dans ce dossier.",
+        "savedFolders": "Dossiers enregistrés"
+    },
+    "files": {
+        "count": "fichiers",
+        "select": "Sélectionner des fichiers",
+        "openEpub": "Ouvrir le lecteur EPUB",
+        "noPreview": "Aperçu non disponible pour ce format",
+        "restore": "Restaurer",
+        "restoredSuccess": "Le fichier a été restauré !",
+        "deletePermanently": "Supprimer définitivement",
+        "deletePermanentlyTitle": "Suppression définitive",
+        "deletePermanentlyDesc": "Voulez-vous vraiment supprimer définitivement le fichier \"{{name}}\" ? Cette opération est irréversible.",
+        "deletedPermanentSuccess": "Le fichier a été supprimé définitivement.",
+        "favoriteFiles": "Fichiers favoris",
+        "type": "Type",
+        "size": "Taille",
+        "createdAt": "Date d'ajout",
+        "optionsTitle": "Options du fichier",
+        "delete": "Supprimer",
+        "deletedSuccess": "Le fichier a été supprimé.",
+        "confirmPermanentDelete": "Voulez-vous vraiment supprimer définitivement le fichier \"{{name}}\" ?",
+        "addToFavorites": "Ajouter aux favoris",
+        "removeFromFavorites": "Retirer des favoris",
+        "preview": "Aperçu",
+        "details": "Détails",
+        "download": "Télécharger",
+        "share": "Partager",
+        "rename": "Renommer",
+        "renameTitle": "Renommer le fichier",
+        "renameDescription": "Modifiez le nom du fichier et enregistrez les modifications.",
+        "filenameLabel": "Nom du fichier",
+        "deleteConfirmTitle": "Voulez-vous vraiment supprimer ce fichier ?",
+        "deleteConfirmDesc": "Voulez-vous vraiment supprimer le fichier",
+        "actionIrreversible": "Cette opération est irréversible."
+    },
+    "form": {
+        "folderName": "Nom du dossier",
+        "enterName": "Saisissez un nom...",
+        "selectFolder": "Choisir un dossier",
+        "selectFiles": "Choisir des fichiers",
+        "name": "Nom"
+    },
+    "common": {
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "saveChanges": "Enregistrer les modifications",
+        "error": "Une erreur est survenue"
+    },
+    "response": {
+        "fileMovedToFolder": "Fichier déplacé vers {{folder}}",
+        "fileMoveError": "Impossible de déplacer le fichier",
+        "folderDownloadStart": "Démarrage du téléchargement du dossier",
+        "folderShared": "Le dossier a été partagé",
+        "folderDeleted": "Le dossier a été supprimé",
+        "deleteError": "Erreur lors de la suppression",
+        "folderCreated": "Le dossier a été créé !",
+        "folderUploaded": "Le dossier a été téléchargé !",
+        "filesUploaded": "Les fichiers ont été téléchargés !",
+        "selectFolderFirst": "Veuillez d'abord choisir un dossier !",
+        "selectFilesFirst": "Veuillez d'abord choisir des fichiers !",
+        "trashEmptied": "La corbeille a été vidée",
+        "trashDeleteError": "Impossible de supprimer tous les fichiers",
+        "DeletingFiles": "Suppression des fichiers en cours..."
+    },
+    "sidebarmyFiles": "Mes fichiers",
+    "sorting": "Tri",
+    "sorting.nameAsc": "Nom (A-Z)",
+    "sorting.nameDesc": "Nom (Z-A)",
+    "sorting.sizeAsc": "Taille croissante",
+    "sorting.sizeDesc": "Taille décroissante",
+    "sorting.dateAsc": "Date (plus ancien)",
+    "sorting.dateDesc": "Date (plus récent)",
+    "cancel": "Annuler",
+    "delete.selectedFile": "Supprimer les fichiers sélectionnés",
+    "navigation": {
+        "newFolder": "Nouveau dossier",
+        "uploadFolder": "Importer un dossier",
+        "uploadFiles": "Importer des fichiers",
+        "newFile": "Nouveau fichier",
+        "emptyTrash": "Vider la corbeille"
     },
     "dialog": {
-      "revokeTitle": "Gestion des accès",
-      "revokeDescription": "Voulez-vous vraiment révoquer l'accès au fichier {{name}} ?",
-      "downloadDescription": "Voulez-vous télécharger le fichier {{name}} ?",
-      "newAccessCode": "Nouveau code d'accès",
-      "shareAgain": "Lien de partage pour le fichier {{name}}"
+        "createFolderTitle": "Créer un dossier",
+        "createFolderDescription": "Saisissez le nom du nouveau dossier.",
+        "uploadFolderDescription": "Sélectionnez un dossier à importer sur le serveur.",
+        "uploadFilesTitle": "Importer des fichiers",
+        "uploadFilesDescription": "Sélectionnez les fichiers à importer sur le serveur.",
+        "newFileTitle": "Nouveau fichier",
+        "newFileDescription": "Saisissez un nom pour le nouvel élément."
+    },
+    "openLink": {
+        "trigger": "Ouvrir un fichier partagé",
+        "title": "Ouvrir un fichier partagé",
+        "description": "Saisissez le lien du fichier partagé ou scannez le code QR.",
+        "placeholder": "Ouvrir via un lien...",
+        "submit": "Ouvrir le fichier"
+    },
+    "trash": {
+        "title": "Corbeille",
+        "header": "Fichiers supprimés",
+        "empty": "Aucun fichier dans la corbeille."
+    },
+    "gallery": {
+        "title": "Ma galerie",
+        "download": "Télécharger",
+        "share": "Partager",
+        "noPhotos": "Aucune photo dans la galerie.",
+        "info": "Informations sur le fichier"
+    },
+    "breadcrumbs": {
+        "dashboard": "Tableau de bord"
+    },
+    "music": {
+        "title": "Musique"
+    },
+    "documents": {
+        "title": "Documents"
+    },
+    "other": {
+        "title": "Autre"
+    },
+    "storage": {
+        "usage": "Espace utilisé"
+    },
+    "storage_dashboard": {
+        "title": "Votre Disque",
+        "usedOf": "{{used}} Go utilisés sur {{total}} Go",
+        "freePercent": "{{percent}}% libre",
+        "type": {
+            "image": "Images",
+            "video": "Vidéos",
+            "audio": "Audio",
+            "document": "Documents",
+            "text": "Fichiers texte",
+            "other": "Autres",
+            "free": "Espace libre"
+        }
     }
-  },
-  "sharedFolders": {
-    "title": "Dossiers partagés",
-    "more": "Plus d'options",
-    "code": "Code d'accès :",
-    "revoke": "Arrêter le partage",
-    "revokedToast": "Le partage du dossier a été révoqué"
-  },
-  "pagination": {
-    "previous": "Précédent",
-    "next": "Suivant",
-    "pageOf": "Page {{page}} sur {{total}}"
-  },
-  "folder": {
-    "options": "Options du dossier",
-    "rename": "Renommer",
-    "renameTitle": "Renommer le dossier",
-    "renameDescription": "Modifiez le nom du dossier et enregistrez les modifications.",
-    "share": "Partager",
-    "shareConfirmTitle": "Voulez-vous partager tout le dossier ?",
-    "shareConfirmDescription": "Voulez-vous vraiment partager le dossier {{folder}} ?",
-    "enterAccessCode": "Entrez le code d'accès",
-    "download": "Télécharger",
-    "delete": "Supprimer",
-    "deleteConfirmTitle": "Voulez-vous vraiment supprimer ce dossier ?",
-    "deleteConfirmDescription": "Voulez-vous vraiment supprimer le dossier {{folder}} ? Cette opération est irréversible. Vous perdrez les {{files}} fichiers contenus dans ce dossier.",
-    "savedFolders": "Dossiers enregistrés"
-  },
-  "files": {
-    "count": "fichiers",
-    "select": "Sélectionner des fichiers",
-    "openEpub": "Ouvrir le lecteur EPUB",
-    "noPreview": "Aperçu non disponible pour ce format",
-    "restore": "Restaurer",
-    "restoredSuccess": "Le fichier a été restauré !",
-    "deletePermanently": "Supprimer définitivement",
-    "deletePermanentlyTitle": "Suppression définitive",
-    "deletePermanentlyDesc": "Voulez-vous vraiment supprimer définitivement le fichier \"{{name}}\" ? Cette opération est irréversible.",
-    "deletedPermanentSuccess": "Le fichier a été supprimé définitivement.",
-    "favoriteFiles": "Fichiers favoris",
-    "type": "Type",
-    "size": "Taille",
-    "createdAt": "Date d'ajout",
-    "optionsTitle": "Options du fichier",
-    "delete": "Supprimer",
-    "deletedSuccess": "Le fichier a été supprimé.",
-    "confirmPermanentDelete": "Voulez-vous vraiment supprimer définitivement le fichier \"{{name}}\" ?",
-    "addToFavorites": "Ajouter aux favoris",
-    "removeFromFavorites": "Retirer des favoris",
-    "preview": "Aperçu",
-    "details": "Détails",
-    "download": "Télécharger",
-    "share": "Partager",
-    "rename": "Renommer",
-    "renameTitle": "Renommer le fichier",
-    "renameDescription": "Modifiez le nom du fichier et enregistrez les modifications.",
-    "filenameLabel": "Nom du fichier",
-    "deleteConfirmTitle": "Voulez-vous vraiment supprimer ce fichier ?",
-    "deleteConfirmDesc": "Voulez-vous vraiment supprimer le fichier",
-    "actionIrreversible": "Cette opération est irréversible."
-  },
-  "form": {
-    "folderName": "Nom du dossier",
-    "enterName": "Saisissez un nom...",
-    "selectFolder": "Choisir un dossier",
-    "selectFiles": "Choisir des fichiers",
-    "name": "Nom"
-  },
-  "common": {
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "saveChanges": "Enregistrer les modifications",
-    "error": "Une erreur est survenue"
-  },
-  "response": {
-    "fileMovedToFolder": "Fichier déplacé vers {{folder}}",
-    "fileMoveError": "Impossible de déplacer le fichier",
-    "folderDownloadStart": "Démarrage du téléchargement du dossier",
-    "folderShared": "Le dossier a été partagé",
-    "folderDeleted": "Le dossier a été supprimé",
-    "deleteError": "Erreur lors de la suppression",
-    "folderCreated": "Le dossier a été créé !",
-    "folderUploaded": "Le dossier a été téléchargé !",
-    "filesUploaded": "Les fichiers ont été téléchargés !",
-    "selectFolderFirst": "Veuillez d'abord choisir un dossier !",
-    "selectFilesFirst": "Veuillez d'abord choisir des fichiers !",
-    "trashEmptied": "La corbeille a été vidée",
-    "trashDeleteError": "Impossible de supprimer tous les fichiers",
-    "DeletingFiles": "Suppression des fichiers en cours..."
-  },
-  "sidebarmyFiles": "Mes fichiers",
-  "sorting": "Tri",
-  "sorting.nameAsc": "Nom (A-Z)",
-  "sorting.nameDesc": "Nom (Z-A)",
-  "sorting.sizeAsc": "Taille croissante",
-  "sorting.sizeDesc": "Taille décroissante",
-  "sorting.dateAsc": "Date (plus ancien)",
-  "sorting.dateDesc": "Date (plus récent)",
-  "cancel": "Annuler",
-  "delete.selectedFile": "Supprimer les fichiers sélectionnés",
-  "navigation": {
-    "newFolder": "Nouveau dossier",
-    "uploadFolder": "Importer un dossier",
-    "uploadFiles": "Importer des fichiers",
-    "newFile": "Nouveau fichier",
-    "emptyTrash": "Vider la corbeille"
-  },
-  "dialog": {
-    "createFolderTitle": "Créer un dossier",
-    "createFolderDescription": "Saisissez le nom du nouveau dossier.",
-    "uploadFolderDescription": "Sélectionnez un dossier à importer sur le serveur.",
-    "uploadFilesTitle": "Importer des fichiers",
-    "uploadFilesDescription": "Sélectionnez les fichiers à importer sur le serveur.",
-    "newFileTitle": "Nouveau fichier",
-    "newFileDescription": "Saisissez un nom pour le nouvel élément."
-  },
-  "openLink": {
-    "trigger": "Ouvrir un fichier partagé",
-    "title": "Ouvrir un fichier partagé",
-    "description": "Saisissez le lien du fichier partagé ou scannez le code QR.",
-    "placeholder": "Ouvrir via un lien...",
-    "submit": "Ouvrir le fichier"
-  },
-  "trash": {
-    "title": "Corbeille",
-    "header": "Fichiers supprimés",
-    "empty": "Aucun fichier dans la corbeille."
-  },
-  "gallery": {
-    "title": "Ma galerie",
-    "download": "Télécharger",
-    "share": "Partager",
-    "noPhotos": "Aucune photo dans la galerie.",
-    "info": "Informations sur le fichier"
-  },
-  "breadcrumbs": {
-    "dashboard": "Tableau de bord"
-  },
-  "music": {
-    "title": "Musique"
-  },
-  "documents": {
-    "title": "Documents"
-  },
-  "other": {
-    "title": "Autre"
-  },
-  "storage": {
-    "usage": "Espace utilisé"
-  }
 }

@@ -1,183 +1,197 @@
 {
-  "sharedFiles": {
-    "title": "الملفات المشاركة",
-    "searchPlaceholder": "البحث عن ملفات...",
-    "never": "أبداً",
-    "selectAction": "اختر إجراءً",
-    "actionsLabel": "الإجراءات المتاحة",
-    "linkCopied": "تم نسخ الرابط إلى الحافظة!",
-    "revokeAccess": "تأكيد",
-    "table": {
-      "name": "الاسم",
-      "size": "الحجم",
-      "sharedAt": "تمت المشاركة في",
-      "expires": "تنتهي الصلاحية",
-      "code": "الرمز",
-      "downloads": "التحميلات",
-      "actions": "الإجراءات"
+    "sharedFiles": {
+        "title": "الملفات المشاركة",
+        "searchPlaceholder": "البحث عن ملفات...",
+        "never": "أبداً",
+        "selectAction": "اختر إجراءً",
+        "actionsLabel": "الإجراءات المتاحة",
+        "linkCopied": "تم نسخ الرابط إلى الحافظة!",
+        "revokeAccess": "تأكيد",
+        "table": {
+            "name": "الاسم",
+            "size": "الحجم",
+            "sharedAt": "تمت المشاركة في",
+            "expires": "تنتهي الصلاحية",
+            "code": "الرمز",
+            "downloads": "التحميلات",
+            "actions": "الإجراءات"
+        },
+        "actions": {
+            "preview": "معاينة",
+            "share": "إعادة مشاركة",
+            "revoke": "إلغاء الوصول",
+            "changeCode": "تغيير الرمز",
+            "download": "تحميل"
+        },
+        "dialog": {
+            "revokeTitle": "إدارة الوصول",
+            "revokeDescription": "هل أنت متأكد أنك تريد إلغاء مشاركة الملف {{name}}؟",
+            "downloadDescription": "هل تريد تحميل الملف {{name}}؟",
+            "newAccessCode": "رمز وصول جديد",
+            "shareAgain": "رابط مشاركة الملف {{name}}"
+        }
     },
-    "actions": {
-      "preview": "معاينة",
-      "share": "إعادة مشاركة",
-      "revoke": "إلغاء الوصول",
-      "changeCode": "تغيير الرمز",
-      "download": "تحميل"
+    "sharedFolders": {
+        "title": "المجلدات المشاركة",
+        "more": "المزيد من الخيارات",
+        "code": "رمز الوصول:",
+        "revoke": "إلغاء المشاركة",
+        "revokedToast": "تم إلغاء مشاركة المجلد"
+    },
+    "pagination": {
+        "previous": "السابق",
+        "next": "التالي",
+        "pageOf": "صفحة {{page}} من {{total}}"
+    },
+    "folder": {
+        "options": "خيارات المجلد",
+        "rename": "تغيير الاسم",
+        "renameTitle": "تغيير اسم المجلد",
+        "renameDescription": "قم بتغيير اسم المجلد وحفظ التغييرات.",
+        "share": "مشاركة",
+        "shareConfirmTitle": "هل تريد مشاركة المجلد بأكمله؟",
+        "shareConfirmDescription": "هل أنت متأكد أنك تريد مشاركة المجلد {{folder}}؟",
+        "enterAccessCode": "أدخل رمز الوصول",
+        "download": "تحميل",
+        "delete": "حذف",
+        "deleteConfirmTitle": "هل أنت متأكد أنك تريد حذف المجلد؟",
+        "deleteConfirmDescription": "هل أنت متأكد أنك تريد حذف المجلد {{folder}}؟ لا يمكن التراجع عن هذه العملية. ستفقد {{files}} ملفاً موجوداً في هذا المجلد.",
+        "savedFolders": "المجلدات المحفوظة"
+    },
+    "files": {
+        "count": "ملفات",
+        "select": "تحديد الملفات",
+        "openEpub": "فتح قارئ EPUB",
+        "noPreview": "المعاينة غير متاحة لهذا التنسيق",
+        "restore": "استعادة",
+        "restoredSuccess": "تمت استعادة الملف بنجاح!",
+        "deletePermanently": "حذف نهائي",
+        "deletePermanentlyTitle": "حذف الملف نهائياً",
+        "deletePermanentlyDesc": "هل أنت متأكد أنك تريد حذف الملف \"{{name}}\" نهائياً؟ لا يمكن التراجع عن هذه العملية.",
+        "deletedPermanentSuccess": "تم حذف الملف نهائياً.",
+        "favoriteFiles": "الملفات المفضلة",
+        "type": "النوع",
+        "size": "الحجم",
+        "createdAt": "تاريخ الإضافة",
+        "optionsTitle": "خيارات الملف",
+        "delete": "حذف",
+        "deletedSuccess": "تم حذف الملف.",
+        "confirmPermanentDelete": "هل أنت متأكد أنك تريد حذف الملف \"{{name}}\" نهائياً؟",
+        "addToFavorites": "إضافة إلى المفضلة",
+        "removeFromFavorites": "إزالة من المفضلة",
+        "preview": "معاينة",
+        "details": "التفاصيل",
+        "download": "تحميل",
+        "share": "مشاركة",
+        "rename": "تغيير الاسم",
+        "renameTitle": "تغيير اسم الملف",
+        "renameDescription": "قم بتغيير اسم الملف وحفظ التغييرات.",
+        "filenameLabel": "اسم الملف",
+        "deleteConfirmTitle": "هل أنت متأكد أنك تريد حذف الملف؟",
+        "deleteConfirmDesc": "هل أنت متأكد أنك تريد حذف الملف",
+        "actionIrreversible": "هذه العملية لا يمكن التراجع عنها."
+    },
+    "form": {
+        "folderName": "اسم المجلد",
+        "enterName": "اكتب الاسم...",
+        "selectFolder": "اختر مجلداً",
+        "selectFiles": "اختر ملفات",
+        "name": "الاسم"
+    },
+    "common": {
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "saveChanges": "حفظ التغييرات",
+        "error": "حدث خطأ ما"
+    },
+    "response": {
+        "fileMovedToFolder": "تم نقل الملف إلى {{folder}}",
+        "fileMoveError": "فشل نقل الملف",
+        "folderDownloadStart": "بدء تحميل المجلد",
+        "folderShared": "تمت مشاركة المجلد",
+        "folderDeleted": "تم حذف المجلد",
+        "deleteError": "حدث خطأ أثناء الحذف",
+        "folderCreated": "تم إنشاء المجلد بنجاح!",
+        "folderUploaded": "تم رفع المجلد بنجاح!",
+        "filesUploaded": "تم رفع الملفات بنجاح!",
+        "selectFolderFirst": "يرجى اختيار مجلد لرفعه أولاً!",
+        "selectFilesFirst": "يرجى اختيار ملفات لرفعها أولاً!",
+        "trashEmptied": "تم إفراغ سلة المهملات",
+        "trashDeleteError": "فشل حذف جميع الملفات",
+        "DeletingFiles": "جاري حذف الملفات..."
+    },
+    "sidebarmyFiles": "ملفاتي",
+    "sorting": "ترتيب",
+    "sorting.nameAsc": "الاسم (A-Z)",
+    "sorting.nameDesc": "الاسم (Z-A)",
+    "sorting.sizeAsc": "الحجم (تصاعدي)",
+    "sorting.sizeDesc": "الحجم (تنازلي)",
+    "sorting.dateAsc": "التاريخ (الأقدم)",
+    "sorting.dateDesc": "التاريخ (الأحدث)",
+    "cancel": "إلغاء",
+    "delete.selectedFile": "حذف الملفات المختارة",
+    "navigation": {
+        "newFolder": "مجلد جديد",
+        "uploadFolder": "رفع مجلد",
+        "uploadFiles": "رفع ملفات",
+        "newFile": "ملف جديد",
+        "emptyTrash": "إفراغ سلة المهملات"
     },
     "dialog": {
-      "revokeTitle": "إدارة الوصول",
-      "revokeDescription": "هل أنت متأكد أنك تريد إلغاء مشاركة الملف {{name}}؟",
-      "downloadDescription": "هل تريد تحميل الملف {{name}}؟",
-      "newAccessCode": "رمز وصول جديد",
-      "shareAgain": "رابط مشاركة الملف {{name}}"
+        "createFolderTitle": "إنشاء مجلد",
+        "createFolderDescription": "أدخل اسم المجلد الجديد.",
+        "uploadFolderDescription": "اختر مجلداً لرفعه إلى الخادم.",
+        "uploadFilesTitle": "رفع ملفات",
+        "uploadFilesDescription": "اختر ملفات لرفعها إلى الخادم.",
+        "newFileTitle": "ملف جديد",
+        "newFileDescription": "أدخل اسماً للعنصر الجديد."
+    },
+    "openLink": {
+        "trigger": "فتح ملف مشارك",
+        "title": "فتح ملف مشارك",
+        "description": "أدخل رابط الملف المشارك الذي تريد فتحه أو امسح رمز QR.",
+        "placeholder": "فتح ملف عبر الرابط...",
+        "submit": "فتح الملف"
+    },
+    "trash": {
+        "title": "سلة المهملات",
+        "header": "الملفات المحذوفة",
+        "empty": "لا توجد ملفات محذوفة."
+    },
+    "gallery": {
+        "title": "معرض الصور الخاص بي",
+        "download": "تحميل",
+        "share": "مشاركة",
+        "noPhotos": "لا توجد صور في المعرض.",
+        "info": "معلومات الملف"
+    },
+    "breadcrumbs": {
+        "dashboard": "لوحة التحكم"
+    },
+    "music": {
+        "title": "موسيقى"
+    },
+    "documents": {
+        "title": "مستندات"
+    },
+    "other": {
+        "title": "أخرى"
+    },
+    "storage": {
+        "usage": "استهلاك المساحة"
+    },
+    "storage_dashboard": {
+        "title": "محرك الأقراص الخاص بك",
+        "usedOf": "تم استخدام {{used}} غيغابايت من أصل {{total}} غيغابايت",
+        "freePercent": "مساحة فارغة {{percent}}%",
+        "type": {
+            "image": "صور",
+            "video": "فيديوهات",
+            "audio": "صوتيات",
+            "document": "مستندات",
+            "text": "ملفات نصية",
+            "other": "أخرى",
+            "free": "مساحة فارغة"
+        }
     }
-  },
-  "sharedFolders": {
-    "title": "المجلدات المشاركة",
-    "more": "المزيد من الخيارات",
-    "code": "رمز الوصول:",
-    "revoke": "إلغاء المشاركة",
-    "revokedToast": "تم إلغاء مشاركة المجلد"
-  },
-  "pagination": {
-    "previous": "السابق",
-    "next": "التالي",
-    "pageOf": "صفحة {{page}} من {{total}}"
-  },
-  "folder": {
-    "options": "خيارات المجلد",
-    "rename": "تغيير الاسم",
-    "renameTitle": "تغيير اسم المجلد",
-    "renameDescription": "قم بتغيير اسم المجلد وحفظ التغييرات.",
-    "share": "مشاركة",
-    "shareConfirmTitle": "هل تريد مشاركة المجلد بأكمله؟",
-    "shareConfirmDescription": "هل أنت متأكد أنك تريد مشاركة المجلد {{folder}}؟",
-    "enterAccessCode": "أدخل رمز الوصول",
-    "download": "تحميل",
-    "delete": "حذف",
-    "deleteConfirmTitle": "هل أنت متأكد أنك تريد حذف المجلد؟",
-    "deleteConfirmDescription": "هل أنت متأكد أنك تريد حذف المجلد {{folder}}؟ لا يمكن التراجع عن هذه العملية. ستفقد {{files}} ملفاً موجوداً في هذا المجلد.",
-    "savedFolders": "المجلدات المحفوظة"
-  },
-  "files": {
-    "count": "ملفات",
-    "select": "تحديد الملفات",
-    "openEpub": "فتح قارئ EPUB",
-    "noPreview": "المعاينة غير متاحة لهذا التنسيق",
-    "restore": "استعادة",
-    "restoredSuccess": "تمت استعادة الملف بنجاح!",
-    "deletePermanently": "حذف نهائي",
-    "deletePermanentlyTitle": "حذف الملف نهائياً",
-    "deletePermanentlyDesc": "هل أنت متأكد أنك تريد حذف الملف \"{{name}}\" نهائياً؟ لا يمكن التراجع عن هذه العملية.",
-    "deletedPermanentSuccess": "تم حذف الملف نهائياً.",
-    "favoriteFiles": "الملفات المفضلة",
-    "type": "النوع",
-    "size": "الحجم",
-    "createdAt": "تاريخ الإضافة",
-    "optionsTitle": "خيارات الملف",
-    "delete": "حذف",
-    "deletedSuccess": "تم حذف الملف.",
-    "confirmPermanentDelete": "هل أنت متأكد أنك تريد حذف الملف \"{{name}}\" نهائياً؟",
-    "addToFavorites": "إضافة إلى المفضلة",
-    "removeFromFavorites": "إزالة من المفضلة",
-    "preview": "معاينة",
-    "details": "التفاصيل",
-    "download": "تحميل",
-    "share": "مشاركة",
-    "rename": "تغيير الاسم",
-    "renameTitle": "تغيير اسم الملف",
-    "renameDescription": "قم بتغيير اسم الملف وحفظ التغييرات.",
-    "filenameLabel": "اسم الملف",
-    "deleteConfirmTitle": "هل أنت متأكد أنك تريد حذف الملف؟",
-    "deleteConfirmDesc": "هل أنت متأكد أنك تريد حذف الملف",
-    "actionIrreversible": "هذه العملية لا يمكن التراجع عنها."
-  },
-  "form": {
-    "folderName": "اسم المجلد",
-    "enterName": "اكتب الاسم...",
-    "selectFolder": "اختر مجلداً",
-    "selectFiles": "اختر ملفات",
-    "name": "الاسم"
-  },
-  "common": {
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "saveChanges": "حفظ التغييرات",
-    "error": "حدث خطأ ما"
-  },
-  "response": {
-    "fileMovedToFolder": "تم نقل الملف إلى {{folder}}",
-    "fileMoveError": "فشل نقل الملف",
-    "folderDownloadStart": "بدء تحميل المجلد",
-    "folderShared": "تمت مشاركة المجلد",
-    "folderDeleted": "تم حذف المجلد",
-    "deleteError": "حدث خطأ أثناء الحذف",
-    "folderCreated": "تم إنشاء المجلد بنجاح!",
-    "folderUploaded": "تم رفع المجلد بنجاح!",
-    "filesUploaded": "تم رفع الملفات بنجاح!",
-    "selectFolderFirst": "يرجى اختيار مجلد لرفعه أولاً!",
-    "selectFilesFirst": "يرجى اختيار ملفات لرفعها أولاً!",
-    "trashEmptied": "تم إفراغ سلة المهملات",
-    "trashDeleteError": "فشل حذف جميع الملفات",
-    "DeletingFiles": "جاري حذف الملفات..."
-  },
-  "sidebarmyFiles": "ملفاتي",
-  "sorting": "ترتيب",
-  "sorting.nameAsc": "الاسم (A-Z)",
-  "sorting.nameDesc": "الاسم (Z-A)",
-  "sorting.sizeAsc": "الحجم (تصاعدي)",
-  "sorting.sizeDesc": "الحجم (تنازلي)",
-  "sorting.dateAsc": "التاريخ (الأقدم)",
-  "sorting.dateDesc": "التاريخ (الأحدث)",
-  "cancel": "إلغاء",
-  "delete.selectedFile": "حذف الملفات المختارة",
-  "navigation": {
-    "newFolder": "مجلد جديد",
-    "uploadFolder": "رفع مجلد",
-    "uploadFiles": "رفع ملفات",
-    "newFile": "ملف جديد",
-    "emptyTrash": "إفراغ سلة المهملات"
-  },
-  "dialog": {
-    "createFolderTitle": "إنشاء مجلد",
-    "createFolderDescription": "أدخل اسم المجلد الجديد.",
-    "uploadFolderDescription": "اختر مجلداً لرفعه إلى الخادم.",
-    "uploadFilesTitle": "رفع ملفات",
-    "uploadFilesDescription": "اختر ملفات لرفعها إلى الخادم.",
-    "newFileTitle": "ملف جديد",
-    "newFileDescription": "أدخل اسماً للعنصر الجديد."
-  },
-  "openLink": {
-    "trigger": "فتح ملف مشارك",
-    "title": "فتح ملف مشارك",
-    "description": "أدخل رابط الملف المشارك الذي تريد فتحه أو امسح رمز QR.",
-    "placeholder": "فتح ملف عبر الرابط...",
-    "submit": "فتح الملف"
-  },
-  "trash": {
-    "title": "سلة المهملات",
-    "header": "الملفات المحذوفة",
-    "empty": "لا توجد ملفات محذوفة."
-  },
-  "gallery": {
-    "title": "معرض الصور الخاص بي",
-    "download": "تحميل",
-    "share": "مشاركة",
-    "noPhotos": "لا توجد صور في المعرض.",
-    "info": "معلومات الملف"
-  },
-  "breadcrumbs": {
-    "dashboard": "لوحة التحكم"
-  },
-  "music": {
-    "title": "موسيقى"
-  },
-  "documents": {
-    "title": "مستندات"
-  },
-  "other": {
-    "title": "أخرى"
-  },
-  "storage": {
-    "usage": "استهلاك المساحة"
-  }
 }

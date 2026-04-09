@@ -1,183 +1,197 @@
 {
-  "sharedFiles": {
-    "title": "Freigegebene Dateien",
-    "searchPlaceholder": "Dateien suchen...",
-    "never": "Nie",
-    "selectAction": "Aktion wählen",
-    "actionsLabel": "Verfügbare Aktionen",
-    "linkCopied": "Link wude in die Zwischenablage kopiert!",
-    "revokeAccess": "Bestätigen",
-    "table": {
-      "name": "Name",
-      "size": "Größe",
-      "sharedAt": "Freigegeben am",
-      "expires": "Läuft ab am",
-      "code": "Code",
-      "downloads": "Downloads",
-      "actions": "Aktionen"
+    "sharedFiles": {
+        "title": "Freigegebene Dateien",
+        "searchPlaceholder": "Dateien suchen...",
+        "never": "Nie",
+        "selectAction": "Aktion wählen",
+        "actionsLabel": "Verfügbare Aktionen",
+        "linkCopied": "Link wude in die Zwischenablage kopiert!",
+        "revokeAccess": "Bestätigen",
+        "table": {
+            "name": "Name",
+            "size": "Größe",
+            "sharedAt": "Freigegeben am",
+            "expires": "Läuft ab am",
+            "code": "Code",
+            "downloads": "Downloads",
+            "actions": "Aktionen"
+        },
+        "actions": {
+            "preview": "Vorschau",
+            "share": "Erneut teilen",
+            "revoke": "Zugriff widerrufen",
+            "changeCode": "Code ändern",
+            "download": "Herunterladen"
+        },
+        "dialog": {
+            "revokeTitle": "Zugriffsverwaltung",
+            "revokeDescription": "Sind Sie sicher, dass Sie die Freigabe für die Datei {{name}} aufheben möchten?",
+            "downloadDescription": "Möchten Sie die Datei {{name}} herunterladen?",
+            "newAccessCode": "Neuer Zugangscode",
+            "shareAgain": "Freigabelink für die Datei {{name}}"
+        }
     },
-    "actions": {
-      "preview": "Vorschau",
-      "share": "Erneut teilen",
-      "revoke": "Zugriff widerrufen",
-      "changeCode": "Code ändern",
-      "download": "Herunterladen"
+    "sharedFolders": {
+        "title": "Freigegebene Ordner",
+        "more": "Weitere Optionen",
+        "code": "Zugangscode:",
+        "revoke": "Freigabe aufheben",
+        "revokedToast": "Ordnerfreigabe wurde widerrufen"
+    },
+    "pagination": {
+        "previous": "Zurück",
+        "next": "Weiter",
+        "pageOf": "Seite {{page}} von {{total}}"
+    },
+    "folder": {
+        "options": "Ordneroptionen",
+        "rename": "Umbenennen",
+        "renameTitle": "Ordner umbenennen",
+        "renameDescription": "Ändern Sie den Namen des Ordners und speichern Sie die Änderungen.",
+        "share": "Freigeben",
+        "shareConfirmTitle": "Möchten Sie den gesamten Ordner freigeben?",
+        "shareConfirmDescription": "Sind Sie sicher, dass Sie den Ordner {{folder}} freigeben möchten?",
+        "enterAccessCode": "Zugangscode eingeben",
+        "download": "Herunterladen",
+        "delete": "Löschen",
+        "deleteConfirmTitle": "Ordner wirklich löschen?",
+        "deleteConfirmDescription": "Sind Sie sicher, dass Sie den Ordner {{folder}} löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden. Sie verlieren {{files}} Dateien in diesem Ordner.",
+        "savedFolders": "Gespeicherte Ordner"
+    },
+    "files": {
+        "count": "Dateien",
+        "select": "Dateien auswählen",
+        "openEpub": "EPUB-Reader öffnen",
+        "noPreview": "Vorschau für dieses Format nicht verfügbar",
+        "restore": "Wiederherstellen",
+        "restoredSuccess": "Datei wurde wiederhergestellt!",
+        "deletePermanently": "Endgültig löschen",
+        "deletePermanentlyTitle": "Datei endgültig löschen",
+        "deletePermanentlyDesc": "Sind Sie sicher, dass Sie „{{name}}“ dauerhaft löschen möchten? Dies kann nicht rückgängig gemacht werden.",
+        "deletedPermanentSuccess": "Datei wurde dauerhaft gelöscht.",
+        "favoriteFiles": "Favoriten",
+        "type": "Typ",
+        "size": "Größe",
+        "createdAt": "Hinzugefügt am",
+        "optionsTitle": "Dateioptionen",
+        "delete": "Löschen",
+        "deletedSuccess": "Datei wurde gelöscht.",
+        "confirmPermanentDelete": "Möchten Sie „{{name}}“ wirklich dauerhaft löschen?",
+        "addToFavorites": "Zu Favoriten hinzufügen",
+        "removeFromFavorites": "Aus Favoriten entfernen",
+        "preview": "Vorschau",
+        "details": "Details",
+        "download": "Herunterladen",
+        "share": "Freigeben",
+        "rename": "Umbenennen",
+        "renameTitle": "Datei umbenennen",
+        "renameDescription": "Ändern Sie den Dateinamen und speichern Sie die Änderungen.",
+        "filenameLabel": "Dateiname",
+        "deleteConfirmTitle": "Datei wirklich löschen?",
+        "deleteConfirmDesc": "Sind Sie sicher, dass Sie die Datei löschen möchten",
+        "actionIrreversible": "Dieser Vorgang kann nicht rückgängig gemacht werden."
+    },
+    "form": {
+        "folderName": "Ordnername",
+        "enterName": "Namen eingeben...",
+        "selectFolder": "Ordner auswählen",
+        "selectFiles": "Dateien auswählen",
+        "name": "Name"
+    },
+    "common": {
+        "cancel": "Abbrechen",
+        "save": "Speichern",
+        "saveChanges": "Änderungen speichern",
+        "error": "Ein Fehler ist aufgetreten"
+    },
+    "response": {
+        "fileMovedToFolder": "Datei nach {{folder}} verschoben",
+        "fileMoveError": "Datei konnte nicht verschoben werden",
+        "folderDownloadStart": "Ordner-Download wird gestartet",
+        "folderShared": "Ordner wurde freigegeben",
+        "folderDeleted": "Ordner wurde gelöscht",
+        "deleteError": "Fehler beim Löschen aufgetreten",
+        "folderCreated": "Ordner wurde erstellt!",
+        "folderUploaded": "Ordner wurde hochgeladen!",
+        "filesUploaded": "Dateien wurden hochgeladen!",
+        "selectFolderFirst": "Bitte wählen Sie zuerst einen Ordner aus!",
+        "selectFilesFirst": "Bitte wählen Sie zuerst Dateien aus!",
+        "trashEmptied": "Papierkorb wurde geleert",
+        "trashDeleteError": "Nicht alle Dateien konnten gelöscht werden",
+        "DeletingFiles": "Dateien werden gelöscht..."
+    },
+    "sidebarmyFiles": "Meine Dateien",
+    "sorting": "Sortierung",
+    "sorting.nameAsc": "Name (A-Z)",
+    "sorting.nameDesc": "Name (Z-A)",
+    "sorting.sizeAsc": "Größe (aufsteigend)",
+    "sorting.sizeDesc": "Größe (absteigend)",
+    "sorting.dateAsc": "Datum (älteste zuerst)",
+    "sorting.dateDesc": "Datum (neueste zuerst)",
+    "cancel": "Abbrechen",
+    "delete.selectedFile": "Ausgewählte Dateien löschen",
+    "navigation": {
+        "newFolder": "Neuer Ordner",
+        "uploadFolder": "Ordner hochladen",
+        "uploadFiles": "Dateien hochladen",
+        "newFile": "Neue Datei",
+        "emptyTrash": "Papierkorb leeren"
     },
     "dialog": {
-      "revokeTitle": "Zugriffsverwaltung",
-      "revokeDescription": "Sind Sie sicher, dass Sie die Freigabe für die Datei {{name}} aufheben möchten?",
-      "downloadDescription": "Möchten Sie die Datei {{name}} herunterladen?",
-      "newAccessCode": "Neuer Zugangscode",
-      "shareAgain": "Freigabelink für die Datei {{name}}"
+        "createFolderTitle": "Ordner erstellen",
+        "createFolderDescription": "Geben Sie einen Namen für den neuen Ordner ein.",
+        "uploadFolderDescription": "Ordner zum Hochladen auswählen.",
+        "uploadFilesTitle": "Dateien hochladen",
+        "uploadFilesDescription": "Dateien zum Hochladen auswählen.",
+        "newFileTitle": "Neue Datei",
+        "newFileDescription": "Namen für das neue Element eingeben."
+    },
+    "openLink": {
+        "trigger": "Freigegebene Datei öffnen",
+        "title": "Freigegebene Datei öffnen",
+        "description": "Geben Sie den Link zur freigegebenen Datei ein oder scannen Sie den QR-Code.",
+        "placeholder": "Datei über Link öffnen...",
+        "submit": "Datei öffnen"
+    },
+    "trash": {
+        "title": "Papierkorb",
+        "header": "Gelöschte Dateien",
+        "empty": "Keine gelöschten Dateien vorhanden."
+    },
+    "gallery": {
+        "title": "Meine Galerie",
+        "download": "Herunterladen",
+        "share": "Freigeben",
+        "noPhotos": "Keine Fotos in der Galerie.",
+        "info": "Datei-Informationen"
+    },
+    "breadcrumbs": {
+        "dashboard": "Dashboard"
+    },
+    "music": {
+        "title": "Musik"
+    },
+    "documents": {
+        "title": "Dokumente"
+    },
+    "other": {
+        "title": "Sonstiges"
+    },
+    "storage": {
+        "usage": "Speicherplatzbelegung"
+    },
+    "storage_dashboard": {
+        "title": "Dein Speicher",
+        "usedOf": "{{used}} GB belegt von {{total}} GB",
+        "freePercent": "{{percent}}% frei",
+        "type": {
+            "image": "Bilder",
+            "video": "Videos",
+            "audio": "Audio",
+            "document": "Dokumente",
+            "text": "Textdateien",
+            "other": "Andere",
+            "free": "Freier Speicherplatz"
+        }
     }
-  },
-  "sharedFolders": {
-    "title": "Freigegebene Ordner",
-    "more": "Weitere Optionen",
-    "code": "Zugangscode:",
-    "revoke": "Freigabe aufheben",
-    "revokedToast": "Ordnerfreigabe wurde widerrufen"
-  },
-  "pagination": {
-    "previous": "Zurück",
-    "next": "Weiter",
-    "pageOf": "Seite {{page}} von {{total}}"
-  },
-  "folder": {
-    "options": "Ordneroptionen",
-    "rename": "Umbenennen",
-    "renameTitle": "Ordner umbenennen",
-    "renameDescription": "Ändern Sie den Namen des Ordners und speichern Sie die Änderungen.",
-    "share": "Freigeben",
-    "shareConfirmTitle": "Möchten Sie den gesamten Ordner freigeben?",
-    "shareConfirmDescription": "Sind Sie sicher, dass Sie den Ordner {{folder}} freigeben möchten?",
-    "enterAccessCode": "Zugangscode eingeben",
-    "download": "Herunterladen",
-    "delete": "Löschen",
-    "deleteConfirmTitle": "Ordner wirklich löschen?",
-    "deleteConfirmDescription": "Sind Sie sicher, dass Sie den Ordner {{folder}} löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden. Sie verlieren {{files}} Dateien in diesem Ordner.",
-    "savedFolders": "Gespeicherte Ordner"
-  },
-  "files": {
-    "count": "Dateien",
-    "select": "Dateien auswählen",
-    "openEpub": "EPUB-Reader öffnen",
-    "noPreview": "Vorschau für dieses Format nicht verfügbar",
-    "restore": "Wiederherstellen",
-    "restoredSuccess": "Datei wurde wiederhergestellt!",
-    "deletePermanently": "Endgültig löschen",
-    "deletePermanentlyTitle": "Datei endgültig löschen",
-    "deletePermanentlyDesc": "Sind Sie sicher, dass Sie „{{name}}“ dauerhaft löschen möchten? Dies kann nicht rückgängig gemacht werden.",
-    "deletedPermanentSuccess": "Datei wurde dauerhaft gelöscht.",
-    "favoriteFiles": "Favoriten",
-    "type": "Typ",
-    "size": "Größe",
-    "createdAt": "Hinzugefügt am",
-    "optionsTitle": "Dateioptionen",
-    "delete": "Löschen",
-    "deletedSuccess": "Datei wurde gelöscht.",
-    "confirmPermanentDelete": "Möchten Sie „{{name}}“ wirklich dauerhaft löschen?",
-    "addToFavorites": "Zu Favoriten hinzufügen",
-    "removeFromFavorites": "Aus Favoriten entfernen",
-    "preview": "Vorschau",
-    "details": "Details",
-    "download": "Herunterladen",
-    "share": "Freigeben",
-    "rename": "Umbenennen",
-    "renameTitle": "Datei umbenennen",
-    "renameDescription": "Ändern Sie den Dateinamen und speichern Sie die Änderungen.",
-    "filenameLabel": "Dateiname",
-    "deleteConfirmTitle": "Datei wirklich löschen?",
-    "deleteConfirmDesc": "Sind Sie sicher, dass Sie die Datei löschen möchten",
-    "actionIrreversible": "Dieser Vorgang kann nicht rückgängig gemacht werden."
-  },
-  "form": {
-    "folderName": "Ordnername",
-    "enterName": "Namen eingeben...",
-    "selectFolder": "Ordner auswählen",
-    "selectFiles": "Dateien auswählen",
-    "name": "Name"
-  },
-  "common": {
-    "cancel": "Abbrechen",
-    "save": "Speichern",
-    "saveChanges": "Änderungen speichern",
-    "error": "Ein Fehler ist aufgetreten"
-  },
-  "response": {
-    "fileMovedToFolder": "Datei nach {{folder}} verschoben",
-    "fileMoveError": "Datei konnte nicht verschoben werden",
-    "folderDownloadStart": "Ordner-Download wird gestartet",
-    "folderShared": "Ordner wurde freigegeben",
-    "folderDeleted": "Ordner wurde gelöscht",
-    "deleteError": "Fehler beim Löschen aufgetreten",
-    "folderCreated": "Ordner wurde erstellt!",
-    "folderUploaded": "Ordner wurde hochgeladen!",
-    "filesUploaded": "Dateien wurden hochgeladen!",
-    "selectFolderFirst": "Bitte wählen Sie zuerst einen Ordner aus!",
-    "selectFilesFirst": "Bitte wählen Sie zuerst Dateien aus!",
-    "trashEmptied": "Papierkorb wurde geleert",
-    "trashDeleteError": "Nicht alle Dateien konnten gelöscht werden",
-    "DeletingFiles": "Dateien werden gelöscht..."
-  },
-  "sidebarmyFiles": "Meine Dateien",
-  "sorting": "Sortierung",
-  "sorting.nameAsc": "Name (A-Z)",
-  "sorting.nameDesc": "Name (Z-A)",
-  "sorting.sizeAsc": "Größe (aufsteigend)",
-  "sorting.sizeDesc": "Größe (absteigend)",
-  "sorting.dateAsc": "Datum (älteste zuerst)",
-  "sorting.dateDesc": "Datum (neueste zuerst)",
-  "cancel": "Abbrechen",
-  "delete.selectedFile": "Ausgewählte Dateien löschen",
-  "navigation": {
-    "newFolder": "Neuer Ordner",
-    "uploadFolder": "Ordner hochladen",
-    "uploadFiles": "Dateien hochladen",
-    "newFile": "Neue Datei",
-    "emptyTrash": "Papierkorb leeren"
-  },
-  "dialog": {
-    "createFolderTitle": "Ordner erstellen",
-    "createFolderDescription": "Geben Sie einen Namen für den neuen Ordner ein.",
-    "uploadFolderDescription": "Ordner zum Hochladen auswählen.",
-    "uploadFilesTitle": "Dateien hochladen",
-    "uploadFilesDescription": "Dateien zum Hochladen auswählen.",
-    "newFileTitle": "Neue Datei",
-    "newFileDescription": "Namen für das neue Element eingeben."
-  },
-  "openLink": {
-    "trigger": "Freigegebene Datei öffnen",
-    "title": "Freigegebene Datei öffnen",
-    "description": "Geben Sie den Link zur freigegebenen Datei ein oder scannen Sie den QR-Code.",
-    "placeholder": "Datei über Link öffnen...",
-    "submit": "Datei öffnen"
-  },
-  "trash": {
-    "title": "Papierkorb",
-    "header": "Gelöschte Dateien",
-    "empty": "Keine gelöschten Dateien vorhanden."
-  },
-  "gallery": {
-    "title": "Meine Galerie",
-    "download": "Herunterladen",
-    "share": "Freigeben",
-    "noPhotos": "Keine Fotos in der Galerie.",
-    "info": "Datei-Informationen"
-  },
-  "breadcrumbs": {
-    "dashboard": "Dashboard"
-  },
-  "music": {
-    "title": "Musik"
-  },
-  "documents": {
-    "title": "Dokumente"
-  },
-  "other": {
-    "title": "Sonstiges"
-  },
-  "storage": {
-    "usage": "Speicherplatzbelegung"
-  }
 }

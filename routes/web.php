@@ -55,7 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('textFile');
 
     Route::get('/search/{query}', [FileController::class, 'searchFiles'])->name('searchFiles');
-   
+    Route::get('/view/{fileId}/pdf', [FileController::class, 'showPdfViewer'])->name('pdfViewer');
    
 });
 

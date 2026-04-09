@@ -16,20 +16,30 @@ export function NewFolder({ urlr, refreshData }: { urlr: string; refreshData: ()
   const isMobile = useIsMobile();
 
   const handleCreateFolder = () => {
-    router.post(
-      "/createFolder",
-      {
-        name: folderName,
-        parent: urlr === "dashboard" ? null : urlr,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t("response.folderCreated"));
+    if (urlr === "dropzone") {
+      axios.post("/dropzones", { name: folderName })
+        .then(() => {
+          toast.success("Strefa publiczna pomyślnie utworzona!");
           refreshData();
           setFolderName(t("navigation.newFolder"));
+        })
+        .catch(() => toast.error("Wystąpił błąd"));
+    } else {
+      router.post(
+        "/createFolder",
+        {
+          name: folderName,
+          parent: urlr === "dashboard" ? null : urlr,
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            toast.success(t("response.folderCreated"));
+            refreshData();
+            setFolderName(t("navigation.newFolder"));
+          },
+        }
+      );
+    }
   };
 
   return (

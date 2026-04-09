@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Head, router, useRemember } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
-import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X, Loader2, FileVideo, Info, Play, Pause, Maximize, Minimize } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, Ellipsis, Share, Share2, X, Loader2, FileVideo, Info, Play, Pause, Maximize, Minimize, ForwardIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { type BreadcrumbItem } from "@/types";
@@ -163,6 +163,16 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
               </a>
               <button className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors">
                 <Share2 className="w-4 h-4" /> {t("gallery.share")}
+              </button>
+               <button className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors"
+                      onClick={()=>{
+                        if(images[currentIndex].path){
+                          router.visit('/dashboard/'+images[currentIndex].path)
+                        }else{
+                          router.visit('/dashboard')
+                        }
+                        }}>
+                <ForwardIcon className="w-4 h-4" /> Jump to file
               </button>
             </div>
           )}
@@ -348,7 +358,7 @@ export function GalleryComponent() {
         .finally(() => setLoading(false));
     }
   }, [page]);
-
+console.log(images);
   return (
     <>
       <Head title={t("gallery.title")} />

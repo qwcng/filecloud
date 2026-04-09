@@ -1,183 +1,197 @@
 {
-  "sharedFiles": {
-    "title": "File condivisi",
-    "searchPlaceholder": "Cerca file...",
-    "never": "Mai",
-    "selectAction": "Seleziona azione",
-    "actionsLabel": "Azioni disponibili",
-    "linkCopied": "Link copiato negli appunti!",
-    "revokeAccess": "Conferma",
-    "table": {
-      "name": "Nome",
-      "size": "Dimensione",
-      "sharedAt": "Condiviso il",
-      "expires": "Scade il",
-      "code": "Codice",
-      "downloads": "Download",
-      "actions": "Azioni"
+    "sharedFiles": {
+        "title": "File condivisi",
+        "searchPlaceholder": "Cerca file...",
+        "never": "Mai",
+        "selectAction": "Seleziona azione",
+        "actionsLabel": "Azioni disponibili",
+        "linkCopied": "Link copiato negli appunti!",
+        "revokeAccess": "Conferma",
+        "table": {
+            "name": "Nome",
+            "size": "Dimensione",
+            "sharedAt": "Condiviso il",
+            "expires": "Scade il",
+            "code": "Codice",
+            "downloads": "Download",
+            "actions": "Azioni"
+        },
+        "actions": {
+            "preview": "Anteprima",
+            "share": "Ricondividi",
+            "revoke": "Revoca accesso",
+            "changeCode": "Cambia codice",
+            "download": "Scarica"
+        },
+        "dialog": {
+            "revokeTitle": "Gestione accessi",
+            "revokeDescription": "Sei sicuro di voler revocare la condivisione del file {{name}}?",
+            "downloadDescription": "Vuoi scaricare il file {{name}}?",
+            "newAccessCode": "Nuovo codice di accesso",
+            "shareAgain": "Link per condividere il file {{name}}"
+        }
     },
-    "actions": {
-      "preview": "Anteprima",
-      "share": "Ricondividi",
-      "revoke": "Revoca accesso",
-      "changeCode": "Cambia codice",
-      "download": "Scarica"
+    "sharedFolders": {
+        "title": "Cartelle condivise",
+        "more": "Altre opzioni",
+        "code": "Codice di accesso:",
+        "revoke": "Revoca condivisione",
+        "revokedToast": "La condivisione della cartella è stata revocata"
+    },
+    "pagination": {
+        "previous": "Precedente",
+        "next": "Successiva",
+        "pageOf": "Pagina {{page}} di {{total}}"
+    },
+    "folder": {
+        "options": "Opzioni cartella",
+        "rename": "Rinomina",
+        "renameTitle": "Rinomina cartella",
+        "renameDescription": "Modifica il nome della cartella e salva le modifiche.",
+        "share": "Condividi",
+        "shareConfirmTitle": "Vuoi condividere l'intera cartella?",
+        "shareConfirmDescription": "Sei sicuro di voler condividere la cartella {{folder}}?",
+        "enterAccessCode": "Inserisci il codice di accesso",
+        "download": "Scarica",
+        "delete": "Elimina",
+        "deleteConfirmTitle": "Sei sicuro di voler eliminare la cartella?",
+        "deleteConfirmDescription": "Sei sicuro di voler eliminare la cartella {{folder}}? L'operazione non può essere annullata. Perderai i {{files}} file contenuti in questa cartella.",
+        "savedFolders": "Cartelle salvate"
+    },
+    "files": {
+        "count": "file",
+        "select": "Seleziona file",
+        "openEpub": "Apri lettore EPUB",
+        "noPreview": "Anteprima non disponibile per questo formato",
+        "restore": "Ripristina",
+        "restoredSuccess": "Il file è stato ripristinato!",
+        "deletePermanently": "Elimina definitivamente",
+        "deletePermanentlyTitle": "Elimina file definitivamente",
+        "deletePermanentlyDesc": "Sei sicuro di voler eliminare definitivamente \"{{name}}\"? L'operazione non può essere annullata.",
+        "deletedPermanentSuccess": "Il file è stato eliminato definitivamente.",
+        "favoriteFiles": "File preferiti",
+        "type": "Tipo",
+        "size": "Dimensione",
+        "createdAt": "Data di aggiunta",
+        "optionsTitle": "Opzioni file",
+        "delete": "Elimina",
+        "deletedSuccess": "Il file è stato eliminato.",
+        "confirmPermanentDelete": "Sei sicuro di voler eliminare definitivamente il file \"{{name}}\"?",
+        "addToFavorites": "Aggiungi ai preferiti",
+        "removeFromFavorites": "Rimuovi dai preferiti",
+        "preview": "Anteprima",
+        "details": "Dettagli",
+        "download": "Scarica",
+        "share": "Condividi",
+        "rename": "Rinomina",
+        "renameTitle": "Rinomina file",
+        "renameDescription": "Modifica il nome del file e salva le modifiche.",
+        "filenameLabel": "Nome del file",
+        "deleteConfirmTitle": "Sei sicuro di voler eliminare il file?",
+        "deleteConfirmDesc": "Sei sicuro di voler eliminare il file",
+        "actionIrreversible": "Questa operazione non può essere annullata."
+    },
+    "form": {
+        "folderName": "Nome cartella",
+        "enterName": "Inserisci nome...",
+        "selectFolder": "Seleziona cartella",
+        "selectFiles": "Seleziona file",
+        "name": "Nome"
+    },
+    "common": {
+        "cancel": "Annulla",
+        "save": "Salva",
+        "saveChanges": "Salva modifiche",
+        "error": "Si è verificato un errore"
+    },
+    "response": {
+        "fileMovedToFolder": "File spostato in {{folder}}",
+        "fileMoveError": "Impossibile spostare il file",
+        "folderDownloadStart": "Avvio del download della cartella",
+        "folderShared": "La cartella è stata condivisa",
+        "folderDeleted": "La cartella è stata eliminata",
+        "deleteError": "Errore durante l'eliminazione",
+        "folderCreated": "Cartella creata!",
+        "folderUploaded": "Cartella caricata!",
+        "filesUploaded": "File caricati!",
+        "selectFolderFirst": "Seleziona prima una cartella!",
+        "selectFilesFirst": "Seleziona prima i file!",
+        "trashEmptied": "Cestino svuotato",
+        "trashDeleteError": "Impossibile eliminare tutti i file",
+        "DeletingFiles": "Eliminazione file in corso..."
+    },
+    "sidebarmyFiles": "I miei file",
+    "sorting": "ordina per",
+    "sorting.nameAsc": "Nome (A-Z)",
+    "sorting.nameDesc": "Nome (Z-A)",
+    "sorting.sizeAsc": "Dimensione (crescente)",
+    "sorting.sizeDesc": "Dimensione (decrescente)",
+    "sorting.dateAsc": "Data (meno recenti)",
+    "sorting.dateDesc": "Data (più recenti)",
+    "cancel": "Annulla",
+    "delete.selectedFile": "Elimina i file selezionati",
+    "navigation": {
+        "newFolder": "Nuova cartella",
+        "uploadFolder": "Carica cartella",
+        "uploadFiles": "Carica file",
+        "newFile": "Nuovo file",
+        "emptyTrash": "Svuota cestino"
     },
     "dialog": {
-      "revokeTitle": "Gestione accessi",
-      "revokeDescription": "Sei sicuro di voler revocare la condivisione del file {{name}}?",
-      "downloadDescription": "Vuoi scaricare il file {{name}}?",
-      "newAccessCode": "Nuovo codice di accesso",
-      "shareAgain": "Link per condividere il file {{name}}"
+        "createFolderTitle": "Crea cartella",
+        "createFolderDescription": "Inserisci il nome della nuova cartella.",
+        "uploadFolderDescription": "Seleziona la cartella da caricare sul server.",
+        "uploadFilesTitle": "Carica file",
+        "uploadFilesDescription": "Seleziona i file da caricare sul server.",
+        "newFileTitle": "Nuovo file",
+        "newFileDescription": "Inserisci un nome per il nuovo elemento."
+    },
+    "openLink": {
+        "trigger": "Apri file condiviso",
+        "title": "Apri file condiviso",
+        "description": "Inserisci il link del file condiviso che vuoi aprire o scansiona il codice QR.",
+        "placeholder": "Apri file tramite link...",
+        "submit": "Apri file"
+    },
+    "trash": {
+        "title": "Cestino",
+        "header": "File eliminati",
+        "empty": "Nessun file eliminato."
+    },
+    "gallery": {
+        "title": "La mia galleria",
+        "download": "Scarica",
+        "share": "Condividi",
+        "noPhotos": "Nessuna foto nella galleria.",
+        "info": "Informazioni file"
+    },
+    "breadcrumbs": {
+        "dashboard": "Dashboard"
+    },
+    "music": {
+        "title": "Musica"
+    },
+    "documents": {
+        "title": "Documenti"
+    },
+    "other": {
+        "title": "Altro"
+    },
+    "storage": {
+        "usage": "Utilizzo spazio"
+    },
+    "storage_dashboard": {
+        "title": "Il tuo Drive",
+        "usedOf": "{{used}} GB usati su {{total}} GB",
+        "freePercent": "{{percent}}% libero",
+        "type": {
+            "image": "Immagini",
+            "video": "Video",
+            "audio": "Audio",
+            "document": "Documenti",
+            "text": "File di testo",
+            "other": "Altro",
+            "free": "Spazio libero"
+        }
     }
-  },
-  "sharedFolders": {
-    "title": "Cartelle condivise",
-    "more": "Altre opzioni",
-    "code": "Codice di accesso:",
-    "revoke": "Revoca condivisione",
-    "revokedToast": "La condivisione della cartella è stata revocata"
-  },
-  "pagination": {
-    "previous": "Precedente",
-    "next": "Successiva",
-    "pageOf": "Pagina {{page}} di {{total}}"
-  },
-  "folder": {
-    "options": "Opzioni cartella",
-    "rename": "Rinomina",
-    "renameTitle": "Rinomina cartella",
-    "renameDescription": "Modifica il nome della cartella e salva le modifiche.",
-    "share": "Condividi",
-    "shareConfirmTitle": "Vuoi condividere l'intera cartella?",
-    "shareConfirmDescription": "Sei sicuro di voler condividere la cartella {{folder}}?",
-    "enterAccessCode": "Inserisci il codice di accesso",
-    "download": "Scarica",
-    "delete": "Elimina",
-    "deleteConfirmTitle": "Sei sicuro di voler eliminare la cartella?",
-    "deleteConfirmDescription": "Sei sicuro di voler eliminare la cartella {{folder}}? L'operazione non può essere annullata. Perderai i {{files}} file contenuti in questa cartella.",
-    "savedFolders": "Cartelle salvate"
-  },
-  "files": {
-    "count": "file",
-    "select": "Seleziona file",
-    "openEpub": "Apri lettore EPUB",
-    "noPreview": "Anteprima non disponibile per questo formato",
-    "restore": "Ripristina",
-    "restoredSuccess": "Il file è stato ripristinato!",
-    "deletePermanently": "Elimina definitivamente",
-    "deletePermanentlyTitle": "Elimina file definitivamente",
-    "deletePermanentlyDesc": "Sei sicuro di voler eliminare definitivamente \"{{name}}\"? L'operazione non può essere annullata.",
-    "deletedPermanentSuccess": "Il file è stato eliminato definitivamente.",
-    "favoriteFiles": "File preferiti",
-    "type": "Tipo",
-    "size": "Dimensione",
-    "createdAt": "Data di aggiunta",
-    "optionsTitle": "Opzioni file",
-    "delete": "Elimina",
-    "deletedSuccess": "Il file è stato eliminato.",
-    "confirmPermanentDelete": "Sei sicuro di voler eliminare definitivamente il file \"{{name}}\"?",
-    "addToFavorites": "Aggiungi ai preferiti",
-    "removeFromFavorites": "Rimuovi dai preferiti",
-    "preview": "Anteprima",
-    "details": "Dettagli",
-    "download": "Scarica",
-    "share": "Condividi",
-    "rename": "Rinomina",
-    "renameTitle": "Rinomina file",
-    "renameDescription": "Modifica il nome del file e salva le modifiche.",
-    "filenameLabel": "Nome del file",
-    "deleteConfirmTitle": "Sei sicuro di voler eliminare il file?",
-    "deleteConfirmDesc": "Sei sicuro di voler eliminare il file",
-    "actionIrreversible": "Questa operazione non può essere annullata."
-  },
-  "form": {
-    "folderName": "Nome cartella",
-    "enterName": "Inserisci nome...",
-    "selectFolder": "Seleziona cartella",
-    "selectFiles": "Seleziona file",
-    "name": "Nome"
-  },
-  "common": {
-    "cancel": "Annulla",
-    "save": "Salva",
-    "saveChanges": "Salva modifiche",
-    "error": "Si è verificato un errore"
-  },
-  "response": {
-    "fileMovedToFolder": "File spostato in {{folder}}",
-    "fileMoveError": "Impossibile spostare il file",
-    "folderDownloadStart": "Avvio del download della cartella",
-    "folderShared": "La cartella è stata condivisa",
-    "folderDeleted": "La cartella è stata eliminata",
-    "deleteError": "Errore durante l'eliminazione",
-    "folderCreated": "Cartella creata!",
-    "folderUploaded": "Cartella caricata!",
-    "filesUploaded": "File caricati!",
-    "selectFolderFirst": "Seleziona prima una cartella!",
-    "selectFilesFirst": "Seleziona prima i file!",
-    "trashEmptied": "Cestino svuotato",
-    "trashDeleteError": "Impossibile eliminare tutti i file",
-    "DeletingFiles": "Eliminazione file in corso..."
-  },
-  "sidebarmyFiles": "I miei file",
-  "sorting": "ordina per",
-  "sorting.nameAsc": "Nome (A-Z)",
-  "sorting.nameDesc": "Nome (Z-A)",
-  "sorting.sizeAsc": "Dimensione (crescente)",
-  "sorting.sizeDesc": "Dimensione (decrescente)",
-  "sorting.dateAsc": "Data (meno recenti)",
-  "sorting.dateDesc": "Data (più recenti)",
-  "cancel": "Annulla",
-  "delete.selectedFile": "Elimina i file selezionati",
-  "navigation": {
-    "newFolder": "Nuova cartella",
-    "uploadFolder": "Carica cartella",
-    "uploadFiles": "Carica file",
-    "newFile": "Nuovo file",
-    "emptyTrash": "Svuota cestino"
-  },
-  "dialog": {
-    "createFolderTitle": "Crea cartella",
-    "createFolderDescription": "Inserisci il nome della nuova cartella.",
-    "uploadFolderDescription": "Seleziona la cartella da caricare sul server.",
-    "uploadFilesTitle": "Carica file",
-    "uploadFilesDescription": "Seleziona i file da caricare sul server.",
-    "newFileTitle": "Nuovo file",
-    "newFileDescription": "Inserisci un nome per il nuovo elemento."
-  },
-  "openLink": {
-    "trigger": "Apri file condiviso",
-    "title": "Apri file condiviso",
-    "description": "Inserisci il link del file condiviso che vuoi aprire o scansiona il codice QR.",
-    "placeholder": "Apri file tramite link...",
-    "submit": "Apri file"
-  },
-  "trash": {
-    "title": "Cestino",
-    "header": "File eliminati",
-    "empty": "Nessun file eliminato."
-  },
-  "gallery": {
-    "title": "La mia galleria",
-    "download": "Scarica",
-    "share": "Condividi",
-    "noPhotos": "Nessuna foto nella galleria.",
-    "info": "Informazioni file"
-  },
-  "breadcrumbs": {
-    "dashboard": "Dashboard"
-  },
-  "music": {
-    "title": "Musica"
-  },
-  "documents": {
-    "title": "Documenti"
-  },
-  "other": {
-    "title": "Altro"
-  },
-  "storage": {
-    "usage": "Utilizzo spazio"
-  }
 }

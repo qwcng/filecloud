@@ -38,6 +38,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DialogBuilder } from "../DialogBuilder";
 import { ref } from "process";
 import { useTranslation } from "react-i18next";
+import PdfViewer from "./PdfViewer";
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "panel", href: dashboard().url },
   { title: "Pliki", href: dashboard().url },
@@ -116,6 +117,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
         setOptionVisible(false);
       }}
     >
+      
       <div className="flex justify-start absolute ">
       
          {/* <Checkbox className="bg-neutral-900 h-6 w-6"/> */}
@@ -352,7 +354,7 @@ export function FileModal({ file, onClose, sharing = false }: { file: any; onClo
         onClick={onClose}
       >
         <div 
-          className="bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]"
+          className={`bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl w-full flex flex-col max-h-[90vh] ${file.mime_type === "pdf" ? "max-w-5xl" : "max-w-lg"}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -376,6 +378,9 @@ export function FileModal({ file, onClose, sharing = false }: { file: any; onClo
               {file.mime_type === "video" && (
                 <img src={`/showThumbnail/${file.id}`} alt={file.name} className="max-h-80 object-contain shadow-sm" />
                 
+              )}
+              {file.mime_type === "pdf" && (
+                <PdfViewer fileUrl={`/showFile/${file.id}`} />
               )}
               {file.mime_type === "epub" && (
                 <Button onClick={() => window.open(`/polygon/${file.id}`, "_blank")}>

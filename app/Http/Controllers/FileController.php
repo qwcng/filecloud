@@ -14,9 +14,11 @@
     use Illuminate\Support\Str;
     use Intervention\Image\Laravel\Facades\Image;
     use Ercsctt\FileEncryption\Facades\FileEncrypter;
-use Illuminate\Support\Facades\Log;
+    use Illuminate\Support\Facades\Log;
+use App\Services\FileUploadService;
+use App\Services\FileService;
 
-    class FileController extends Controller
+class FileController extends Controller
     {
       
         
@@ -76,7 +78,7 @@ use Illuminate\Support\Facades\Log;
 }
 
 
-        public function uploadFile(Request $request)
+        public function uploadFile(Request $request, FileUploadService $uploadService)
     {
         // $request->validate([
         //     'files' => 'required|array',
@@ -84,131 +86,37 @@ use Illuminate\Support\Facades\Log;
         // ]);
 
         $uploadedFiles = [];
+        $userId = $request->user()->id;
+        $folderId = $request->input('folder') === 'root' ? null : $request->input('folder');
 
-foreach ($request->file('files') as $file) {
-    $filename = time().'_'.Str::random(16).'.enc';
-    // $path = $file->storeAs('uploads', $filename, 'private');
-    $mime = $file->getMimeType();
+        foreach ($request->file('files') as $file) {
+            
+            // Cała potężna logika wgrania, FFMpeg, FileEncrypter ląduje w Serwisie
+            $userFile = $uploadService->handleUpload($file, $folderId, $userId);
 
-    //  $path = $file->store('uploads', 'private');
-    FileEncrypter::encryptFile($file->getRealPath(), storage_path("app/private/uploads/".auth()->id()."/{$filename}"));
-     $encryptedContent = Crypt::encrypt(file_get_contents($file->getRealPath()));
-    //  Storage::disk('private')->put("uploads/".auth()->id()."/{$filename}", $encryptedContent);
-    
-
-    $type = match (true) {
-        str_starts_with($mime, 'image/') => 'image',
-        str_starts_with($mime, 'audio/') => 'audio',
-        str_starts_with($mime, 'video/') => 'video',
-        str_contains($mime, 'pdf') => 'document',
-        str_contains($mime, 'word') => 'document',
-        str_contains($mime, 'excel') => 'document',
-        str_contains($mime, 'text') => 'text',
-        default => 'other',
-    };
-
-    // folder_id
-    $folderId = $request->input('folder') === 'root' ? null : $request->input('folder');
-    if($type == "image"){
- $image = Image::read($file)
-    ->cover(300, 200); 
-         Storage::put(
-                "private/uploads/thumbs/".auth()->id()."/{$filename}",
-                Crypt::encryptString($image->encodeByExtension($file->getClientOriginalExtension(), quality: 70))
-            );
+            $uploadedFiles[] = [
+                'id' => $userFile->id,
+                'folder_id' => $userFile->folder_id,
+                'name' => $userFile->original_name,
+                'size' => number_format($userFile->size / 1024 / 1024, 2),
+                'date' => $userFile->created_at->format('Y-m-d'),
+                'type' => $userFile->type,
+                // 'thumbnail' => $userFile->thumbnail ? Storage::url($userFile->thumbnail) : null,
+            ];
         }
-    if($type =="video"){
-        try {
-            if(env('APP_ENV') === 'local'){
-                $ffmpeg = \FFMpeg\FFMpeg::create();
-               
-            } else {
-                $ffmpeg = \FFMpeg\FFMpeg::create([
-               'ffmpeg.binaries'  => '/usr/local/bin/ffmpeg',
-                'ffprobe.binaries' => '/usr/local/bin/ffprobe',
-                'timeout' => 60,
+    
+        return response()->json([
+            'message' => 'Pliki dodane',
+            'files' => $uploadedFiles,
         ]);
     }
-        $video = $ffmpeg->open($file->getRealPath());
-         $video
-            ->filters()
-            ->resize(new \FFMpeg\Coordinate\Dimension(320, 240))
-            ->synchronize();
-         $video->frame(\FFMpeg\Coordinate\TimeCode::fromSeconds(2))->save(storage_path("app/private/uploads/thumbs/temp/{$filename}"));
-        
-       
-       
-         $thumbnailPath = "uploads/thumbs/".auth()->id()."/{$filename}";
-        Storage::disk('private')->put($thumbnailPath, Crypt::encryptString(file_get_contents(storage_path("app/private/uploads/thumbs/temp/{$filename}"))));
-         unlink(storage_path("app/private/uploads/thumbs/temp/{$filename}"));
-        }
-        catch (\Exception $e) {
-            Log::error("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
-                // Możesz też ustawić domyślną miniaturę dla wideo, jeśli generowanie się nie powiedzie
-                Storage::disk('private')->put("uploads/thumbs/".auth()->id()."/{$filename}", Crypt::encryptString(file_get_contents(public_path('logo.png'))));
-            dd("Błąd podczas generowania miniatury wideo: " . $e->getMessage());
-            
-        }
-    
-            //  Storage::disk('private')->put("uploads/thumbs/".auth()->id()."/{$filename}", Crypt::encryptString(file_get_contents(public_path('logo.png'))));
-
-        // unlink(storage_path("app/{$thumbnailPath}"));
-    }
-   
-
-    
-
-
-    $userFile = UserFile::create([
-        'user_id' => $request->user()->id,
-        'original_name' => $file->getClientOriginalName(),
-        'path' => 'uploads/'. auth()->id() . "/{$filename}",
-        'mime_type' => $mime,
-        'size' => $file->getSize(),
-        'type' => $type,
-        'folder_id' => $folderId,
-        'thumbnail' => $type === 'image' || $type === 'video' ? "uploads/thumbs/".auth()->id()."/{$filename}" : null,
-        'encrypted' => true,
-    ]);
-
-    // $uploadedFiles[] = [
-    //     'id' => $userFile->id,
-    //     'folder_id' => $userFile->folder_id,
-    //     'name' => $userFile->original_name,
-    //     'size' => number_format($userFile->size / 1024 / 1024, 2),
-    //     'date' => $userFile->created_at->format('Y-m-d'),
-    //     'url' => route('downloadFile', $userFile->id),
-    //     'type' => $userFile->type,
-    //     'thumbnail' => $userFile->thumbnail ? Storage::url($userFile->thumbnail) : null,
-    // ];
-}
-}
-
-        // return response()->json([
-        //     'message' => 'Pliki dodane',
-        //     'files' => $uploadedFiles,
-            
-        // ]);
-        //delete all retrun json
         
         public function deleteFile(UserFile $file)
         {
             if ($file->user_id !== auth()->id()) {
                 abort(403);
-            }
-
-            // Usuwanie pliku z dysku
-            // Storage::disk('private')->delete($file->path);
-            // if (!empty($file->thumbnail) && Storage::disk('private')->exists($file->thumbnail)) {
-            //     Storage::disk('private')->delete($file->thumbnail);
-            // }
-
-            // // Usuwanie rekordu z bazy danych
+            }    
             $file->delete();
-            
-            // $file->delete();
-
-            // return response()->json(['message' => 'Plik usunięty']);
         }
         // 2️⃣ Pobranie listy plików użytkownika
         public function moveFile(Request $request, UserFile $file)
@@ -274,7 +182,7 @@ foreach ($request->file('files') as $file) {
                 return [
                     'id'          => $file->id,
                     'name'        => $file->original_name,
-                    'path'        => $file->path,
+                    'path'        => $file->folder_id,
                     'mime_type'   => $file->mime_type,
                     'size'        => number_format($file->size / 1024 / 1024, 2) . ' MB',
                     'created_at'  => $file->created_at->toDateTimeString(),
@@ -324,80 +232,46 @@ foreach ($request->file('files') as $file) {
                 ->header('Content-Type', $file->mime_type)
                 ->header('Content-Disposition', 'attachment; filename="' . $file->original_name . '"');
         }
-        public function showFile(UserFile $file)
-{
-    // Używamy nowej metody z modelu
-    if (!$file->hasAccessTo(auth()->user())) {
-        abort(403, 'Brak dostępu do pliku.');
+    public function showFile(UserFile $file, FileService $fileService)
+    {
+        // Używamy nowej metody z modelu - autoryzacja zostaje w kontrolerze
+        if (!$file->hasAccessTo(auth()->user())) {
+            abort(403, 'Brak dostępu do pliku.');
+        }
+        return $fileService->getInlineFileResponse($file);
     }
-
-    // $path = Storage::disk('private')->path($file->path);
-    if(FileEncrypter::isEncrypted(storage_path("app/private/".$file->path))){
-       $decrypted = FileEncrypter::decryptedContents(storage_path('app/private/' . $file->path));
-        
-       
-    } else if(!$file->encrypted){ 
-        $decrypted = Storage::disk('private')->get($file->path);
-    }
-    else if($file->encrypted){  
-        $encrypted = Storage::disk('private')->get($file->path);
-        $decrypted = Crypt::decrypt($encrypted);
-    }   
-   
-    
-    // Sprawdzamy czy plik fizycznie istnieje na dysku
-    // if (!Storage::disk('private')->exists($file->path)) {
-    //     abort(404, 'Plik nie istnieje na serwerze.');
-    // }
-
-    
-        return response($decrypted)
-        ->header('Content-Type', $file->mime_type) // Używamy mime_type z bazy
-        ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '.pdf"')
-        ->header('Content-Length', strlen($decrypted))
-        ->header('Cache-Control', 'private, max-age=3600');
-        // ->header('Content-Disposition', 'inline; filename="' . $file->original_name . '"');
-}
-    public function showThumbnail(UserFile $file)
+    public function showThumbnail(UserFile $file, FileService $fileService)
     {
         if (!$file->hasAccessTo(auth()->user())) abort(403);
-        
-        if (!$file->thumbnail || !Storage::disk('private')->exists($file->thumbnail)) {
-            // Zwróć domyślną ikonę, jeśli miniatura nie istnieje
-            return response()->file(public_path('logo.png'));
-        }
-        if($file->encrypted){
-            $encrypted = Storage::disk('private')->get($file->thumbnail);
-            $decrypted = Crypt::decryptString($encrypted);
-        } else {
-            $decrypted = Storage::disk('private')->get($file->thumbnail);
-        }
-       
-
-       return response($decrypted)->header('Content-Type', 'image/jpeg')
-    //    ->header('Content-Type', 'application/octet-stream')
-       ->header('Content-Disposition', 'inline')
-       ->header('Cache-Control', 'max-age=31536000, public');
+        return $fileService->getThumbnailResponse($file);
     }
     public function showTextFile($fileId)
     {
-        // pobieramy rekord po ID
         $file = UserFile::findOrFail($fileId);
 
-        // sprawdzamy, czy aktualny użytkownik ma dostęp
         if ($file->user_id !== auth()->id()) {
             abort(403);
         }
 
-        // wczytujemy zawartość pliku z private storage
         $path = Storage::disk('private')->path($file->path);
         $content = file_get_contents($path);
 
-        // przesyłamy do Inertia jako string
         return Inertia::render('TextFile', [
             'fileContent' => $content,
             'fileId' => $file->id,
             'fileName' => $file->original_name,
+        ]);
+    }
+    public function showPdfViewer($fileId)
+    {
+        $file = UserFile::findOrFail($fileId);
+        if ($file->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return Inertia::render('PdfFile', [
+            'id' => $file->id,
+            'name' => $file->original_name,
         ]);
     }
     
@@ -433,8 +307,16 @@ public function editFile($fileId)
         abort(403);
     }
 
-    $path = Storage::disk('private')->path($file->path);
-    $content = file_get_contents($path);
+    $realPath = storage_path("app/private/" . $file->path);
+    
+    if (FileEncrypter::isEncrypted($realPath)) {
+        $content = FileEncrypter::decryptedContents($realPath);
+    } else if (!$file->encrypted) {
+        $content = Storage::disk('private')->get($file->path);
+    } else {
+        $encrypted = Storage::disk('private')->get($file->path);
+        $content = Crypt::decrypt($encrypted);
+    }
 
     return Inertia::render('Word', [
         'fileContent' => $content,
@@ -462,16 +344,25 @@ public function saveEditedFile(Request $request, $fileId)
     if ($file->user_id !== auth()->id()) {
         abort(403);
     }  
-    // $request->validate([
-    //     'content' => '',
-    //     'filename' => 'required|string|max:255',
-    // ]);
-    $path = Storage::disk('private')->path($file->path);
-    file_put_contents($path, $request->input('content'));
+
+    $content = $request->input('content');
+    $realPath = storage_path("app/private/" . $file->path);
+    
+    // Tworzymy tymczasowy plik aby użyć FileEncrypter
+    $tempFile = storage_path("app/tmp_" . Str::random(10) . ".txt");
+    file_put_contents($tempFile, $content);
+    
+    // Nadpisujemy stary plik nową wersją zaszyfrowaną
+    FileEncrypter::encryptFile($tempFile, $realPath);
+    
+    // Czyścimy plik tymczasowy
+    unlink($tempFile);
+
     $file->original_name = $request->filename;
+    $file->encrypted = true; // Upewniamy się że flaga jest ustawiona
     $file->save();
 
-    // return response()->json(['message' => 'File updated successfully']);
+    return back();
 }
 
     public function createFile(Request $request)
@@ -561,12 +452,24 @@ public function saveEditedFile(Request $request, $fileId)
    public function getCapacity(Request $request){
     $userId = $request->user()->id;
 
-    $capacity = Cache::remember("user:{$userId}:capacity", 60, function() use ($userId) {
-        $used = UserFile::where('user_id', $userId)->sum('size');
-        $total = 1 * 1024 * 1024 * 1024; // 15 GB
+    $capacity = Cache::remember("user:{$userId}:capacity_detailed", 60, function() use ($userId) {
+        $files = UserFile::where('user_id', $userId)
+                         ->whereNull('deleted_at')
+                         ->get(['size', 'type']);
+                         
+        $used = $files->sum('size');
+        $total = 1 * 1024 * 1024 * 1024; // 1GB (Możesz tu uaktualnić na 15GB z .env)
+
+        $breakdown = $files->groupBy('type')->map(function ($group) {
+            return round($group->sum('size') / (1024 * 1024), 2); // Zwracamy w megabajtach dla czytelności
+        });
+
         return [
-            'used' => round($used / (1024*1024*1024), 2),
+            'used' => round($used / (1024*1024*1024), 3),
+            'used_bytes' => $used,
             'total' => round($total / (1024*1024*1024), 2),
+            'total_bytes' => $total,
+            'breakdown' => $breakdown
         ];
     });
 

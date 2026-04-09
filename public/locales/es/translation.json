@@ -1,183 +1,197 @@
 {
-  "sharedFiles": {
-    "title": "Archivos compartidos",
-    "searchPlaceholder": "Buscar archivos...",
-    "never": "Nunca",
-    "selectAction": "Seleccionar acción",
-    "actionsLabel": "Acciones disponibles",
-    "linkCopied": "¡Enlace copiado al portapapeles!",
-    "revokeAccess": "Confirmar",
-    "table": {
-      "name": "Nombre",
-      "size": "Tamaño",
-      "sharedAt": "Compartido el",
-      "expires": "Caduca",
-      "code": "Código",
-      "downloads": "Descargas",
-      "actions": "Acciones"
+    "sharedFiles": {
+        "title": "Archivos compartidos",
+        "searchPlaceholder": "Buscar archivos...",
+        "never": "Nunca",
+        "selectAction": "Seleccionar acción",
+        "actionsLabel": "Acciones disponibles",
+        "linkCopied": "¡Enlace copiado al portapapeles!",
+        "revokeAccess": "Confirmar",
+        "table": {
+            "name": "Nombre",
+            "size": "Tamaño",
+            "sharedAt": "Compartido el",
+            "expires": "Caduca",
+            "code": "Código",
+            "downloads": "Descargas",
+            "actions": "Acciones"
+        },
+        "actions": {
+            "preview": "Vista previa",
+            "share": "Volver a compartir",
+            "revoke": "Revocar acceso",
+            "changeCode": "Cambiar código",
+            "download": "Descargar"
+        },
+        "dialog": {
+            "revokeTitle": "Gestión de acceso",
+            "revokeDescription": "¿Estás seguro de que quieres dejar de compartir el archivo {{name}}?",
+            "downloadDescription": "¿Quieres descargar el archivo {{name}}?",
+            "newAccessCode": "Nuevo código de acceso",
+            "shareAgain": "Enlace para compartir el archivo {{name}}"
+        }
     },
-    "actions": {
-      "preview": "Vista previa",
-      "share": "Volver a compartir",
-      "revoke": "Revocar acceso",
-      "changeCode": "Cambiar código",
-      "download": "Descargar"
+    "sharedFolders": {
+        "title": "Carpetas compartidas",
+        "more": "Más opciones",
+        "code": "Código de acceso:",
+        "revoke": "Dejar de compartir",
+        "revokedToast": "Se ha revocado el acceso a la carpeta"
+    },
+    "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "pageOf": "Página {{page}} de {{total}}"
+    },
+    "folder": {
+        "options": "Opciones de carpeta",
+        "rename": "Cambiar nombre",
+        "renameTitle": "Cambiar nombre de carpeta",
+        "renameDescription": "Cambia el nombre de la carpeta y guarda los cambios.",
+        "share": "Compartir",
+        "shareConfirmTitle": "¿Quieres compartir toda la carpeta?",
+        "shareConfirmDescription": "¿Estás seguro de que quieres compartir la carpeta {{folder}}?",
+        "enterAccessCode": "Introduce el código de acceso",
+        "download": "Descargar",
+        "delete": "Eliminar",
+        "deleteConfirmTitle": "¿Estás seguro de que quieres eliminar la carpeta?",
+        "deleteConfirmDescription": "¿Estás seguro de que quieres eliminar la carpeta {{folder}}? Esta operación no se puede deshacer. Perderás {{files}} archivos de esta carpeta.",
+        "savedFolders": "Carpetas guardadas"
+    },
+    "files": {
+        "count": "archivos",
+        "select": "Seleccionar archivos",
+        "openEpub": "Abrir lector EPUB",
+        "noPreview": "Vista previa no disponible para este formato",
+        "restore": "Restaurar",
+        "restoredSuccess": "¡Archivo restaurado con éxito!",
+        "deletePermanently": "Eliminar permanentemente",
+        "deletePermanentlyTitle": "Eliminar archivo permanentemente",
+        "deletePermanentlyDesc": "¿Estás seguro de que quieres eliminar permanentemente \"{{name}}\"? Esta acción no se puede deshacer.",
+        "deletedPermanentSuccess": "Archivo eliminado permanentemente.",
+        "favoriteFiles": "Archivos favoritos",
+        "type": "Tipo",
+        "size": "Tamaño",
+        "createdAt": "Fecha de subida",
+        "optionsTitle": "Opciones de archivo",
+        "delete": "Eliminar",
+        "deletedSuccess": "Archivo eliminado.",
+        "confirmPermanentDelete": "¿Estás seguro de que quieres eliminar permanentemente \"{{name}}\"?",
+        "addToFavorites": "Añadir a favoritos",
+        "removeFromFavorites": "Quitar de favoritos",
+        "preview": "Vista previa",
+        "details": "Detalles",
+        "download": "Descargar",
+        "share": "Compartir",
+        "rename": "Cambiar nombre",
+        "renameTitle": "Cambiar nombre de archivo",
+        "renameDescription": "Cambia el nombre del archivo y guarda los cambios.",
+        "filenameLabel": "Nombre del archivo",
+        "deleteConfirmTitle": "¿Estás seguro de que quieres eliminar el archivo?",
+        "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar el archivo",
+        "actionIrreversible": "Esta operación no se puede deshacer."
+    },
+    "form": {
+        "folderName": "Nombre de la carpeta",
+        "enterName": "Escribe un nombre...",
+        "selectFolder": "Seleccionar carpeta",
+        "selectFiles": "Seleccionar archivos",
+        "name": "Nombre"
+    },
+    "common": {
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saveChanges": "Guardar cambios",
+        "error": "Ha ocurrido un error"
+    },
+    "response": {
+        "fileMovedToFolder": "Archivo movido a {{folder}}",
+        "fileMoveError": "No se pudo mover el archivo",
+        "folderDownloadStart": "Iniciando descarga de la carpeta",
+        "folderShared": "Carpeta compartida",
+        "folderDeleted": "Carpeta eliminada",
+        "deleteError": "Error al eliminar",
+        "folderCreated": "¡Carpeta creada!",
+        "folderUploaded": "¡Carpeta subida!",
+        "filesUploaded": "¡Archivos subidos!",
+        "selectFolderFirst": "¡Selecciona primero una carpeta!",
+        "selectFilesFirst": "¡Selecciona primero los archivos!",
+        "trashEmptied": "Papelera vaciada",
+        "trashDeleteError": "No se pudieron eliminar todos los archivos",
+        "DeletingFiles": "Eliminando archivos..."
+    },
+    "sidebarmyFiles": "Mis archivos",
+    "sorting": "ordenar",
+    "sorting.nameAsc": "Nombre (A-Z)",
+    "sorting.nameDesc": "Nombre (Z-A)",
+    "sorting.sizeAsc": "Tamaño (menor a mayor)",
+    "sorting.sizeDesc": "Tamaño (mayor a menor)",
+    "sorting.dateAsc": "Fecha (más antiguos)",
+    "sorting.dateDesc": "Fecha (más recientes)",
+    "cancel": "Cancelar",
+    "delete.selectedFile": "Eliminar archivos seleccionados",
+    "navigation": {
+        "newFolder": "Nueva carpeta",
+        "uploadFolder": "Subir carpeta",
+        "uploadFiles": "Subir archivos",
+        "newFile": "Nuevo archivo",
+        "emptyTrash": "Vaciar papelera"
     },
     "dialog": {
-      "revokeTitle": "Gestión de acceso",
-      "revokeDescription": "¿Estás seguro de que quieres dejar de compartir el archivo {{name}}?",
-      "downloadDescription": "¿Quieres descargar el archivo {{name}}?",
-      "newAccessCode": "Nuevo código de acceso",
-      "shareAgain": "Enlace para compartir el archivo {{name}}"
+        "createFolderTitle": "Crear carpeta",
+        "createFolderDescription": "Escribe el nombre de la nueva carpeta.",
+        "uploadFolderDescription": "Selecciona la carpeta para subir al servidor.",
+        "uploadFilesTitle": "Subir archivos",
+        "uploadFilesDescription": "Selecciona los archivos para subir al servidor.",
+        "newFileTitle": "Nuevo archivo",
+        "newFileDescription": "Escribe un nombre para el nuevo elemento."
+    },
+    "openLink": {
+        "trigger": "Abrir archivo compartido",
+        "title": "Abrir archivo compartido",
+        "description": "Introduce el enlace del archivo compartido o escanea el código QR.",
+        "placeholder": "Abrir mediante enlace...",
+        "submit": "Abrir archivo"
+    },
+    "trash": {
+        "title": "Papelera",
+        "header": "Archivos eliminados",
+        "empty": "No hay archivos eliminados."
+    },
+    "gallery": {
+        "title": "Mi galería",
+        "download": "Descargar",
+        "share": "Compartir",
+        "noPhotos": "No hay fotos en la galería.",
+        "info": "Información del archivo"
+    },
+    "breadcrumbs": {
+        "dashboard": "Panel"
+    },
+    "music": {
+        "title": "Música"
+    },
+    "documents": {
+        "title": "Documentos"
+    },
+    "other": {
+        "title": "Otros"
+    },
+    "storage": {
+        "usage": "Uso de espacio"
+    },
+    "storage_dashboard": {
+        "title": "Tu Unidad",
+        "usedOf": "{{used}} GB usados de {{total}} GB",
+        "freePercent": "{{percent}}% libre",
+        "type": {
+            "image": "Imágenes",
+            "video": "Videos",
+            "audio": "Audio",
+            "document": "Documentos",
+            "text": "Archivos de texto",
+            "other": "Otros",
+            "free": "Espacio libre"
+        }
     }
-  },
-  "sharedFolders": {
-    "title": "Carpetas compartidas",
-    "more": "Más opciones",
-    "code": "Código de acceso:",
-    "revoke": "Dejar de compartir",
-    "revokedToast": "Se ha revocado el acceso a la carpeta"
-  },
-  "pagination": {
-    "previous": "Anterior",
-    "next": "Siguiente",
-    "pageOf": "Página {{page}} de {{total}}"
-  },
-  "folder": {
-    "options": "Opciones de carpeta",
-    "rename": "Cambiar nombre",
-    "renameTitle": "Cambiar nombre de carpeta",
-    "renameDescription": "Cambia el nombre de la carpeta y guarda los cambios.",
-    "share": "Compartir",
-    "shareConfirmTitle": "¿Quieres compartir toda la carpeta?",
-    "shareConfirmDescription": "¿Estás seguro de que quieres compartir la carpeta {{folder}}?",
-    "enterAccessCode": "Introduce el código de acceso",
-    "download": "Descargar",
-    "delete": "Eliminar",
-    "deleteConfirmTitle": "¿Estás seguro de que quieres eliminar la carpeta?",
-    "deleteConfirmDescription": "¿Estás seguro de que quieres eliminar la carpeta {{folder}}? Esta operación no se puede deshacer. Perderás {{files}} archivos de esta carpeta.",
-    "savedFolders": "Carpetas guardadas"
-  },
-  "files": {
-    "count": "archivos",
-    "select": "Seleccionar archivos",
-    "openEpub": "Abrir lector EPUB",
-    "noPreview": "Vista previa no disponible para este formato",
-    "restore": "Restaurar",
-    "restoredSuccess": "¡Archivo restaurado con éxito!",
-    "deletePermanently": "Eliminar permanentemente",
-    "deletePermanentlyTitle": "Eliminar archivo permanentemente",
-    "deletePermanentlyDesc": "¿Estás seguro de que quieres eliminar permanentemente \"{{name}}\"? Esta acción no se puede deshacer.",
-    "deletedPermanentSuccess": "Archivo eliminado permanentemente.",
-    "favoriteFiles": "Archivos favoritos",
-    "type": "Tipo",
-    "size": "Tamaño",
-    "createdAt": "Fecha de subida",
-    "optionsTitle": "Opciones de archivo",
-    "delete": "Eliminar",
-    "deletedSuccess": "Archivo eliminado.",
-    "confirmPermanentDelete": "¿Estás seguro de que quieres eliminar permanentemente \"{{name}}\"?",
-    "addToFavorites": "Añadir a favoritos",
-    "removeFromFavorites": "Quitar de favoritos",
-    "preview": "Vista previa",
-    "details": "Detalles",
-    "download": "Descargar",
-    "share": "Compartir",
-    "rename": "Cambiar nombre",
-    "renameTitle": "Cambiar nombre de archivo",
-    "renameDescription": "Cambia el nombre del archivo y guarda los cambios.",
-    "filenameLabel": "Nombre del archivo",
-    "deleteConfirmTitle": "¿Estás seguro de que quieres eliminar el archivo?",
-    "deleteConfirmDesc": "¿Estás seguro de que quieres eliminar el archivo",
-    "actionIrreversible": "Esta operación no se puede deshacer."
-  },
-  "form": {
-    "folderName": "Nombre de la carpeta",
-    "enterName": "Escribe un nombre...",
-    "selectFolder": "Seleccionar carpeta",
-    "selectFiles": "Seleccionar archivos",
-    "name": "Nombre"
-  },
-  "common": {
-    "cancel": "Cancelar",
-    "save": "Guardar",
-    "saveChanges": "Guardar cambios",
-    "error": "Ha ocurrido un error"
-  },
-  "response": {
-    "fileMovedToFolder": "Archivo movido a {{folder}}",
-    "fileMoveError": "No se pudo mover el archivo",
-    "folderDownloadStart": "Iniciando descarga de la carpeta",
-    "folderShared": "Carpeta compartida",
-    "folderDeleted": "Carpeta eliminada",
-    "deleteError": "Error al eliminar",
-    "folderCreated": "¡Carpeta creada!",
-    "folderUploaded": "¡Carpeta subida!",
-    "filesUploaded": "¡Archivos subidos!",
-    "selectFolderFirst": "¡Selecciona primero una carpeta!",
-    "selectFilesFirst": "¡Selecciona primero los archivos!",
-    "trashEmptied": "Papelera vaciada",
-    "trashDeleteError": "No se pudieron eliminar todos los archivos",
-    "DeletingFiles": "Eliminando archivos..."
-  },
-  "sidebarmyFiles": "Mis archivos",
-  "sorting": "ordenar",
-  "sorting.nameAsc": "Nombre (A-Z)",
-  "sorting.nameDesc": "Nombre (Z-A)",
-  "sorting.sizeAsc": "Tamaño (menor a mayor)",
-  "sorting.sizeDesc": "Tamaño (mayor a menor)",
-  "sorting.dateAsc": "Fecha (más antiguos)",
-  "sorting.dateDesc": "Fecha (más recientes)",
-  "cancel": "Cancelar",
-  "delete.selectedFile": "Eliminar archivos seleccionados",
-  "navigation": {
-    "newFolder": "Nueva carpeta",
-    "uploadFolder": "Subir carpeta",
-    "uploadFiles": "Subir archivos",
-    "newFile": "Nuevo archivo",
-    "emptyTrash": "Vaciar papelera"
-  },
-  "dialog": {
-    "createFolderTitle": "Crear carpeta",
-    "createFolderDescription": "Escribe el nombre de la nueva carpeta.",
-    "uploadFolderDescription": "Selecciona la carpeta para subir al servidor.",
-    "uploadFilesTitle": "Subir archivos",
-    "uploadFilesDescription": "Selecciona los archivos para subir al servidor.",
-    "newFileTitle": "Nuevo archivo",
-    "newFileDescription": "Escribe un nombre para el nuevo elemento."
-  },
-  "openLink": {
-    "trigger": "Abrir archivo compartido",
-    "title": "Abrir archivo compartido",
-    "description": "Introduce el enlace del archivo compartido o escanea el código QR.",
-    "placeholder": "Abrir mediante enlace...",
-    "submit": "Abrir archivo"
-  },
-  "trash": {
-    "title": "Papelera",
-    "header": "Archivos eliminados",
-    "empty": "No hay archivos eliminados."
-  },
-  "gallery": {
-    "title": "Mi galería",
-    "download": "Descargar",
-    "share": "Compartir",
-    "noPhotos": "No hay fotos en la galería.",
-    "info": "Información del archivo"
-  },
-  "breadcrumbs": {
-    "dashboard": "Panel"
-  },
-  "music": {
-    "title": "Música"
-  },
-  "documents": {
-    "title": "Documentos"
-  },
-  "other": {
-    "title": "Otros"
-  },
-  "storage": {
-    "usage": "Uso de espacio"
-  }
 }
