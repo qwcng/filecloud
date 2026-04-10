@@ -1,4 +1,4 @@
-import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
+
 import { login } from '@/routes';
 import { Form, Head } from '@inertiajs/react';
 import { Check, LoaderCircle } from 'lucide-react';
@@ -9,14 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
-import { Checkbox, CheckboxIndicator } from '@radix-ui/react-checkbox';
+import { Checkbox } from '@radix-ui/react-checkbox';
 
 export default function Register() {
     return (
         <AuthLayout title="Create an account" description="Enter your details below to create your account">
             <Head title="Register" />
             <Form
-                {...RegisteredUserController.store.form()}
+                
                 resetOnSuccess={['password', 'password_confirmation']}
                 disableWhileProcessing
                 className="flex flex-col gap-6"
@@ -80,18 +80,20 @@ export default function Register() {
                                 />
                                 <InputError message={errors.password_confirmation} />
                             </div>
-                            <span className='flex '>
-                                <Input type='checkbox' id="terms" className="peer sr-onl" required />
-                                <Label htmlFor="terms" className="flex items-center gap-2 text-sm">
-                                
-                                    <Checkbox className="peer-data-[state=checked]:bg-blue-500 peer-data-[state=checked]:border-blue-500 h-4 w-4 rounded-sm border border-gray-300 bg-white">
-                                        <CheckboxIndicator>
-                                            <Check className="h-3 w-3 text-white" />
-                                        </CheckboxIndicator>
-                                    </Checkbox>
-                                    I agree to the <a href="/terms" className="underline hover:no-underline">Terms of Service</a> and <a href="/privacy" className="underline hover:no-underline">Privacy Policy</a>.   
-                                </Label>
-                            </span>
+
+                            <Checkbox id="terms" className="" required  />
+                            <Label htmlFor="terms" className="flex items-center gap-2 text-sm">
+                               
+                                I agree to the{' '}
+                                <a href="/terms" className="underline hover:no-underline">
+                                    Terms of Service
+                                </a>{' '}
+                                and{' '}
+                                <a href="/privacy" className="underline hover:no-underline">
+                                    Privacy Policy
+                                </a>
+                                .
+                            </Label>
 
                             <Button type="submit" className="mt-2 w-full" tabIndex={5} data-test="register-user-button">
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
