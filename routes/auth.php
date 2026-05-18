@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+
 // Wszystkie trasy tutaj zostały przejęte przez Laravel Fortify,
 // aby poprawnie obsługiwać 2-Factor Authentication (2FA).
 // Jeśli chcesz przywrócić klasyczne logowanie, musisz tu odkomentować trasy,
