@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import AppLayout from "@/layouts/app-layout";
 import { type BreadcrumbItem } from "@/types";
 import { dashboard } from "@/routes";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { X } from "lucide-react";
+import { startGlobalUpload } from "@/components/custom/UploadProgressWidget";
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: "panel", href: dashboard().url },
@@ -11,31 +12,25 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function AddFile() {
-  // używamy inertia useForm do obsługi wysyłki
-  const { data, setData, post, progress } = useForm<{ files: File[] }>({
-    files: [],
-  });
+  const [files, setFiles] = useState<File[]>([]);
 
-const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files) {
-    // dodajemy nowe pliki do już istniejących
-    setData("files", [...data.files, ...Array.from(e.target.files)]);
-  }
-};
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles([...files, ...Array.from(e.target.files)]);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // tu wysyłasz do swojego endpointu w Laravelu (np. files.store)
-    post('/uploadFile', {
-      forceFormData: true, // wymusza wysyłkę multipart/form-data
-    });
+    if (files.length === 0) return;
+    
+    startGlobalUpload(files, null);
+    setFiles([]);
+    router.visit(dashboard().url);
   };
 
   const removeFile = (index: number) => {
-    setData(
-      "files",
-      data.files.filter((_, i) => i !== index)
-    );
+    setFiles(files.filter((_, i) => i !== index));
   };
 
   return (
@@ -78,9 +73,9 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               multiple
               onChange={handleFileChange}
             />
-            {data.files.length > 0 && (
+            {files.length > 0 && (
             <div className="space-y-2">
-              {data.files.map((file, i) => (
+              {files.map((file, i) => (
                 <div
                   key={i}
                   className="flex items-center justify-between rounded border px-3 py-2 text-sm"
@@ -102,28 +97,18 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           {/* Lista wybranych plików */}
           
 
-          {/* Progress bar */}
-          {progress && (
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full"
-                style={{ width: `${progress.percentage}%` }}
-              />
-            </div>
-          )}
-
           {/* Przyciski */}
           <button
             type="submit"
-            disabled={data.files.length === 0}
+            disabled={files.length === 0}
             className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400"
           >
             Prześlij pliki
           </button>
 
           <span className="block text-sm text-gray-600 text-center">
-            {data.files.length > 0
-              ? `${data.files.length} plików gotowych do przesłania`
+            {files.length > 0
+              ? `${files.length} plików gotowych do przesłania`
               : "Brak plików do przesłania"}
           </span>
         </form>

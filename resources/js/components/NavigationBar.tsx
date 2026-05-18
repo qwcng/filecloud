@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { router, useForm } from "@inertiajs/react";
 import axios from "axios";
 import { FolderPlus, FilePlus, X, Trash2 } from "lucide-react";
+import { startGlobalUpload } from "@/components/custom/UploadProgressWidget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,34 +71,27 @@ export function NewFolder({ urlr, refreshData }: { urlr: string; refreshData: ()
 
 export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refreshData: () => void }) {
   const { t } = useTranslation();
-  const { data, setData, post, progress } = useForm<{ files: File[]; folder: string }>({
-    files: [],
-    folder: urlr === "dashboard" ? "root" : urlr,
-  });
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleFolderSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setData("files", [...data.files, ...Array.from(e.target.files)]);
+      setFiles([...files, ...Array.from(e.target.files)]);
     }
   };
 
   const handleUpload = () => {
-    if (data.files.length === 0) {
+    if (files.length === 0) {
       toast.error(t("response.selectFolderFirst"));
       return;
     }
-    post("/uploadFile", {
-      forceFormData: true,
-      onSuccess: () => {
-        toast.success(t("response.folderUploaded"));
-        setData("files", []);
-        refreshData();
-      },
+    startGlobalUpload(files, urlr, () => {
+      refreshData();
     });
+    setFiles([]);
   };
 
   const removeFile = (index: number) => {
-    setData("files", data.files.filter((_, i) => i !== index));
+    setFiles(files.filter((_, i) => i !== index));
   };
 
   return (
@@ -121,9 +115,9 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
           onChange={handleFolderSelect}
           className="cursor-pointer border rounded p-2"
         />
-        {data.files.length > 0 && (
+        {files.length > 0 && (
           <div className="mt-2 max-h-48 overflow-y-auto space-y-1 border p-2 rounded">
-            {data.files.map((file, i) => (
+            {files.map((file, i) => (
               <div key={i} className="flex justify-between items-center text-sm">
                 <span className="truncate">{file.webkitRelativePath}</span>
                 <button type="button" onClick={() => removeFile(i)} className="text-red-500 hover:text-red-700">
@@ -133,11 +127,6 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
             ))}
           </div>
         )}
-        {progress && (
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${progress.percentage}%` }} />
-          </div>
-        )}
       </div>
     </DialogBuilder>
   );
@@ -145,34 +134,27 @@ export function UploadFolderDialog({ urlr, refreshData }: { urlr: string; refres
 
 export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refreshData: () => void }) {
   const { t } = useTranslation();
-  const { data, setData, post, progress } = useForm<{ files: File[]; folder: string }>({
-    files: [],
-    folder: urlr === "dashboard" ? "root" : urlr,
-  });
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setData("files", [...data.files, ...Array.from(e.target.files)]);
+      setFiles([...files, ...Array.from(e.target.files)]);
     }
   };
 
   const handleUpload = () => {
-    if (data.files.length === 0) {
+    if (files.length === 0) {
       toast.error(t("response.selectFilesFirst"));
       return;
     }
-    post("/uploadFile", {
-      forceFormData: true,
-      onSuccess: () => {
-        toast.success(t("response.filesUploaded"));
-        setData("files", []);
-        refreshData();
-      },
+    startGlobalUpload(files, urlr, () => {
+      refreshData();
     });
+    setFiles([]);
   };
 
   const removeFile = (index: number) => {
-    setData("files", data.files.filter((_, i) => i !== index));
+    setFiles(files.filter((_, i) => i !== index));
   };
 
   const isMobile = useIsMobile();
@@ -197,9 +179,9 @@ export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refresh
           onChange={handleFileSelect}
           className="cursor-pointer border rounded p-2"
         />
-        {data.files.length > 0 && (
+        {files.length > 0 && (
           <div className="mt-2 max-h-48 overflow-y-auto space-y-1 border p-2 rounded">
-            {data.files.map((file, i) => (
+            {files.map((file, i) => (
               <div key={i} className="flex justify-between items-center text-sm">
                 <span className="truncate">{file.name}</span>
                 <button type="button" onClick={() => removeFile(i)} className="text-red-500 hover:text-red-700">
@@ -207,11 +189,6 @@ export function UploadFilesDialog({ urlr, refreshData }: { urlr: string; refresh
                 </button>
               </div>
             ))}
-          </div>
-        )}
-        {progress && (
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${progress.percentage}%` }} />
           </div>
         )}
       </div>

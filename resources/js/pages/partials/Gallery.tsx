@@ -167,9 +167,9 @@ export function Gallerye({ images, initialIndex, onClose, sharing = false }: { i
                <button className="flex items-center w-full gap-3 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors"
                       onClick={()=>{
                         if(images[currentIndex].path){
-                          router.visit('/dashboard/'+images[currentIndex].path)
+                          router.visit('/dashboard/'+images[currentIndex].path+"#file="+images[currentIndex].id)
                         }else{
-                          router.visit('/dashboard')
+                          router.visit('/dashboard#file='+images[currentIndex].id)
                         }
                         }}>
                 <ForwardIcon className="w-4 h-4" /> Jump to file

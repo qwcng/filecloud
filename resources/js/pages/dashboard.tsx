@@ -8,10 +8,12 @@ import axios from "axios";
 import {
   ArrowUpNarrowWide,
   ArrowDownNarrowWide,
+  X,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { FileCard, FileModal, UploadFolderCard } from "@/components/files/Files";
 import { FolderCard } from "@/components/files/Folders";
+import MusicPlayer from "@/components/MusicPlayer";
 import { Toaster } from "@/components/ui/sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import StorageUsageBar from "@/components/custom/StorageUsageBar";
@@ -53,6 +55,7 @@ import i18n from "i18next";
 import { NewFile, NewFolder, UploadFilesDialog, UploadFolderDialog } from "@/components/NavigationBar";
 import debounce from 'lodash/debounce';
 import FullScreenDrop from "@/components/custom/FullScreenDrop";
+import { startGlobalUpload } from "@/components/custom/UploadProgressWidget";
 import { toast } from "sonner";
 import { useSwipeable } from "react-swipeable";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -84,7 +87,8 @@ export default function Dashboard() {
   const [selectedFile, setSelectedFile] = useState<FileData | null>(null);
   const { url } = usePage();
   const urlr = useMemo(() => {
-    const segment = url.split("/").pop() || "";
+    const cleanUrl = url.split("#")[0].split("?")[0];
+    const segment = cleanUrl.split("/").pop() || "";
     return segment === "dashboard" ? "" : segment;
   }, [url]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -99,6 +103,44 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const [highlightedFileId, setHighlightedFileId] = useState<number | null>(null);
+  const [activeAudioFile, setActiveAudioFile] = useState<FileData | null>(null);
+
+  // sprawdzanie hash w url, np #file=12
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#file=')) {
+        const fileId = parseInt(hash.replace('#file=', ''), 10);
+        if (!isNaN(fileId)) {
+          setHighlightedFileId(fileId);
+        }
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // scrollowanie do pliku i krotki puls
+  useEffect(() => {
+    if (!filesLoading && files.length > 0 && highlightedFileId !== null) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`file-${highlightedFileId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // wylaczenie pulsu po 4s
+          setTimeout(() => {
+            setHighlightedFileId(null);
+          }, 1500);
+        }
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [filesLoading, files, highlightedFileId]);
 
   // --- Memos ---
   const sortedFiles = useMemo(() => {
@@ -208,6 +250,9 @@ export default function Dashboard() {
     }
     else if(file.mime_type === "pdf"){
       router.visit('/view/' + file.id + '/pdf')
+    }
+    else if(file.mime_type === "mp3"){
+      setActiveAudioFile(file)
     }
     else{
       setSelectedFile(file)
@@ -390,29 +435,10 @@ const hideFromUi = (fileId: number) => {
   // --- Ścieżka dla Shared Dialog ---
   const cleanedSharePath = useMemo(() => shareLink.replace(window.location.origin + '/', ''), [shareLink]);
 
-  const handleQuickUpload = async (fileList: FileList | File[]) => {
-    const formData = new FormData();
-    // Dodajemy wszystkie pliki do FormData
-    Array.from(fileList).forEach((file) => {
-      formData.append("files[]", file);
+  const handleQuickUpload = (fileList: FileList | File[]) => {
+    startGlobalUpload(Array.from(fileList), urlr, () => {
+      refreshData();
     });
-    
-    // Jeśli urlr to ID folderu, dodaj go
-    if (urlr) formData.append("folder", urlr);
-
-    const id = toast.loading("Przesyłanie plików...");
-
-    try {
-      await axios.post("/uploadFile", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-        
-      });
-      toast.success("Pliki przesłane pomyślnie!", { id });
-      refreshData(); // Twoja funkcja odświeżająca cache i dane
-    } catch (error) {
-      toast.error("Błąd przesyłania", { id });
-      console.error(error);
-    }
   };
 
   const moveSelectComponent = (
@@ -634,7 +660,15 @@ const hideFromUi = (fileId: number) => {
             Array(6).fill(0).map((_, i) => <Skeleton key={i} className="h-48 w-72 rounded-lg" />)
           ) : (
             sortedFiles.map((file) => (
-              <div key={file.id} className="relative group">
+              <div 
+                key={file.id} 
+                id={`file-${file.id}`} 
+                className={`relative group transition-all duration-500 rounded-lg ${
+                  file.id === highlightedFileId 
+                    ? 'ring-4 ring-blue-500 scale-105 z-30 shadow-2xl animate-pulse shadow-blue-500/50' 
+                    : ''
+                }`}
+              >
                 {selecting && (
                   <input 
                     type="checkbox" 
@@ -654,6 +688,25 @@ const hideFromUi = (fileId: number) => {
         </div>
 
         {selectedFile && <FileModal file={selectedFile} onClose={() => setSelectedFile(null)} />}
+
+        {activeAudioFile && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md z-40">
+            <div className="relative shadow-2xl rounded-3xl overflow-hidden bg-neutral-950 border border-neutral-800 p-0.5">
+              {/* Przycisk zamknięcia */}
+              <button 
+                onClick={() => setActiveAudioFile(null)}
+                className="absolute top-3 right-3 z-50 p-1 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded-full transition"
+                title="Zamknij odtwarzacz"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <MusicPlayer 
+                src={`/showFile/${activeAudioFile.id}`} 
+                title={activeAudioFile.name} 
+              />
+            </div>
+          </div>
+        )}
       </div>
     </AppLayout>
     

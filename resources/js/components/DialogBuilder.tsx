@@ -67,9 +67,11 @@ export function DialogBuilder({
           </DialogClose>
           {/* Jeśli onSave istnieje, renderujemy przycisk zapisu */}
           {onSave && (
-            <Button type="submit" onClick={onSave}>
-              {saveButtonText}
-            </Button>
+            <DialogClose asChild>
+              <Button type="submit" onClick={onSave}>
+                {saveButtonText}
+              </Button>
+            </DialogClose>
           )}
         </DialogFooter>
       </DialogContent>
