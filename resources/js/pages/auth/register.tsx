@@ -19,6 +19,7 @@ export default function Register() {
                 
                 resetOnSuccess={['password', 'password_confirmation']}
                 disableWhileProcessing
+                method='POST'
                 className="flex flex-col gap-6"
             >
                 {({ processing, errors }) => (
@@ -81,7 +82,7 @@ export default function Register() {
                                 <InputError message={errors.password_confirmation} />
                             </div>
 
-                            <Checkbox id="terms" className="" required  />
+                            <Checkbox id="terms" className="h-12 w-12 bg-blue-500" required  />
                             <Label htmlFor="terms" className="flex items-center gap-2 text-sm">
                                
                                 I agree to the{' '}

@@ -13,6 +13,10 @@ return new class extends Migration
     {
         //
             Schema::table('shared_files', function (Blueprint $table) {
+                $table->dropColumn('user_id');
+            });
+
+            Schema::table('shared_files', function (Blueprint $table) {
             $table->foreignId('user_id')
                   ->nullable()
                   ->after('id')

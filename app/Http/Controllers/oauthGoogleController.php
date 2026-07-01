@@ -15,12 +15,11 @@ class oauthGoogleController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    // Obsługa odpowiedzi z Google
+
     public function handleGoogleCallback()
     {
         $googleUser = Socialite::driver('google')->user();
 
-        // Znajdź lub stwórz użytkownika w bazie
         $user = User::updateOrCreate([
             'email' => $googleUser->email,
         ], [

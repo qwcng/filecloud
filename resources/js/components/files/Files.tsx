@@ -59,7 +59,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
   const [optionVisible, setOptionVisible] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDivElement>(null);
-  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [isFavorite, setIsFavorite] = useState<boolean>(file.favorite);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const {t}= useTranslation();
@@ -230,7 +230,7 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
           </a>
         </li>
         <li className="m-2 cursor-pointer hover:text-blue-600">
-          <span onClick={() => setShareModalOpen(true)}>
+          <span onClick={() => setShowShareModal(true)}>
             <ShareIcon className="inline-block mr-2" /> {t("files.share")}
           </span>
         </li>
@@ -318,7 +318,9 @@ export function FileCard({ file, onClick, refreshData, sharing=false }: { file: 
              <FileModal file={file} onClose={() => setInfoModalOpen(false)} />
             )}
           
-
+ {showShareModal && (
+        <ShareModal fileId={file.id} onClose={() => setShowShareModal(false)} />
+      )}
     </motion.div>
   );
 }

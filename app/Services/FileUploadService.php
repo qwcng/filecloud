@@ -20,15 +20,20 @@ class FileUploadService
      * Odpowiada za bezpieczne wgrywanie pliku, miniaturyzację, 
      * szyfrowanie i zapis do bazy danych.
      */
-    public function handleUpload(UploadedFile $file, ?int $folderId, int $userId): UserFile
+    public function handleUpload(UploadedFile $file, ?int $folderId, int $userId):UserFile
     {
         $filename = time() . '_' . Str::random(16) . '.enc';
         $mime = $file->getMimeType();
 
         // 1. Główne szyfrowanie potężnym FileEncrypter (bez wpychania go do RAMu)
+        // dd(Storage::disk('private'));
+        
+        if(!Storage::disk('private')->exists("/uploads/{$userId}/")){
+            Storage::disk('private')->makeDirectory("/uploads/{$userId}/");
+        }
         FileEncrypter::encryptFile(
             $file->getRealPath(), 
-            storage_path("app/private/uploads/{$userId}/{$filename}")
+            Storage::disk('private')->path("uploads/{$userId}/{$filename}")
         );
 
         // 2. Parsowanie MimeType
@@ -52,7 +57,9 @@ class FileUploadService
             try {
                 $image = Image::read($file)->cover(300, 200);
                 $thumbnailPathWithoutDisk = "uploads/thumbs/{$userId}/{$filename}";
-                
+                if(!Storage::disk('private')->exists("uploads/thumbs/{$userId}/")){
+                    Storage::disk('private')->makeDirectory("uploads/thumbs/{$userId}/");
+                }
                 Storage::put(
                     "private/{$thumbnailPathWithoutDisk}",
                     Crypt::encryptString($image->encodeByExtension($file->getClientOriginalExtension(), quality: 70))
@@ -117,5 +124,7 @@ class FileUploadService
             'thumbnail' => $thumbnailPathWithoutDisk,
             'encrypted' => true,
         ]);
+        }
+       
     }
-}
+
