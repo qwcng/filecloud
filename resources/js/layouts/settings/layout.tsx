@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import settings from '@/routes/settings';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Key, Palette, Shield, User } from 'lucide-react';
+import { Key, Palette, Shield, User, Smartphone } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
@@ -28,6 +28,11 @@ const sidebarNavItems: NavItem[] = [
         title: 'Two-factor auth',
         href: settings.twoFactor.edit().url,
         icon: Shield,
+    },
+    {
+        title: 'Sessions',
+        href: settings.sessions.edit().url,
+        icon: Smartphone,
     },
 ];
 

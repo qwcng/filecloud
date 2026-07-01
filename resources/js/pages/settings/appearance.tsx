@@ -42,7 +42,7 @@ export default function Appearance() {
                         i18n.changeLanguage(e);
                         
                     }} 
-                    defaultValue={localStorage.getItem("lang")}>
+                    defaultValue={localStorage.getItem("lang")??"en"}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select a language" />
                     </SelectTrigger>

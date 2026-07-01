@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\SessionController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -25,4 +26,12 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/two-factor', function () {
         return Inertia::render('settings/two-factor');
     })->name('settings.two-factor.edit');
+
+    Route::get('settings/sessions', function () {
+        return Inertia::render('settings/sessions');
+    })->name('settings.sessions.edit');
+
+    Route::get('/auth/getActiveSessions', [SessionController::class, 'getActiveSessions']);
+    Route::delete('/auth/deleteSession/{id}', [SessionController::class, 'deleteSession']);
+
 });
