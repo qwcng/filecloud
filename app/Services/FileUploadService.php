@@ -51,6 +51,7 @@ class FileUploadService
         // Zmienna dla lokalizacji miniaturki
         $thumbnailDiskPath = null;
         $thumbnailPathWithoutDisk = null;
+        
 
         // 3. Miniaturyzacja Zdjęć
         if ($type === "image") {
