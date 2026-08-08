@@ -24,7 +24,9 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, \App\Http\Responses\LoginResponse::class);
+        $this->app->singleton(\Laravel\Fortify\Contracts\TwoFactorLoginResponse::class, \App\Http\Responses\TwoFactorLoginResponse::class);
+        $this->app->singleton(\Laravel\Fortify\Contracts\RegisterResponse::class, \App\Http\Responses\RegisterResponse::class);
     }
 
     /**
@@ -45,13 +47,29 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::confirmPasswordView(function () {
             return Inertia::render('auth/confirm-password');
         });
-        Fortify::loginView(function () {
+        Fortify::loginView(function (Request $request) {
+            if ($request->has('redirect_to')) {
+                session()->put('url.intended', $request->input('redirect_to'));
+            } elseif ($request->has('return_to')) {
+                session()->put('url.intended', $request->input('return_to'));
+            } elseif ($request->has('intended')) {
+                session()->put('url.intended', $request->input('intended'));
+            }
+
             return Inertia::render('auth/login', [
                 'canResetPassword' => Route::has('password.request'),
                 'status' => session('status'),
             ]);
         });
-        Fortify::registerView(function () {
+        Fortify::registerView(function (Request $request) {
+            if ($request->has('redirect_to')) {
+                session()->put('url.intended', $request->input('redirect_to'));
+            } elseif ($request->has('return_to')) {
+                session()->put('url.intended', $request->input('return_to'));
+            } elseif ($request->has('intended')) {
+                session()->put('url.intended', $request->input('intended'));
+            }
+
             return Inertia::render('auth/register', [
                 'status' => session('status'),
             ]);
