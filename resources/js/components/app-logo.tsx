@@ -1,3 +1,4 @@
+import { LayoutGrid } from 'lucide-react';
 import AppLogoIcon from './app-logo-icon';
 
 export default function AppLogo() {
@@ -9,6 +10,7 @@ export default function AppLogo() {
             <div className="ml-1 grid flex-1 text-left text-sm ">
                 <span className="mb-0.5 truncate leading-tight font-bold font-poppins">Versec drive</span>
             </div>
+           
         </>
     );
 }

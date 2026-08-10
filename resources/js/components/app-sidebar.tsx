@@ -1,89 +1,56 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { 
+    DropdownMenu, 
+    DropdownMenuContent, 
+    DropdownMenuItem, 
+    DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { 
+    Sidebar, 
+    SidebarContent, 
+    SidebarFooter, 
+    SidebarHeader, 
+    SidebarMenu, 
+    SidebarMenuButton, 
+    SidebarMenuItem, 
+    useSidebar 
+} from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Files, Folder, LayoutGrid, PlusIcon,Share2Icon,Image,File,Headphones, Save, Heart, Trash2, Trash, Star, Bookmark, EyeOff} from 'lucide-react';
+import Axios from 'axios';
+import { 
+    BookOpen, 
+    Bookmark, 
+    EyeOff, 
+    File, 
+    Files, 
+    Folder, 
+    Headphones, 
+    Image, 
+    LayoutGrid, 
+    PlusIcon, 
+    Share2Icon, 
+    Star, 
+    Trash 
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from "react-i18next";
 import AppLogo from './app-logo';
 import { NavMainGallery } from './nav-gallery';
-import { Input } from './ui/input';
-import { useContext, useEffect, useState } from 'react';
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpApi from "i18next-http-backend";
-import i18n from "i18next";
-import Axios from 'axios';
 
-
-
-
-const mainNavItems: NavItem[] = [
+const appsList = [
     {
-        title: 'Moje pliki',
-        href: dashboard(),
-        icon: Files,
+        name: 'Versec Drive',
+        href: 'https://filecloud.ct8.pl',
+        icon: '/versec-s.jpg',
     },
     {
-        title:'Udostępnione Pliki',
-        href : '/sharedFiles',
-        icon: Share2Icon,
-    },
-    {
-        title: 'Zapisane foldery',
-        href: '/dashboard/saved',
-        icon: Bookmark,
-    },
-    {
-        title:"Ulubione pliki",
-        href:"/dashboard/favorite",
-        icon:Star,
-    },
-    {
-        title: 'Dodaj pliki',
-        href: 'addFile',
-        icon: PlusIcon,
-    },
-    {
-        title:"Kosz",
-        href:"/trash",
-        icon:Trash,
-    }   
-];
-const themeFolders: NavItem[] = [
-    {
-        title: 'Galeria',
-        href: '/type/images',
-        icon: Image,
-    },
-    {
-        title: 'Muzyka',
-        href: '/type/music',
-        icon: Headphones,
-    },
-    {
-        title: 'Dokumenty',
-        href: '/type/documents',
-        icon: File,
-    },
-    {
-        title: 'Inne',
-        href: '/type/other',
-        icon: Folder,
-    },
-
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        name: 'Versec Weather',
+        href: 'https://weather.filecloud.ct8.pl',
+        icon: '/versecweather.jpg',
     },
 ];
 
@@ -98,7 +65,6 @@ export function AppSidebar() {
     useEffect(() => {
         const cachedAt = localStorage.getItem('storage_capacity_timestamp');
         const now = Date.now();
-        // Only fetch if > 30 seconds since last fetch
         if (!cachedAt || now - parseInt(cachedAt) > 30000) {
             fetchStorageCapacity();
         }
@@ -113,7 +79,6 @@ export function AppSidebar() {
             });
     };
 
-    // Definiujemy elementy wewnątrz, aby reagowały na zmianę języka (hook t)
     const mainNavItems: NavItem[] = [
         {
             title: t('sidebarmyFiles'),
@@ -126,7 +91,7 @@ export function AppSidebar() {
             icon: Share2Icon,
         },
         {
-            title: t('folder.savedFolders', 'Zapisane foldery'), // dodałem klucz dla spójności
+            title: t('folder.savedFolders', 'Zapisane foldery'),
             href: '/dashboard/saved',
             icon: Bookmark,
         },
@@ -198,6 +163,41 @@ export function AppSidebar() {
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuButton size="lg" className="w-full justify-start cursor-pointer">
+                                    <div className="flex aspect-square size-6 items-center justify-center">
+                                        <LayoutGrid className="size-6 text-black dark:text-white" />
+                                    </div>
+                                    <div className="ml-1 grid flex-1 text-left text-sm">
+                                        <span className="mb-0.5 truncate leading-tight font-bold font-poppins">Apps</span>
+                                    </div>
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent 
+                                side={state === 'collapsed' ? 'right' : 'bottom'} 
+                                align="start" 
+                                className="w-48 p-1"
+                            >
+                                {appsList.map((app, index) => (
+                                    <DropdownMenuItem key={index} asChild>
+                                        <a 
+                                            href={app.href} 
+                                            className="flex items-center gap-3 px-3 py-2 cursor-pointer w-full hover:bg-accent rounded-md transition-colors"
+                                        >
+                                            <img 
+                                                src={app.icon} 
+                                                alt={app.name} 
+                                                className="size-5 object-contain rounded-sm" 
+                                            />
+                                            <span className="text-sm font-medium">{app.name}</span>
+                                        </a>
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>

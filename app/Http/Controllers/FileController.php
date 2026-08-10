@@ -370,6 +370,7 @@ public function saveEditedFile(Request $request, $fileId)
     $request->validate([
         'filename' => 'required|string|max:255',
         'folder' => 'nullable|',
+        'content'=>'nullable',
     ]);
 
     // Generujemy unikalną nazwę pliku
@@ -377,7 +378,7 @@ public function saveEditedFile(Request $request, $fileId)
     $path = 'uploads/' . $filename;
 
     // Tworzymy pusty plik w storage/private
-    Storage::disk('private')->put($path, '');
+    Storage::disk('private')->put($path, $request->content);
 
     // Tworzymy rekord w bazie danych
     $file = UserFile::create([
@@ -385,7 +386,7 @@ public function saveEditedFile(Request $request, $fileId)
         'original_name' => $request->filename,
         'path' => $path,
         'mime_type' => 'text/plain',
-        'size' => Storage::disk('private')->size($path), // ✅ teraz poprawnie
+        'size' => Storage::disk('private')->size($path),
         'type' => 'text',
         'folder_id' => $request->input('folder') === 'root' ? null : $request->input('folder'),
     ]);
