@@ -61,6 +61,7 @@ import { useSwipeable } from "react-swipeable";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Gallerye } from "./partials/Gallery";
+import { Toast } from "radix-ui";
 // --- Konfiguracja i18n ---
 
 
@@ -211,14 +212,17 @@ export default function Dashboard() {
     if (selectedFiles.length === 0) return;
 
     if (confirm(`Czy na pewno chcesz usunąć ${selectedFiles.length} zaznaczone pliki?`)) {
+      const toastId = toast.loading('Deleting files...');
       try {
+        
         await Promise.all(selectedFiles.map(file => axios.delete(`/files/${file.id}`)));
         setSelecting(false);
         setSelectedFiles([]);
+        toast.success(`Usunięto zaznaczone pliki`,{id:toastId});
         refreshData();
       } catch (error) {
         console.error('Błąd usuwania:', error);
-        alert('Wystąpił błąd podczas usuwania niektórych plików.');
+        toast.success(`Wystąpił błąd przy uswuaniu plików`,{id:toastId});
       }
     }
   };

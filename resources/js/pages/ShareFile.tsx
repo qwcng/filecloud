@@ -121,12 +121,12 @@ export default function ShareFile() {
 
           <p className="mt-2"><strong>Typ:</strong> {fileData.type}</p>
           <p><strong>Rozmiar:</strong> {fileData.size} MB</p>
-          <button
+          {/*<button
             onClick={downloadFile}
             className="mt-4 inline-block bg-green-600 px-4 py-2 text-white rounded hover:bg-green-700"
           >
             Pobierz plik
-          </button>
+          </button> */}
           <button
         onClick={showFile}
         className="mt-4 ml-2 inline-block bg-blue-600 px-4 py-2 text-white rounded hover:bg-blue-700"
